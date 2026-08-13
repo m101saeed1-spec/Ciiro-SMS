@@ -1,0 +1,6 @@
+{
+  "name": "EduSpike School Management System",
+  "description": "Comprehensive school management platform with role-based access for Admin, Teachers, Students, and Parents, featuring students, teachers, classes, library, subjects, attendance, exams, and notices.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
