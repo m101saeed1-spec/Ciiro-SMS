@@ -5,8 +5,10 @@ import { INITIAL_USER_PROFILES } from '../data/initialData';
 interface AuthContextType {
   currentUser: UserProfile;
   activeRole: UserRole;
-  switchRole: (role: UserRole) => void;
   updateProfile: (updated: Partial<UserProfile>) => void;
+  adminUpdateUserRole: (userId: string, newRole: UserRole, reason?: string) => Promise<{ success: boolean; error?: string }>;
+  adminToggleUserStatus: (userId: string, status: 'Active' | 'Disabled', reason?: string) => Promise<{ success: boolean; error?: string }>;
+  adminCreateUser: (userData: Partial<UserProfile> & { schoolId: string; name: string; email: string; role: UserRole }) => Promise<{ success: boolean; error?: string }>;
   login: (email: string, role: UserRole) => boolean;
   loginWithSchoolId: (schoolId: string, password: string, userType: UserRole, rememberMe?: boolean) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
@@ -15,6 +17,7 @@ interface AuthContextType {
   setActiveChildId: (childId: string) => void;
   getAuthHeaders: () => Record<string, string>;
   userProfiles: UserProfile[];
+  refreshProfiles: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -61,16 +64,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [currentUser, activeChildId]);
 
-  const switchRole = (role: UserRole) => {
-    const target = userProfiles.find((p) => p.role === role);
-    if (target) {
-      setActiveRoleId(target.id);
-      setIsAuthenticated(true);
-      if (target.role === 'Parent' && target.linkedStudentIds?.length) {
-        setActiveChildId(target.linkedStudentIds[0]);
-      } else if (target.role === 'Student' && (target.studentId || target.schoolId)) {
-        setActiveChildId(target.studentId || target.schoolId);
+  const refreshProfiles = async () => {
+    try {
+      const res = await fetch('/api/admin/users', {
+        headers: getAuthHeaders(),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setUserProfiles(data);
+        }
       }
+    } catch {
+      // Ignored
     }
   };
 
@@ -84,15 +90,156 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   };
 
-  const updateProfile = (updated: Partial<UserProfile>) => {
+  const updateProfile = async (updated: Partial<UserProfile>) => {
+    // Exclude security-critical locked attributes from user modification
+    const { role: _, id: __, status: ___, schoolId: ____, ...safeFields } = updated as any;
+    
+    try {
+      await fetch('/api/profile', {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(safeFields),
+      });
+    } catch {
+      // Offline fallback
+    }
+
     setUserProfiles((prev) =>
-      prev.map((p) => (p.id === currentUser.id ? { ...p, ...updated } : p))
+      prev.map((p) => (p.id === currentUser.id ? { ...p, ...safeFields } : p))
     );
+  };
+
+  // Admin Role Management: Change target user's role (Admin Only)
+  const adminUpdateUserRole = async (
+    userId: string,
+    newRole: UserRole,
+    reason?: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (currentUser.role !== 'Admin') {
+      return { success: false, error: 'Access Denied: Only School Administrators can assign or reassign roles.' };
+    }
+
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/role`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ newRole, reason }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || 'Failed to update user role' };
+      }
+
+      setUserProfiles((prev) =>
+        prev.map((p) =>
+          p.id === userId
+            ? {
+                ...p,
+                role: newRole,
+                roleAssignedBy: `${currentUser.name} (${currentUser.id})`,
+                roleAssignedAt: new Date().toISOString().slice(0, 10),
+              }
+            : p
+        )
+      );
+
+      return { success: true };
+    } catch {
+      // Fallback local update
+      setUserProfiles((prev) =>
+        prev.map((p) =>
+          p.id === userId
+            ? {
+                ...p,
+                role: newRole,
+                roleAssignedBy: `${currentUser.name} (${currentUser.id})`,
+                roleAssignedAt: new Date().toISOString().slice(0, 10),
+              }
+            : p
+        )
+      );
+      return { success: true };
+    }
+  };
+
+  // Admin Account Status Toggle: Active / Disabled (Admin Only)
+  const adminToggleUserStatus = async (
+    userId: string,
+    status: 'Active' | 'Disabled',
+    reason?: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (currentUser.role !== 'Admin') {
+      return { success: false, error: 'Access Denied: Only School Administrators can change user status.' };
+    }
+
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/status`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status, reason }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || 'Failed to update user status' };
+      }
+
+      setUserProfiles((prev) =>
+        prev.map((p) => (p.id === userId ? { ...p, status } : p))
+      );
+      return { success: true };
+    } catch {
+      setUserProfiles((prev) =>
+        prev.map((p) => (p.id === userId ? { ...p, status } : p))
+      );
+      return { success: true };
+    }
+  };
+
+  // Admin Provision New User with official role (Admin Only)
+  const adminCreateUser = async (
+    userData: Partial<UserProfile> & { schoolId: string; name: string; email: string; role: UserRole }
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (currentUser.role !== 'Admin') {
+      return { success: false, error: 'Access Denied: Only School Administrators can provision accounts.' };
+    }
+
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(userData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || 'Failed to provision user' };
+      }
+
+      const createdUser: UserProfile = data.user;
+      setUserProfiles((prev) => [...prev, createdUser]);
+      return { success: true };
+    } catch {
+      const newUser: UserProfile = {
+        id: `usr-${userData.role.toLowerCase()}-${Date.now().toString(36)}`,
+        schoolId: userData.schoolId.toUpperCase(),
+        name: userData.name,
+        email: userData.email,
+        role: userData.role,
+        password: userData.password || 'password123',
+        status: 'Active',
+        roleAssignedBy: `${currentUser.name} (${currentUser.id})`,
+        roleAssignedAt: new Date().toISOString().slice(0, 10),
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+        joinDate: new Date().toISOString().slice(0, 10),
+        ...userData,
+      };
+      setUserProfiles((prev) => [...prev, newUser]);
+      return { success: true };
+    }
   };
 
   const login = (email: string, role: UserRole) => {
     const target = userProfiles.find((p) => p.role === role);
-    if (target) {
+    if (target && target.status !== 'Disabled') {
       setActiveRoleId(target.id);
       setIsAuthenticated(true);
       return true;
@@ -158,6 +305,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: false, error: `No ${userType} account found with ID "${cleanId}".` };
       }
 
+      if (match.status === 'Disabled') {
+        return { success: false, error: 'Account Suspended: This account has been disabled by the Administrator.' };
+      }
+
       const validPass = match.password || 'password123';
       if (password !== validPass) {
         return { success: false, error: 'Incorrect password for this School ID.' };
@@ -178,8 +329,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         currentUser,
         activeRole,
-        switchRole,
         updateProfile,
+        adminUpdateUserRole,
+        adminToggleUserStatus,
+        adminCreateUser,
         login,
         loginWithSchoolId,
         logout,
@@ -188,6 +341,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setActiveChildId,
         getAuthHeaders,
         userProfiles,
+        refreshProfiles,
       }}
     >
       {children}

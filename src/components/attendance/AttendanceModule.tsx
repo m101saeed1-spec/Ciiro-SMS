@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { AttendanceRecord } from '../../types';
+import { exportAttendanceReportPDF } from '../../utils/pdfExport';
 import {
   CalendarCheck,
   CheckCircle2,
@@ -11,7 +12,8 @@ import {
   Save,
   BarChart2,
   Calendar,
-  UserCheck
+  UserCheck,
+  Download,
 } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
@@ -257,10 +259,30 @@ export const AttendanceModule: React.FC = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+          <button
+            type="button"
+            onClick={() => {
+              const currentRecords = classStudents.map((st) => ({
+                id: `att-${st.id}-${selectedDate}`,
+                studentId: st.id,
+                studentName: st.name,
+                rollNo: st.rollNo,
+                class: selectedClass,
+                section: selectedSection,
+                date: selectedDate,
+                status: currentStatuses[st.id] || 'Present',
+              }));
+              exportAttendanceReportPDF(`${selectedClass} (${selectedSection}) - ${selectedDate}`, currentRecords);
+            }}
+            className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-bold text-xs flex items-center gap-1.5"
+          >
+            <Download className="w-4 h-4 text-purple-600" />
+            <span>Export PDF</span>
+          </button>
           <button
             onClick={() => handleMarkAll('Present')}
-            className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-xs"
+            className="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-xs"
           >
             Mark All Present
           </button>

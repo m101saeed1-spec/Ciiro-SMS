@@ -105,9 +105,19 @@ export const ExamModule: React.FC = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Examination & Grades</h1>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 text-xs font-bold flex items-center gap-1">
+              <Award className="w-3.5 h-3.5" />
+              {activeRole === 'Student' ? 'My Academic Performance' : 'Examination & Grades'}
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-800">
+            {activeRole === 'Student' ? 'My Results & Exam Schedules' : 'Examination & Grades'}
+          </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Schedule examinations, enter marks, generate official report cards & view analytics
+            {activeRole === 'Student'
+              ? 'View your examination schedules, subject marks, performance percentages, and verified grades.'
+              : 'Schedule examinations, enter marks, generate official report cards & view analytics'}
           </p>
         </div>
         {(activeRole === 'Admin' || activeRole === 'Teacher') && (
