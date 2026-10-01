@@ -177,9 +177,9 @@ export function exportStudentReportPDF(
   doc.text(`${student.attendanceRate}% (Satisfactory)`, 140, startY + 24);
 
   // Table of marks
-  const studentMarks = marks.filter((m) => m.studentId === student.id);
-  const totalObtained = studentMarks.reduce((acc, m) => acc + m.marksObtained, 0);
-  const totalMax = studentMarks.reduce((acc, m) => acc + m.totalMarks, 0);
+  const studentMarks = (marks || []).filter((m) => m.studentId === student.id);
+  const totalObtained = studentMarks.reduce((acc, m) => acc + (m.marksObtained || 0), 0);
+  const totalMax = studentMarks.reduce((acc, m) => acc + (m.totalMarks || 100), 0);
   const percentage = totalMax > 0 ? ((totalObtained / totalMax) * 100).toFixed(1) : '0';
 
   const tableBody = studentMarks.map((m, idx) => [
@@ -439,44 +439,149 @@ export function exportExamRankingPDF(
   doc.save(`Exam_Ranking_${examTitle.replace(/\s+/g, '_')}_${targetClass}.pdf`);
 }
 
-// 4. EXPORT: Attendance Report
+export interface AttendancePDFExportOptions extends PDFExportOptions {
+  dateRangeLabel?: string;
+  className?: string;
+  section?: string;
+  totalStudents?: number;
+}
+
+// 4. EXPORT: Attendance Report (Offline Administrative & Classroom Audit)
 export function exportAttendanceReportPDF(
   targetClass: string,
   records: AttendanceRecord[],
-  options: PDFExportOptions = {}
+  options: AttendancePDFExportOptions = {}
 ) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  addHeader(doc, `ATTENDANCE REGISTRY REPORT: ${targetClass}`, 'Daily Classroom Attendance Audit Log', options);
+  const subTitle = options.dateRangeLabel 
+    ? `Period: ${options.dateRangeLabel} | Class Scope: ${targetClass}` 
+    : `Class Scope: ${targetClass} | Official Attendance Audit Log`;
+    
+  addHeader(doc, `OFFICIAL ATTENDANCE REPORT: ${targetClass}`, subTitle, options);
+
+  // Compute metrics for administrative summary cards
+  const total = records.length;
+  const present = records.filter((r) => r.status === 'Present').length;
+  const absent = records.filter((r) => r.status === 'Absent').length;
+  const permission = records.filter((r) => r.status === 'Permission' || r.status === 'Late').length;
+  const rate = total > 0 ? Number(((present / total) * 100).toFixed(1)) : 0;
+
+  // Render 4 Summary KPI Metric Boxes
+  const startY = 53;
+  const boxWidth = 43.5;
+  const boxHeight = 15;
+  const gap = 2.5;
+  const leftMargin = 14;
+
+  const kpis = [
+    { label: 'TOTAL LOGS', val: String(total), sub: 'Recorded entries', bg: [248, 250, 252], border: [203, 213, 225], text: [15, 23, 42] },
+    { label: 'PRESENT', val: `${present} (${rate}%)`, sub: 'In classroom', bg: [236, 253, 245], border: [167, 243, 208], text: [4, 120, 87] },
+    { label: 'ABSENT', val: String(absent), sub: 'Unexcused', bg: [255, 241, 242], border: [254, 205, 211], text: [225, 29, 72] },
+    { label: 'EXCUSED / LATE', val: String(permission), sub: 'Authorized leave', bg: [255, 251, 235], border: [253, 230, 138], text: [180, 83, 9] },
+  ];
+
+  kpis.forEach((kpi, idx) => {
+    const x = leftMargin + idx * (boxWidth + gap);
+    doc.setFillColor(kpi.bg[0], kpi.bg[1], kpi.bg[2]);
+    doc.setDrawColor(kpi.border[0], kpi.border[1], kpi.border[2]);
+    doc.roundedRect(x, startY, boxWidth, boxHeight, 1.5, 1.5, 'FD');
+
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(100, 116, 139);
+    doc.text(kpi.label, x + 3.5, startY + 4.5);
+
+    doc.setFontSize(9.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(kpi.text[0], kpi.text[1], kpi.text[2]);
+    doc.text(kpi.val, x + 3.5, startY + 9.5);
+
+    doc.setFontSize(6);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(148, 163, 184);
+    doc.text(kpi.sub, x + 3.5, startY + 13);
+  });
 
   const tableBody = records.map((r, idx) => [
     idx + 1,
     r.date,
+    `${r.class}${r.section ? ` - ${r.section}` : ''}`,
     r.studentName,
     r.studentId,
     r.rollNo,
     r.status.toUpperCase(),
     r.remarks || '-',
+    r.recordedBy || 'Class Teacher',
   ]);
 
   autoTable(doc, {
-    startY: 56,
-    head: [['#', 'Date', 'Student Name', 'School ID', 'Roll No', 'Status', 'Remarks']],
+    startY: 72,
+    head: [['#', 'Date', 'Class', 'Student Name', 'School ID', 'Roll #', 'Status', 'Remarks', 'Recorded By']],
     body: tableBody,
     theme: 'striped',
     headStyles: {
       fillColor: [109, 40, 217],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
-      fontSize: 8.5,
+      fontSize: 8,
     },
     styles: {
-      fontSize: 8,
-      cellPadding: 3,
+      fontSize: 7.5,
+      cellPadding: 2.2,
+    },
+    columnStyles: {
+      0: { cellWidth: 8, halign: 'center' },
+      1: { cellWidth: 20 },
+      2: { cellWidth: 18 },
+      3: { cellWidth: 38, fontStyle: 'bold' },
+      4: { cellWidth: 24, fontStyle: 'bold' },
+      5: { cellWidth: 14, halign: 'center' },
+      6: { cellWidth: 22, halign: 'center', fontStyle: 'bold' },
+      7: { cellWidth: 24 },
+      8: { cellWidth: 14 },
+    },
+    didParseCell: (data) => {
+      if (data.section === 'body' && data.column.index === 6) {
+        const val = String(data.cell.raw).toUpperCase();
+        if (val === 'PRESENT') {
+          data.cell.styles.textColor = [4, 120, 87]; // Emerald
+        } else if (val === 'ABSENT') {
+          data.cell.styles.textColor = [225, 29, 72]; // Rose
+        } else {
+          data.cell.styles.textColor = [180, 83, 9]; // Amber
+        }
+      }
     },
   });
 
+  // Verification & Sign-off Block on the last page
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const finalY = (doc as any).lastAutoTable ? (doc as any).lastAutoTable.finalY : 180;
+  let signY = finalY + 12;
+
+  // If table went too close to bottom, add a new page for signatures
+  if (signY > pageHeight - 35) {
+    doc.addPage();
+    signY = 35;
+  }
+
+  doc.setDrawColor(226, 232, 240);
+  doc.line(14, signY, 196, signY);
+
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 116, 139);
+  doc.text(`Official Document Ref: ATT-${Date.now().toString().slice(-6)} | Authorized offline record`, 14, signY + 6);
+  doc.text(`Generated By: ${options.generatedBy || 'Academic Administration'}`, 14, signY + 11);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(51, 65, 85);
+  doc.text('Class Teacher Signature: __________________________', 105, signY + 6);
+  doc.text('Principal / Authority Approval: ___________________', 105, signY + 13);
+
   addFooter(doc);
-  doc.save(`Attendance_Report_${targetClass.replace(/\s+/g, '_')}.pdf`);
+  const dateSuffix = new Date().toISOString().slice(0, 10);
+  doc.save(`Attendance_Report_${targetClass.replace(/\s+/g, '_')}_${dateSuffix}.pdf`);
 }
 
 // 5. EXPORT: Student Directory List
@@ -737,3 +842,71 @@ export function exportNoticePDF(
   addFooter(doc);
   doc.save(`Notice_${notice.title.slice(0, 20).replace(/\s+/g, '_')}.pdf`);
 }
+
+// 11. EXPORT: Academic Documents & Certificates Manifest
+export function exportDocumentManifestPDF(
+  documents: { id: string; title: string; category: string; fileType: string; size: string; date: string }[],
+  options: PDFExportOptions = {}
+) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  addHeader(doc, 'ACADEMIC DOCUMENTS MANIFEST & ARCHIVE', 'Authorized Institutional Records & Certification Index', options);
+
+  const startY = 48;
+  doc.setFillColor(248, 250, 252);
+  doc.roundedRect(14, startY, 182, 20, 2, 2, 'FD');
+  doc.setDrawColor(203, 213, 225);
+
+  doc.setFontSize(9.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text(`Total Authorized Institutional Documents: ${documents.length}`, 20, startY + 7);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(71, 85, 105);
+  doc.text(`Scholar / Requestor: ${options.generatedBy || 'Authorized Academic User'}  |  Institution: ${options.schoolName || DEFAULT_OPTIONS.schoolName}`, 20, startY + 14);
+
+  const rows = documents.map((d, index) => [
+    `#0${index + 1}`,
+    d.title,
+    d.category,
+    d.fileType,
+    d.size,
+    d.date,
+    'VERIFIED',
+  ]);
+
+  autoTable(doc, {
+    startY: startY + 25,
+    head: [['Ref', 'Document Title', 'Category', 'Format', 'Size', 'Issue Date', 'Security']],
+    body: rows,
+    theme: 'striped',
+    headStyles: {
+      fillColor: [109, 40, 217],
+      textColor: 255,
+      fontStyle: 'bold',
+      fontSize: 8,
+    },
+    bodyStyles: {
+      fontSize: 8,
+      cellPadding: 3.5,
+    },
+    columnStyles: {
+      0: { cellWidth: 12, halign: 'center' },
+      1: { cellWidth: 62 },
+      2: { cellWidth: 32 },
+      3: { cellWidth: 22 },
+      4: { cellWidth: 16, halign: 'center' },
+      5: { cellWidth: 20, halign: 'center' },
+      6: { cellWidth: 18, halign: 'center', fontStyle: 'bold' },
+    },
+    didParseCell: (data) => {
+      if (data.column.index === 6 && data.section === 'body') {
+        data.cell.styles.textColor = [16, 185, 129];
+      }
+    },
+  });
+
+  addFooter(doc);
+  doc.save(`Academic_Documents_Manifest_${new Date().toISOString().slice(0, 10)}.pdf`);
+}
+

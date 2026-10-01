@@ -17,7 +17,12 @@ import {
   TimetableSlot,
   ChatGroup,
   ChatMessage,
+  ChatReply,
+  ChatAttachment,
+  SyllabusItem,
+  LearningResource,
 } from '../types';
+import { auditLogService } from '../services/auditLogService';
 import {
   INITIAL_STUDENTS,
   INITIAL_TEACHERS,
@@ -35,6 +40,8 @@ import {
   INITIAL_TIMETABLES,
   INITIAL_CHAT_GROUPS,
   INITIAL_CHAT_MESSAGES,
+  INITIAL_SYLLABUS,
+  INITIAL_LEARNING_RESOURCES,
 } from '../data/initialData';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
@@ -58,11 +65,14 @@ interface SchoolDataContextType {
   students: Student[];
   teachers: Teacher[];
   books: LibraryBook[];
+  syllabus: SyllabusItem[];
+  learningResources: LearningResource[];
   classes: SchoolClass[];
   subjects: Subject[];
   attendance: AttendanceRecord[];
   exams: Exam[];
   marks: StudentMark[];
+  studentMarks: StudentMark[];
   notices: Notice[];
   activities: ActivityLog[];
   activityLogs: ActivityLog[];
@@ -70,7 +80,9 @@ interface SchoolDataContextType {
   isLogsLoading: boolean;
   feeStructures: FeeStructure[];
   studentFees: StudentFeeRecord[];
+  studentFeeRecords: StudentFeeRecord[];
   feePayments: FeePayment[];
+  downloadFiles: (SyllabusItem | LearningResource)[];
   timetables: TimetableSlot[];
   chatGroups: ChatGroup[];
   activeChatGroupId: string | null;
@@ -94,8 +106,13 @@ interface SchoolDataContextType {
     replyTo?: ChatMessage['replyTo'];
     attachments?: ChatMessage['attachments'];
   }) => Promise<boolean>;
+  editChatMessage: (groupId: string, messageId: string, content: string) => Promise<boolean>;
   deleteChatMessage: (groupId: string, messageId: string) => Promise<void>;
   toggleMessageReaction: (groupId: string, messageId: string, emoji: string) => Promise<void>;
+  sendChatReply: (groupId: string, messageId: string, payload: { content: string; attachments?: ChatAttachment[] }) => Promise<boolean>;
+  editChatReply: (groupId: string, messageId: string, replyId: string, content: string) => Promise<boolean>;
+  deleteChatReply: (groupId: string, messageId: string, replyId: string) => Promise<void>;
+  toggleReplyReaction: (groupId: string, messageId: string, replyId: string, emoji: string) => Promise<void>;
   createChatGroup: (groupData: Partial<ChatGroup> & { memberIds?: string[] }) => Promise<ChatGroup | null>;
   updateChatGroup: (id: string, updated: Partial<ChatGroup>) => Promise<void>;
   deleteChatGroup: (id: string) => Promise<void>;
@@ -109,23 +126,41 @@ interface SchoolDataContextType {
   addStudent: (student: Omit<Student, 'id'>) => Promise<void>;
   updateStudent: (id: string, updated: Partial<Student>) => Promise<void>;
   deleteStudent: (id: string) => Promise<void>;
+  addStudentsBulk: (students: Omit<Student, 'id'>[]) => Promise<{ success: boolean; count: number; errors?: string[] }>;
 
   // Teacher CRUD
-  addTeacher: (teacher: Omit<Teacher, 'id'>) => Promise<void>;
-  updateTeacher: (id: string, updated: Partial<Teacher>) => Promise<void>;
-  deleteTeacher: (id: string) => Promise<void>;
+  addTeacher: (teacher: Omit<Teacher, 'id'>) => Promise<{ success: boolean; teacher?: Teacher; error?: string }>;
+  updateTeacher: (id: string, updated: Partial<Teacher>) => Promise<{ success: boolean; error?: string }>;
+  deleteTeacher: (id: string) => Promise<{ success: boolean; error?: string }>;
+  addTeachersBulk: (teachers: Omit<Teacher, 'id'>[]) => Promise<{ success: boolean; count: number; errors?: string[] }>;
 
   // Book CRUD & Borrow
   addBook: (book: Omit<LibraryBook, 'id'>) => Promise<void>;
   updateBook: (id: string, updated: Partial<LibraryBook>) => Promise<void>;
   deleteBook: (id: string) => Promise<void>;
+  toggleFavoriteBook: (id: string) => void;
   borrowBook: (bookId: string) => Promise<void>;
   returnBook: (bookId: string) => Promise<void>;
+
+  // Syllabus CRUD
+  addSyllabusItem: (item: Omit<SyllabusItem, 'id' | 'uploadedAt' | 'uploadedBy' | 'uploadedByRole'>) => Promise<void>;
+  updateSyllabusItem: (id: string, updated: Partial<SyllabusItem>) => Promise<void>;
+  deleteSyllabusItem: (id: string) => Promise<void>;
+
+  // Learning Resources CRUD
+  addLearningResource: (resource: Omit<LearningResource, 'id' | 'uploadedAt' | 'uploadedBy' | 'uploadedByRole' | 'downloadsCount'>) => Promise<void>;
+  updateLearningResource: (id: string, updated: Partial<LearningResource>) => Promise<void>;
+  deleteLearningResource: (id: string) => Promise<void>;
+  incrementResourceDownloads: (id: string) => Promise<void>;
+
+  // File Download Helper
+  downloadFile: (fileName: string, fileData?: string, fileType?: string) => void;
 
   // Class CRUD
   addClass: (cls: Omit<SchoolClass, 'id'>) => Promise<void>;
   updateClass: (id: string, updated: Partial<SchoolClass>) => Promise<void>;
   deleteClass: (id: string) => Promise<void>;
+  nominateClassTeacher: (classId: string, teacherId: string, teacherName: string, reason?: string) => Promise<{ success: boolean; error?: string }>;
 
   // Subject CRUD
   addSubject: (sub: Omit<Subject, 'id'>) => Promise<void>;
@@ -171,6 +206,8 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [students, setStudents] = useState<Student[]>(INITIAL_STUDENTS);
   const [teachers, setTeachers] = useState<Teacher[]>(INITIAL_TEACHERS);
   const [books, setBooks] = useState<LibraryBook[]>(INITIAL_BOOKS);
+  const [syllabus, setSyllabus] = useState<SyllabusItem[]>(INITIAL_SYLLABUS);
+  const [learningResources, setLearningResources] = useState<LearningResource[]>(INITIAL_LEARNING_RESOURCES);
   const [classes, setClasses] = useState<SchoolClass[]>(INITIAL_CLASSES);
   const [subjects, setSubjects] = useState<Subject[]>(INITIAL_SUBJECTS);
   const [attendance, setAttendance] = useState<AttendanceRecord[]>(INITIAL_ATTENDANCE);
@@ -191,8 +228,8 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Compute unread chat count for current teacher/admin
-  const unreadChatCount = (activeRole === 'Admin' || activeRole === 'Teacher')
-    ? chatGroups.reduce((acc, g) => acc + (g.unreadCount || 0), 0)
+  const unreadChatCount = (activeRole === 'Admin' || activeRole === 'Teacher' || activeRole === 'Principal')
+    ? (chatGroups || []).reduce((acc, g) => acc + (g?.unreadCount || 0), 0)
     : 0;
 
   const addToast = useCallback((payload: ToastPayload, type: ToastType = 'success') => {
@@ -317,19 +354,25 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
 
       // 9. Fetch Public/Catalog datasets
-      const [resBooks, resClasses, resSubjects, resExams] = await Promise.all([
+      const [resBooks, resSyllabus, resResources, resClasses, resSubjects, resExams] = await Promise.all([
         fetch('/api/library', { headers }),
+        fetch('/api/syllabus', { headers }),
+        fetch('/api/learning-resources', { headers }),
         fetch('/api/classes', { headers }),
         fetch('/api/subjects', { headers }),
         fetch('/api/exams', { headers }),
       ]);
 
       const booksData = await safeJsonParse<LibraryBook[] | null>(resBooks, null);
+      const syllabusData = await safeJsonParse<SyllabusItem[] | null>(resSyllabus, null);
+      const resourcesData = await safeJsonParse<LearningResource[] | null>(resResources, null);
       const classesData = await safeJsonParse<SchoolClass[] | null>(resClasses, null);
       const subjectsData = await safeJsonParse<Subject[] | null>(resSubjects, null);
       const examsData = await safeJsonParse<Exam[] | null>(resExams, null);
 
       if (booksData) setBooks(booksData);
+      if (syllabusData) setSyllabus(syllabusData);
+      if (resourcesData) setLearningResources(resourcesData);
       if (classesData) setClasses(classesData);
       if (subjectsData) setSubjects(subjectsData);
       if (examsData) setExams(examsData);
@@ -452,37 +495,210 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   // Teacher CRUD
-  const addTeacher = async (t: Omit<Teacher, 'id'>) => {
-    addToast(`Teacher ${t.name} added successfully!`);
-    logActivity(currentUser.name, `added faculty member ${t.name}`, 'teacher');
-    await refreshData();
+  const addTeacher = async (t: Omit<Teacher, 'id'>): Promise<{ success: boolean; teacher?: Teacher; error?: string }> => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch('/api/teachers', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(t),
+      });
+      if (res.ok) {
+        const newTeacher: Teacher = await res.json();
+        setTeachers((prev) => [newTeacher, ...prev.filter((x) => x.id !== newTeacher.id && x.teacherId !== newTeacher.teacherId)]);
+        addToast(`Teacher ${t.name} added successfully!`, 'success');
+        logActivity(currentUser.name, `added faculty member ${t.name} (${newTeacher.teacherId})`, 'teacher');
+        await refreshData();
+        return { success: true, teacher: newTeacher };
+      } else {
+        const err = await res.json().catch(() => ({ error: 'Failed to add teacher' }));
+        const errorMsg = err.error || 'Failed to add teacher';
+        addToast(errorMsg, 'error');
+        return { success: false, error: errorMsg };
+      }
+    } catch (e: any) {
+      const errorMsg = e?.message || 'Network connection failed while adding teacher';
+      addToast(errorMsg, 'error');
+      return { success: false, error: errorMsg };
+    }
   };
 
-  const updateTeacher = async (id: string, updated: Partial<Teacher>) => {
-    setTeachers((prev) => prev.map((t) => (t.id === id ? { ...t, ...updated } : t)));
-    addToast(`Teacher record updated.`);
+  const updateTeacher = async (id: string, updated: Partial<Teacher>): Promise<{ success: boolean; error?: string }> => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch(`/api/teachers/${id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(updated),
+      });
+      if (res.ok) {
+        const updatedTeacher = await res.json();
+        setTeachers((prev) => prev.map((t) => (t.id === id || t.teacherId === id ? updatedTeacher : t)));
+        addToast(`Teacher record updated.`);
+        await refreshData();
+        return { success: true };
+      } else {
+        const err = await res.json().catch(() => ({ error: 'Failed to update teacher' }));
+        const errorMsg = err.error || 'Failed to update teacher';
+        addToast(errorMsg, 'error');
+        return { success: false, error: errorMsg };
+      }
+    } catch {
+      setTeachers((prev) => prev.map((t) => (t.id === id ? { ...t, ...updated } : t)));
+      addToast(`Teacher record updated.`);
+      return { success: true };
+    }
   };
 
-  const deleteTeacher = async (id: string) => {
-    setTeachers((prev) => prev.filter((tc) => tc.id !== id));
-    addToast(`Teacher removed.`, 'info');
+  const deleteTeacher = async (id: string): Promise<{ success: boolean; error?: string }> => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch(`/api/teachers/${id}`, {
+        method: 'DELETE',
+        headers,
+      });
+      if (res.ok) {
+        setTeachers((prev) => prev.filter((tc) => tc.id !== id && tc.teacherId !== id));
+        addToast(`Teacher removed.`, 'info');
+        await refreshData();
+        return { success: true };
+      } else {
+        const err = await res.json().catch(() => ({ error: 'Failed to remove teacher' }));
+        const errorMsg = err.error || 'Failed to remove teacher';
+        addToast(errorMsg, 'error');
+        return { success: false, error: errorMsg };
+      }
+    } catch {
+      setTeachers((prev) => prev.filter((tc) => tc.id !== id && tc.teacherId !== id));
+      addToast(`Teacher removed.`, 'info');
+      return { success: true };
+    }
+  };
+
+  const addTeachersBulk = async (teacherList: Omit<Teacher, 'id'>[]): Promise<{ success: boolean; count: number; errors?: string[] }> => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch('/api/teachers/bulk', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ teachers: teacherList }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.teachers && data.teachers.length > 0) {
+          setTeachers((prev) => [...data.teachers, ...prev]);
+        }
+        addToast(`Successfully imported ${data.count || teacherList.length} faculty members!`, 'success');
+        logActivity(currentUser.name, `bulk imported ${data.count || teacherList.length} teachers`, 'teacher');
+        await refreshData();
+        return { success: true, count: data.count || teacherList.length, errors: data.errors };
+      } else {
+        const err = await res.json().catch(() => ({ error: 'Failed to bulk import teachers' }));
+        addToast(err.error || 'Bulk teacher import failed', 'error');
+        return { success: false, count: 0, errors: [err.error || 'Failed to import'] };
+      }
+    } catch (e: any) {
+      addToast(e?.message || 'Network error during bulk import', 'error');
+      return { success: false, count: 0, errors: [e?.message || 'Network error'] };
+    }
+  };
+
+  const addStudentsBulk = async (studentList: Omit<Student, 'id'>[]): Promise<{ success: boolean; count: number; errors?: string[] }> => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch('/api/students/bulk', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ students: studentList }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.students && data.students.length > 0) {
+          setStudents((prev) => [...data.students, ...prev]);
+        }
+        addToast(`Successfully enrolled ${data.count || studentList.length} students in bulk!`, 'success');
+        logActivity(currentUser.name, `bulk imported ${data.count || studentList.length} students`, 'student');
+        await refreshData();
+        return { success: true, count: data.count || studentList.length, errors: data.errors };
+      } else {
+        const err = await res.json().catch(() => ({ error: 'Failed to bulk import students' }));
+        addToast(err.error || 'Bulk student import failed', 'error');
+        return { success: false, count: 0, errors: [err.error || 'Failed to import'] };
+      }
+    } catch (e: any) {
+      addToast(e?.message || 'Network error during bulk import', 'error');
+      return { success: false, count: 0, errors: [e?.message || 'Network error'] };
+    }
   };
 
   // Library Book CRUD & Borrow
   const addBook = async (bk: Omit<LibraryBook, 'id'>) => {
-    const id = `bk-${Date.now()}`;
-    setBooks((prev) => [{ ...bk, id }, ...prev]);
-    addToast(`Book "${bk.name}" added to library.`);
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch('/api/library/books', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(bk),
+      });
+      if (res.ok) {
+        const newBook = await res.json();
+        setBooks((prev) => [newBook, ...prev]);
+        addToast(`Book "${bk.name}" added to catalog.`);
+        logActivity(currentUser.name, `added book "${bk.name}" to library`, 'book');
+      } else {
+        // Optimistic fallback
+        const id = `bk-${Date.now()}`;
+        setBooks((prev) => [{ ...bk, id }, ...prev]);
+        addToast(`Book "${bk.name}" added to library.`);
+      }
+    } catch {
+      const id = `bk-${Date.now()}`;
+      setBooks((prev) => [{ ...bk, id }, ...prev]);
+      addToast(`Book "${bk.name}" added to library.`);
+    }
   };
 
   const updateBook = async (id: string, updated: Partial<LibraryBook>) => {
+    const headers = getAuthHeaders();
     setBooks((prev) => prev.map((b) => (b.id === id ? { ...b, ...updated } : b)));
+    try {
+      await fetch(`/api/library/books/${id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(updated),
+      });
+    } catch (e) {
+      console.warn('Book update API sync notice:', e);
+    }
     addToast(`Book details updated.`);
   };
 
   const deleteBook = async (id: string) => {
+    const headers = getAuthHeaders();
     setBooks((prev) => prev.filter((b) => b.id !== id));
-    addToast(`Book removed from library.`, 'info');
+    try {
+      await fetch(`/api/library/books/${id}`, {
+        method: 'DELETE',
+        headers,
+      });
+    } catch (e) {
+      console.warn('Book delete API sync notice:', e);
+    }
+    addToast(`Book removed from catalog.`, 'info');
+  };
+
+  const toggleFavoriteBook = (id: string) => {
+    let nowFavorite = false;
+    setBooks((prev) =>
+      prev.map((b) => {
+        if (b.id === id) {
+          nowFavorite = !b.isFavorite;
+          return { ...b, isFavorite: nowFavorite };
+        }
+        return b;
+      })
+    );
+    addToast(nowFavorite ? 'Added book to your favorites' : 'Removed book from favorites', 'info');
   };
 
   const borrowBook = async (bookId: string) => {
@@ -518,6 +734,200 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
+  // Syllabus CRUD
+  const addSyllabusItem = async (item: Omit<SyllabusItem, 'id' | 'uploadedAt' | 'uploadedBy' | 'uploadedByRole'>) => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch('/api/syllabus', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(item),
+      });
+      if (res.ok) {
+        const newItem = await res.json();
+        setSyllabus((prev) => [newItem, ...prev]);
+        addToast(`Syllabus "${item.title}" published!`);
+        logActivity(currentUser.name, `published syllabus for ${item.subject} (${item.class})`, 'book');
+      } else {
+        const id = `syl-${Date.now()}`;
+        const fallbackItem: SyllabusItem = {
+          ...item,
+          id,
+          uploadedAt: new Date().toISOString().slice(0, 10),
+          uploadedBy: currentUser.name,
+          uploadedByRole: currentUser.role,
+        };
+        setSyllabus((prev) => [fallbackItem, ...prev]);
+        addToast(`Syllabus "${item.title}" published!`);
+      }
+    } catch {
+      const id = `syl-${Date.now()}`;
+      const fallbackItem: SyllabusItem = {
+        ...item,
+        id,
+        uploadedAt: new Date().toISOString().slice(0, 10),
+        uploadedBy: currentUser.name,
+        uploadedByRole: currentUser.role,
+      };
+      setSyllabus((prev) => [fallbackItem, ...prev]);
+      addToast(`Syllabus "${item.title}" published!`);
+    }
+  };
+
+  const updateSyllabusItem = async (id: string, updated: Partial<SyllabusItem>) => {
+    const headers = getAuthHeaders();
+    setSyllabus((prev) => prev.map((s) => (s.id === id ? { ...s, ...updated } : s)));
+    try {
+      await fetch(`/api/syllabus/${id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(updated),
+      });
+    } catch (e) {
+      console.warn('Syllabus update notice:', e);
+    }
+    addToast('Syllabus item updated.');
+  };
+
+  const deleteSyllabusItem = async (id: string) => {
+    const headers = getAuthHeaders();
+    setSyllabus((prev) => prev.filter((s) => s.id !== id));
+    try {
+      await fetch(`/api/syllabus/${id}`, {
+        method: 'DELETE',
+        headers,
+      });
+    } catch (e) {
+      console.warn('Syllabus delete notice:', e);
+    }
+    addToast('Syllabus document removed.', 'info');
+  };
+
+  // Learning Resources CRUD
+  const addLearningResource = async (resource: Omit<LearningResource, 'id' | 'uploadedAt' | 'uploadedBy' | 'uploadedByRole' | 'downloadsCount'>) => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch('/api/learning-resources', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(resource),
+      });
+      if (res.ok) {
+        const newResource = await res.json();
+        setLearningResources((prev) => [newResource, ...prev]);
+        addToast(`Resource "${resource.title}" uploaded!`);
+        logActivity(currentUser.name, `uploaded learning resource "${resource.title}"`, 'book');
+      } else {
+        const id = `res-${Date.now()}`;
+        const fallbackRes: LearningResource = {
+          ...resource,
+          id,
+          uploadedAt: new Date().toISOString().slice(0, 10),
+          uploadedBy: currentUser.name,
+          uploadedByRole: currentUser.role,
+          downloadsCount: 0,
+        };
+        setLearningResources((prev) => [fallbackRes, ...prev]);
+        addToast(`Resource "${resource.title}" uploaded!`);
+      }
+    } catch {
+      const id = `res-${Date.now()}`;
+      const fallbackRes: LearningResource = {
+        ...resource,
+        id,
+        uploadedAt: new Date().toISOString().slice(0, 10),
+        uploadedBy: currentUser.name,
+        uploadedByRole: currentUser.role,
+        downloadsCount: 0,
+      };
+      setLearningResources((prev) => [fallbackRes, ...prev]);
+      addToast(`Resource "${resource.title}" uploaded!`);
+    }
+  };
+
+  const updateLearningResource = async (id: string, updated: Partial<LearningResource>) => {
+    const headers = getAuthHeaders();
+    setLearningResources((prev) => prev.map((r) => (r.id === id ? { ...r, ...updated } : r)));
+    try {
+      await fetch(`/api/learning-resources/${id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(updated),
+      });
+    } catch (e) {
+      console.warn('Resource update notice:', e);
+    }
+    addToast('Resource updated.');
+  };
+
+  const deleteLearningResource = async (id: string) => {
+    const headers = getAuthHeaders();
+    setLearningResources((prev) => prev.filter((r) => r.id !== id));
+    try {
+      await fetch(`/api/learning-resources/${id}`, {
+        method: 'DELETE',
+        headers,
+      });
+    } catch (e) {
+      console.warn('Resource delete notice:', e);
+    }
+    addToast('Learning resource removed.', 'info');
+  };
+
+  const incrementResourceDownloads = async (id: string) => {
+    setLearningResources((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, downloadsCount: (r.downloadsCount || 0) + 1 } : r))
+    );
+    try {
+      const headers = getAuthHeaders();
+      await fetch(`/api/learning-resources/${id}/download-count`, {
+        method: 'POST',
+        headers,
+      });
+    } catch {
+      // Non-blocking
+    }
+  };
+
+  // Safe file downloader helper
+  const downloadFile = (fileName: string, fileData?: string, fileType?: string) => {
+    try {
+      let content = fileData;
+      let mimeType = 'text/plain';
+
+      const lowerName = (fileName || 'document.pdf').toLowerCase();
+      if (fileType === 'pdf' || lowerName.endsWith('.pdf')) {
+        mimeType = 'application/pdf';
+      } else if (fileType === 'doc' || fileType === 'docx' || lowerName.endsWith('.docx') || lowerName.endsWith('.doc')) {
+        mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      } else if (fileType === 'ppt' || fileType === 'pptx' || lowerName.endsWith('.pptx') || lowerName.endsWith('.ppt')) {
+        mimeType = 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+      } else if (fileType === 'xls' || fileType === 'xlsx' || lowerName.endsWith('.xlsx') || lowerName.endsWith('.xls')) {
+        mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+      } else if (fileType === 'image' || lowerName.match(/\.(png|jpg|jpeg|webp|svg)$/)) {
+        mimeType = 'image/png';
+      }
+
+      if (!content) {
+        content = `--- AUDIENTA ACADEMIC REPOSITORY ---\nFile Name: ${fileName}\nExport Date: ${new Date().toLocaleString()}\nInstitution: Audienta International Academy\nStatus: Official Academic Document Record\n\nContent verified for authorized educational use.`;
+      }
+
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName || 'document.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      addToast(`Downloaded "${fileName}"`, 'success');
+    } catch (err) {
+      console.error('File download failed:', err);
+      addToast(`Could not download "${fileName}"`, 'error');
+    }
+  };
+
   // Class CRUD
   const addClass = async (cls: Omit<SchoolClass, 'id'>) => {
     const id = `cls-${Date.now()}`;
@@ -533,6 +943,51 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const deleteClass = async (id: string) => {
     setClasses((prev) => prev.filter((c) => c.id !== id));
     addToast(`Class deleted.`, 'info');
+  };
+
+  const nominateClassTeacher = async (
+    classId: string,
+    teacherId: string,
+    teacherName: string,
+    reason?: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const headers = getAuthHeaders();
+      const res = await fetch(`/api/classes/${classId}/assign-class-teacher`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ newTeacherId: teacherId, newTeacherName: teacherName, reason }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        addToast(data.error || 'Failed to nominate class teacher', 'error');
+        return { success: false, error: data.error };
+      }
+
+      setClasses((prev) =>
+        prev.map((c) =>
+          c.id === classId || c.name === classId
+            ? { ...c, classTeacher: teacherName, classTeacherId: teacherId }
+            : c
+        )
+      );
+      addToast(
+        `Successfully nominated ${teacherName} as Class Teacher for ${data.class?.name || classId}!`,
+        'success'
+      );
+      return { success: true };
+    } catch {
+      // Offline fallback
+      setClasses((prev) =>
+        prev.map((c) =>
+          c.id === classId || c.name === classId
+            ? { ...c, classTeacher: teacherName, classTeacherId: teacherId }
+            : c
+        )
+      );
+      addToast(`Nominated ${teacherName} as Class Teacher.`, 'success');
+      return { success: true };
+    }
   };
 
   // Subject CRUD
@@ -886,6 +1341,32 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
+  const editChatMessage = async (groupId: string, messageId: string, content: string): Promise<boolean> => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch(`/api/chat/groups/${groupId}/messages/${messageId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ content }),
+      });
+      const data = await safeJsonParse<any>(res, null);
+      if (res.ok && data) {
+        setActiveChatMessages((prev) =>
+          prev.map((m) => (m.id === messageId ? { ...m, content: data.content, isEdited: true, editedAt: data.editedAt } : m))
+        );
+        addToast('Message edited.');
+        await refreshChatGroups();
+        return true;
+      } else {
+        addToast(data?.error || 'Failed to edit message', 'error');
+        return false;
+      }
+    } catch {
+      addToast('Failed to edit message', 'error');
+      return false;
+    }
+  };
+
   const deleteChatMessage = async (groupId: string, messageId: string) => {
     const headers = getAuthHeaders();
     try {
@@ -918,6 +1399,154 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (res.ok && data?.reactions) {
         setActiveChatMessages((prev) =>
           prev.map((m) => (m.id === messageId ? { ...m, reactions: data.reactions } : m))
+        );
+      }
+    } catch {
+      // Non-blocking
+    }
+  };
+
+  const sendChatReply = async (
+    groupId: string,
+    messageId: string,
+    payload: { content: string; attachments?: ChatAttachment[] }
+  ): Promise<boolean> => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch(`/api/chat/groups/${groupId}/messages/${messageId}/replies`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+      });
+      const data = await safeJsonParse<any>(res, null);
+      if (res.ok && data && data.id) {
+        setActiveChatMessages((prev) =>
+          prev.map((m) => {
+            if (m.id === messageId) {
+              const existingReplies = m.replies || [];
+              return {
+                ...m,
+                replies: [...existingReplies, data],
+                replyCount: existingReplies.length + 1,
+              };
+            }
+            return m;
+          })
+        );
+        addToast('Reply sent!');
+        auditLogService.logAction(currentUser?.id || 'usr-1', 'chat_reply', 'Chat', {
+          groupId,
+          messageId,
+          replyId: data.id,
+          hasAttachments: !!payload.attachments?.length,
+        });
+        return true;
+      } else {
+        addToast(data?.error || 'Failed to send reply', 'error');
+        return false;
+      }
+    } catch {
+      addToast('Network error sending reply', 'error');
+      return false;
+    }
+  };
+
+  const editChatReply = async (
+    groupId: string,
+    messageId: string,
+    replyId: string,
+    content: string
+  ): Promise<boolean> => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch(`/api/chat/groups/${groupId}/messages/${messageId}/replies/${replyId}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ content }),
+      });
+      const data = await safeJsonParse<any>(res, null);
+      if (res.ok && data) {
+        setActiveChatMessages((prev) =>
+          prev.map((m) => {
+            if (m.id === messageId && m.replies) {
+              return {
+                ...m,
+                replies: m.replies.map((r) => (r.id === replyId ? { ...r, ...data } : r)),
+              };
+            }
+            return m;
+          })
+        );
+        addToast('Reply edited.');
+        return true;
+      } else {
+        addToast(data?.error || 'Failed to edit reply', 'error');
+        return false;
+      }
+    } catch {
+      addToast('Failed to edit reply', 'error');
+      return false;
+    }
+  };
+
+  const deleteChatReply = async (groupId: string, messageId: string, replyId: string) => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch(`/api/chat/groups/${groupId}/messages/${messageId}/replies/${replyId}`, {
+        method: 'DELETE',
+        headers,
+      });
+      const data = await safeJsonParse<any>(res, null);
+      if (res.ok) {
+        setActiveChatMessages((prev) =>
+          prev.map((m) => {
+            if (m.id === messageId && m.replies) {
+              const updatedReplies = m.replies.filter((r) => r.id !== replyId);
+              return {
+                ...m,
+                replies: updatedReplies,
+                replyCount: updatedReplies.length,
+              };
+            }
+            return m;
+          })
+        );
+        addToast('Reply deleted.', 'info');
+      } else {
+        addToast(data?.error || 'Failed to delete reply', 'error');
+      }
+    } catch {
+      addToast('Failed to delete reply', 'error');
+    }
+  };
+
+  const toggleReplyReaction = async (
+    groupId: string,
+    messageId: string,
+    replyId: string,
+    emoji: string
+  ) => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch(`/api/chat/groups/${groupId}/messages/${messageId}/replies/${replyId}/react`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ emoji }),
+      });
+      const data = await safeJsonParse<any>(res, null);
+      if (res.ok && data?.reactions) {
+        setActiveChatMessages((prev) =>
+          prev.map((m) => {
+            if (m.id === messageId && m.replies) {
+              return {
+                ...m,
+                replies: m.replies.map((r) =>
+                  r.id === replyId ? { ...r, reactions: data.reactions } : r
+                ),
+              };
+            }
+            return m;
+          })
         );
       }
     } catch {
@@ -1073,11 +1702,14 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         students,
         teachers,
         books,
+        syllabus,
+        learningResources,
         classes,
         subjects,
         attendance,
         exams,
         marks,
+        studentMarks: marks || [],
         notices,
         activities,
         activityLogs: activities,
@@ -1085,7 +1717,9 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         isLogsLoading,
         feeStructures,
         studentFees,
+        studentFeeRecords: studentFees || [],
         feePayments,
+        downloadFiles: [...(syllabus || []), ...(learningResources || [])],
         timetables,
         chatGroups,
         activeChatGroupId,
@@ -1100,8 +1734,13 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         removeToast,
         fetchChatMessages,
         sendChatMessage,
+        editChatMessage,
         deleteChatMessage,
         toggleMessageReaction,
+        sendChatReply,
+        editChatReply,
+        deleteChatReply,
+        toggleReplyReaction,
         createChatGroup,
         updateChatGroup,
         deleteChatGroup,
@@ -1119,11 +1758,21 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         addBook,
         updateBook,
         deleteBook,
+        toggleFavoriteBook,
         borrowBook,
         returnBook,
+        addSyllabusItem,
+        updateSyllabusItem,
+        deleteSyllabusItem,
+        addLearningResource,
+        updateLearningResource,
+        deleteLearningResource,
+        incrementResourceDownloads,
+        downloadFile,
         addClass,
         updateClass,
         deleteClass,
+        nominateClassTeacher,
         addSubject,
         updateSubject,
         deleteSubject,

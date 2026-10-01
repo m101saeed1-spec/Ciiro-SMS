@@ -1,20 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+.font-script {
+  font-family: 'Dancing Script', cursive, -apple-system, BlinkMacSystemFont;
+}
+
 :root {
   --background: #f8fafc;
-  --foreground: #0f172a;
+  --foreground: #111827; /* Near-black primary text */
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #111827;
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
+  --popover-foreground: #111827;
   --primary: #9333ea;
   --primary-foreground: #ffffff;
   --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
+  --secondary-foreground: #111827;
   --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  --muted-foreground: #374151; /* High contrast readable dark gray */
   --accent: #f3e8ff;
   --accent-foreground: #7e22ce;
   --destructive: #ef4444;
@@ -27,23 +32,23 @@
 
 .dark {
   --background: #020617;
-  --foreground: #f8fafc;
+  --foreground: #ffffff; /* Crisp white primary text */
   --card: #0f172a;
-  --card-foreground: #f8fafc;
+  --card-foreground: #ffffff;
   --popover: #0f172a;
-  --popover-foreground: #f8fafc;
+  --popover-foreground: #ffffff;
   --primary: #a855f7;
   --primary-foreground: #ffffff;
   --secondary: #1e293b;
-  --secondary-foreground: #f8fafc;
+  --secondary-foreground: #ffffff;
   --muted: #1e293b;
-  --muted-foreground: #94a3b8;
+  --muted-foreground: #cbd5e1; /* High contrast readable light gray */
   --accent: #3b0764;
   --accent-foreground: #d8b4fe;
   --destructive: #7f1d1d;
-  --destructive-foreground: #f8fafc;
-  --border: #1e293b;
-  --input: #1e293b;
+  --destructive-foreground: #ffffff;
+  --border: #334155;
+  --input: #334155;
   --ring: #a855f7;
 }
 
@@ -59,6 +64,111 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ==========================================================================
+   GLOBAL TYPOGRAPHY CONTRAST RULES
+   Light Mode: Primary/Headings = #111827 / #000000, Secondary = readable dark gray
+   Dark Mode: Primary/Headings = #FFFFFF, Secondary = light gray
+   ========================================================================== */
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: #111827;
+}
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #ffffff;
+}
+
+/* Base text elements */
+p, span, label, div {
+  color: inherit;
+}
+
+/* Form Controls & Inputs */
+input, textarea, select {
+  color: #111827;
+}
+.dark input, .dark textarea, .dark select {
+  color: #ffffff;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #4b5563;
+  opacity: 1;
+}
+.dark input::placeholder, .dark textarea::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+/* Select Dropdown options */
+select option {
+  background-color: #ffffff;
+  color: #111827;
+}
+.dark select option {
+  background-color: #0f172a;
+  color: #ffffff;
+}
+
+/* Tables */
+th {
+  color: #111827;
+}
+.dark th {
+  color: #ffffff;
+}
+td {
+  color: #111827;
+}
+.dark td {
+  color: #f1f5f9;
+}
+
+/* Ensure strong contrast overrides for slate text utilities in Light vs Dark */
+.text-slate-800,
+.text-slate-900,
+.text-gray-800,
+.text-gray-900 {
+  color: #111827;
+}
+.dark .text-slate-800,
+.dark .text-slate-900,
+.dark .text-gray-800,
+.dark .text-gray-900,
+.dark .text-slate-100,
+.dark .text-slate-200 {
+  color: #ffffff;
+}
+
+/* Secondary text classes */
+.text-slate-400 {
+  color: #4b5563; /* High contrast dark gray in Light Mode */
+}
+.dark .text-slate-400 {
+  color: #cbd5e1; /* High contrast light gray in Dark Mode */
+}
+
+.text-slate-500 {
+  color: #374151; /* Readable dark gray in Light Mode */
+}
+.dark .text-slate-500 {
+  color: #cbd5e1; /* Readable light gray in Dark Mode */
+}
+
+.text-slate-600 {
+  color: #374151;
+}
+.dark .text-slate-600 {
+  color: #e2e8f0;
+}
+
+.text-slate-700 {
+  color: #1f2937;
+}
+.dark .text-slate-700 {
+  color: #e2e8f0;
 }
 
 @layer utilities {

@@ -67,8 +67,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         return 'e.g. STU-2026-0125';
       case 'Teacher':
         return 'e.g. TCH-2026-0007';
-      case 'Parent':
-        return 'e.g. PAR-2026-0042';
+      case 'AccountAdmin':
+        return 'e.g. ACC-2026-0001';
+      case 'Principal':
+        return 'e.g. PRI-2026-0001';
+      case 'OwnerAdmin':
+        return 'e.g. OWN-2026-0001';
+      case 'SuperAdmin':
+        return 'e.g. SUP-2026-0001';
       case 'Admin':
         return 'e.g. ADM-2026-0001';
       default:
@@ -87,17 +93,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         setSchoolId('ADM-2026-0001');
         setResetIdentifier('ADM-2026-0001');
         break;
+      case 'OwnerAdmin':
+        setSchoolId('OWN-2026-0001');
+        setResetIdentifier('OWN-2026-0001');
+        break;
+      case 'Principal':
+        setSchoolId('PRI-2026-0001');
+        setResetIdentifier('PRI-2026-0001');
+        break;
       case 'Teacher':
         setSchoolId('TCH-2026-0007');
         setResetIdentifier('TCH-2026-0007');
         break;
-      case 'Parent':
-        setSchoolId('PAR-2026-0042');
-        setResetIdentifier('PAR-2026-0042');
+      case 'AccountAdmin':
+        setSchoolId('ACC-2026-0001');
+        setResetIdentifier('ACC-2026-0001');
         break;
       case 'Student':
         setSchoolId('STU-2026-0125');
         setResetIdentifier('STU-2026-0125');
+        break;
+      case 'SuperAdmin':
+        setSchoolId('SUP-2026-0001');
+        setResetIdentifier('SUP-2026-0001');
         break;
     }
     setPassword('password123');
@@ -257,9 +275,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
             Select User Account Type
           </label>
-          <div className="grid grid-cols-4 gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
-            {(['Admin', 'Teacher', 'Parent', 'Student'] as UserRole[]).map((r) => {
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+            {(['OwnerAdmin', 'Principal', 'Admin', 'Teacher', 'AccountAdmin', 'Student'] as UserRole[]).map((r) => {
               const isActive = role === r;
+              const label =
+                r === 'OwnerAdmin'
+                  ? 'Owner'
+                  : r === 'AccountAdmin'
+                  ? 'Accountant'
+                  : r;
               return (
                 <button
                   type="button"
@@ -271,7 +295,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                       : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-700/60'
                   }`}
                 >
-                  <span>{r}</span>
+                  <span>{label}</span>
                 </button>
               );
             })}
@@ -298,7 +322,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-purple-100 dark:border-slate-700 hover:border-purple-300'
               }`}
             >
-              <div className="font-bold">Admin</div>
+              <div className="font-bold">Principal / Admin</div>
               <div className="text-[10px] opacity-80 font-mono">ADM-2026-0001</div>
             </button>
 
@@ -317,15 +341,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
             <button
               type="button"
-              onClick={() => handleQuickDemoFill('Parent', 'PAR-2026-0042')}
+              onClick={() => handleQuickDemoFill('AccountAdmin', 'ACC-2026-0001')}
               className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold text-left border transition-all ${
-                role === 'Parent' && schoolId === 'PAR-2026-0042'
+                role === 'AccountAdmin' && schoolId === 'ACC-2026-0001'
                   ? 'bg-purple-600 text-white border-purple-600 shadow-xs'
                   : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-purple-100 dark:border-slate-700 hover:border-purple-300'
               }`}
             >
-              <div className="font-bold">Parent</div>
-              <div className="text-[10px] opacity-80 font-mono">PAR-2026-0042</div>
+              <div className="font-bold">Accountant</div>
+              <div className="text-[10px] opacity-80 font-mono">ACC-2026-0001</div>
             </button>
 
             <button

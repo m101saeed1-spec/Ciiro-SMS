@@ -379,13 +379,16 @@ export const AccountModule: React.FC = () => {
 
   const generateAutoSchoolId = (targetRole: UserRole) => {
     const prefixMap: Record<UserRole, string> = {
+      SuperAdmin: 'SUP-2026-',
+      OwnerAdmin: 'OWN-2026-',
+      Principal: 'PRP-2026-',
       Admin: 'ADM-2026-',
+      AccountAdmin: 'ACC-2026-',
       Teacher: 'TCH-2026-',
       Student: 'STU-2026-',
-      Parent: 'PAR-2026-',
     };
     const randomNum = Math.floor(1000 + Math.random() * 9000);
-    setNewUserData((prev) => ({ ...prev, schoolId: `${prefixMap[targetRole]}${randomNum}`, role: targetRole }));
+    setNewUserData((prev) => ({ ...prev, schoolId: `${prefixMap[targetRole] || 'USR-2026-'}${randomNum}`, role: targetRole }));
   };
 
   // Filtered Users for Admin Governance
@@ -401,16 +404,21 @@ export const AccountModule: React.FC = () => {
 
   const getRoleBadge = (role: UserRole) => {
     switch (role) {
+      case 'SuperAdmin':
+        return 'bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-800';
+      case 'OwnerAdmin':
       case 'Admin':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return 'bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
+      case 'Principal':
+        return 'bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800';
       case 'Teacher':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Parent':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        return 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
       case 'Student':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
+        return 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+      case 'AccountAdmin':
+        return 'bg-teal-100 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 border-teal-200 dark:border-teal-800';
       default:
-        return 'bg-slate-100 text-slate-800 border-slate-200';
+        return 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700';
     }
   };
 
@@ -423,18 +431,18 @@ export const AccountModule: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 text-xs font-bold flex items-center gap-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800 flex items-center gap-1">
               <User className="w-3.5 h-3.5" />
               {activeRole === 'Admin' ? 'Administrator Profile' : `${activeRole} Profile & Settings`}
             </span>
-            <span className="text-xs font-mono font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+            <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 px-2 py-0.5 rounded-md">
               {currentUser.schoolId || currentUser.studentId || currentUser.teacherId || 'ADM-2026-0001'}
             </span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
             {activeRole === 'Admin' ? 'Admin Profile & Security' : 'Account & Profile Settings'}
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             {activeRole === 'Admin'
               ? 'Update your personal administrative information, profile avatar, security credentials, and manage system role governance.'
               : activeRole === 'Student'
@@ -446,16 +454,16 @@ export const AccountModule: React.FC = () => {
         {activeRole === 'Admin' && (
           <button
             onClick={() => setActiveTab('admin-governance')}
-            className="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-purple-900 transition-colors shadow-sm flex items-center gap-2 self-start sm:self-auto"
+            className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-purple-600 text-white font-bold text-xs hover:bg-purple-900 dark:hover:bg-purple-700 transition-colors shadow-sm flex items-center gap-2 self-start sm:self-auto cursor-pointer"
           >
-            <ShieldAlert className="w-4 h-4 text-purple-400" />
+            <ShieldAlert className="w-4 h-4 text-purple-400 dark:text-white" />
             <span>Role Governance</span>
           </button>
         )}
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-2xs w-full sm:w-auto inline-flex gap-1 flex-wrap">
+      <div className="flex bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs w-full sm:w-auto inline-flex gap-1 flex-wrap">
         <button
           onClick={() => setActiveTab('profile')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
@@ -510,44 +518,44 @@ export const AccountModule: React.FC = () => {
           {/* Left Column: Live Avatar & Protected Authorization Info */}
           <div className="space-y-6">
             {/* Live Profile Overview Card */}
-            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-2xs text-center space-y-4">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs text-center space-y-4">
               <div className="relative inline-block mx-auto">
                 <UserAvatar
                   name={formData.name || currentUser.name}
                   avatarUrl={formData.avatar}
                   size="profile"
-                  ring="ring-4 ring-sky-100 shadow-md"
+                  ring="ring-4 ring-purple-100 dark:ring-purple-900/50 shadow-md"
                   status={currentUser.status || 'Active'}
                   showStatus={true}
                 />
               </div>
 
               <div>
-                <h3 className="text-lg font-bold text-slate-800">{formData.name || currentUser.name}</h3>
-                <p className="text-xs text-purple-600 font-bold mt-0.5">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">{formData.name || currentUser.name}</h3>
+                <p className="text-xs text-purple-600 dark:text-purple-400 font-bold mt-0.5">
                   {formData.designation || currentUser.designation || currentUser.role}
                 </p>
 
                 {/* Initial Avatar Reference Display */}
-                <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-xl border border-slate-100 text-xs text-slate-600 font-mono">
-                  <span className="font-bold text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded">
+                <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-slate-200/80 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300 font-mono">
+                  <span className="font-bold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-950/80 px-1.5 py-0.5 rounded">
                     [ {liveInitials} ]
                   </span>
-                  <span className="font-sans font-semibold text-slate-700 truncate max-w-[180px]">
+                  <span className="font-sans font-semibold text-slate-700 dark:text-slate-200 truncate max-w-[180px]">
                     {formData.name || 'User Name'}
                   </span>
                 </div>
               </div>
 
               {/* Avatar Type Status Pill */}
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-center gap-2">
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2">
                 {hasCustomPhoto ? (
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold flex items-center gap-1">
+                  <span className="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold flex items-center gap-1">
                     <Camera className="w-3 h-3" /> Custom Photo Active
                   </span>
                 ) : (
-                  <span className="px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-200 text-[11px] font-bold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-purple-500" /> Automatic Initials Avatar ({liveInitials})
+                  <span className="px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-[11px] font-bold flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-purple-500 dark:text-purple-400" /> Automatic Initials Avatar ({liveInitials})
                   </span>
                 )}
               </div>
@@ -566,7 +574,7 @@ export const AccountModule: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full py-2 px-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-purple-200"
+                      className="w-full py-2 px-3 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-purple-200 dark:border-purple-800 cursor-pointer"
                     >
                       <Upload className="w-3.5 h-3.5" /> Upload Profile Photo
                     </button>
@@ -575,7 +583,7 @@ export const AccountModule: React.FC = () => {
                       <button
                         type="button"
                         onClick={handleRemovePhoto}
-                        className="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-600 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-slate-200"
+                        className="w-full py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-slate-600 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" /> Use Initial Avatar ({liveInitials})
                       </button>
@@ -586,10 +594,10 @@ export const AccountModule: React.FC = () => {
             </div>
 
             {/* Locked Protected Authorization Information Card */}
-            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-2xs space-y-4">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <Shield className="w-4 h-4 text-purple-600" /> Protected Identity
+                <span className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
+                  <Shield className="w-4 h-4 text-purple-600 dark:text-purple-400" /> Protected Identity
                 </span>
                 <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-black flex items-center gap-1 ${getRoleBadge(currentUser.role)}`}>
                   <Lock className="w-3 h-3" />
@@ -598,40 +606,40 @@ export const AccountModule: React.FC = () => {
               </div>
 
               <div className="space-y-2.5 text-xs">
-                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                  <span className="text-slate-500 font-medium">Official ID</span>
-                  <span className="font-mono font-bold text-slate-800">
+                <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">Official ID</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-white">
                     {currentUser.schoolId || currentUser.studentId || currentUser.teacherId || 'ADM-2026-0001'}
                   </span>
                 </div>
 
-                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                  <span className="text-slate-500 font-medium">Role Authority</span>
-                  <span className="font-bold text-purple-700 flex items-center gap-1">
-                    <BadgeCheck className="w-3.5 h-3.5 text-purple-600" />
+                <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">Role Authority</span>
+                  <span className="font-bold text-purple-700 dark:text-purple-300 flex items-center gap-1">
+                    <BadgeCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                     {currentUser.role === 'Admin' ? 'Super Administrator' : `${currentUser.role} Access`}
                   </span>
                 </div>
 
-                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                  <span className="text-slate-500 font-medium">Account Status</span>
-                  <span className="font-bold text-emerald-700 flex items-center gap-1">
+                <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">Account Status</span>
+                  <span className="font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     {currentUser.status || 'Active'}
                   </span>
                 </div>
 
-                <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                  <span className="text-slate-500 font-medium">Assigned By</span>
-                  <span className="text-slate-700 font-bold truncate max-w-[140px]">
+                <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">Assigned By</span>
+                  <span className="text-slate-700 dark:text-slate-300 font-bold truncate max-w-[140px]">
                     {currentUser.roleAssignedBy || 'System Root / Board'}
                   </span>
                 </div>
               </div>
 
               {/* Role Protection Security Banner */}
-              <div className="p-3 bg-purple-50/70 border border-purple-100 rounded-2xl text-[11px] text-purple-900 leading-relaxed flex items-start gap-2">
-                <Lock className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
+              <div className="p-3 bg-purple-50/70 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-800/60 rounded-2xl text-[11px] text-purple-900 dark:text-purple-200 leading-relaxed flex items-start gap-2">
+                <Lock className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
                 <span>
                   <strong>Strict Security Policy:</strong> Your role ({currentUser.role}) and Official ID are locked by institutional security rules and cannot be modified by the user.
                 </span>
@@ -641,20 +649,20 @@ export const AccountModule: React.FC = () => {
 
           {/* Right Column: Editable Profile Information Form */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-2xs">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-100">
+            <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-800">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                     {activeRole === 'Admin' ? 'Admin Personal Information' : 'Personal Profile Information'}
                   </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
                     {activeRole === 'Student'
                       ? 'Student records are verified by the registry. You can update your biography statement.'
                       : 'Update your authorized contact information, display name, and biography.'}
                   </p>
                 </div>
-                <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-3 py-1 rounded-xl self-start sm:self-auto flex items-center gap-1">
-                  <Lock className="w-3 h-3 text-slate-400" /> Non-system fields
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 px-3 py-1 rounded-xl self-start sm:self-auto flex items-center gap-1">
+                  <Lock className="w-3 h-3 text-slate-400 dark:text-slate-500" /> Non-system fields
                 </span>
               </div>
 
@@ -662,7 +670,7 @@ export const AccountModule: React.FC = () => {
                 {/* Photo Presets & Initials Option (For Non-Student roles) */}
                 {activeRole !== 'Student' && (
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-2">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
                       Profile Avatar Options
                     </label>
                     <div className="flex flex-wrap items-center gap-3">
@@ -670,23 +678,23 @@ export const AccountModule: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setFormData({ ...formData, avatar: '' })}
-                        className={`px-3 py-2 rounded-2xl border flex items-center gap-2 transition-all ${
+                        className={`px-3 py-2 rounded-2xl border flex items-center gap-2 transition-all cursor-pointer ${
                           !hasCustomPhoto
                             ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
-                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750'
                         }`}
                       >
                         <UserAvatar name={formData.name || 'User'} avatarUrl="" size="sm" />
                         <div className="text-left">
                           <span className="text-xs font-bold block leading-none">Use Initials [{liveInitials}]</span>
-                          <span className={`text-[10px] block mt-0.5 ${!hasCustomPhoto ? 'text-purple-200' : 'text-slate-400'}`}>
+                          <span className={`text-[10px] block mt-0.5 ${!hasCustomPhoto ? 'text-purple-200' : 'text-slate-400 dark:text-slate-500'}`}>
                             Auto generated
                           </span>
                         </div>
                       </button>
 
                       {/* Sample Preset Photos */}
-                      {presetPhotos.slice(0, 4).map((imgUrl, i) => (
+                      {presetPhotos.slice(0, 4).filter(Boolean).map((imgUrl, i) => (
                         <div
                           key={i}
                           onClick={() => setFormData({ ...formData, avatar: imgUrl })}
@@ -694,13 +702,15 @@ export const AccountModule: React.FC = () => {
                             formData.avatar === imgUrl ? 'scale-105' : 'opacity-70 hover:opacity-100'
                           }`}
                         >
-                          <img
-                            src={imgUrl}
-                            alt="Preset avatar"
-                            className={`w-10 h-10 rounded-full object-cover border-2 ${
-                              formData.avatar === imgUrl ? 'border-purple-600 shadow-md ring-2 ring-purple-200' : 'border-slate-200'
-                            }`}
-                          />
+                          {imgUrl && imgUrl.trim() !== '' ? (
+                            <img
+                              src={imgUrl}
+                              alt="Preset avatar"
+                              className={`w-10 h-10 rounded-full object-cover border-2 ${
+                                formData.avatar === imgUrl ? 'border-purple-600 shadow-md ring-2 ring-purple-200 dark:ring-purple-900' : 'border-slate-200 dark:border-slate-700'
+                              }`}
+                            />
+                          ) : null}
                           {formData.avatar === imgUrl && (
                             <span className="absolute -top-1 -right-1 bg-purple-600 text-white rounded-full p-0.5">
                               <Check className="w-2.5 h-2.5" />
@@ -715,8 +725,8 @@ export const AccountModule: React.FC = () => {
                 {/* Name & Email Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Full Name {activeRole !== 'Student' && <span className="text-purple-600">*</span>}
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Full Name {activeRole !== 'Student' && <span className="text-purple-600 dark:text-purple-400">*</span>}
                     </label>
                     <input
                       type="text"
@@ -727,20 +737,20 @@ export const AccountModule: React.FC = () => {
                       placeholder="e.g. Salmaan Fitah"
                       className={`w-full border rounded-xl py-2.5 px-3.5 text-xs font-medium transition-all ${
                         activeRole === 'Student'
-                          ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed'
-                          : 'bg-slate-50 border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500'
+                          ? 'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
+                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500'
                       }`}
                     />
                     {activeRole !== 'Student' && (
-                      <p className="text-[10px] text-slate-400 mt-1">
-                        Initials avatar will automatically regenerate as: <strong className="text-purple-700">[{liveInitials}]</strong>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+                        Initials avatar will automatically regenerate as: <strong className="text-purple-700 dark:text-purple-300">[{liveInitials}]</strong>
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Email Address {activeRole !== 'Student' && <span className="text-purple-600">*</span>}
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                      Email Address {activeRole !== 'Student' && <span className="text-purple-600 dark:text-purple-400">*</span>}
                     </label>
                     <input
                       type="email"
@@ -751,8 +761,8 @@ export const AccountModule: React.FC = () => {
                       placeholder="name@eduspike.edu"
                       className={`w-full border rounded-xl py-2.5 px-3.5 text-xs font-medium transition-all ${
                         activeRole === 'Student'
-                          ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed'
-                          : 'bg-slate-50 border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500'
+                          ? 'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
+                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500'
                       }`}
                     />
                   </div>
@@ -761,7 +771,7 @@ export const AccountModule: React.FC = () => {
                 {/* Phone & Designation */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">Phone Number</label>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number</label>
                     <input
                       type="text"
                       disabled={activeRole === 'Student'}
@@ -770,14 +780,14 @@ export const AccountModule: React.FC = () => {
                       placeholder="+1 (555) 019-2834"
                       className={`w-full border rounded-xl py-2.5 px-3.5 text-xs font-medium transition-all ${
                         activeRole === 'Student'
-                          ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed'
-                          : 'bg-slate-50 border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500'
+                          ? 'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
+                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500'
                       }`}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                       {activeRole === 'Admin' ? 'Administrative Title / Designation' : 'Title / Designation'}
                     </label>
                     <input
@@ -788,8 +798,8 @@ export const AccountModule: React.FC = () => {
                       placeholder="e.g. Principal & Chief Administrator"
                       className={`w-full border rounded-xl py-2.5 px-3.5 text-xs font-medium transition-all ${
                         activeRole === 'Student'
-                          ? 'bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed'
-                          : 'bg-slate-50 border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500'
+                          ? 'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
+                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500'
                       }`}
                     />
                   </div>
@@ -798,7 +808,7 @@ export const AccountModule: React.FC = () => {
                 {/* Residential / Campus Address */}
                 {activeRole !== 'Student' && (
                   <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                       Campus / Residential Address
                     </label>
                     <input
@@ -806,7 +816,7 @@ export const AccountModule: React.FC = () => {
                       value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                       placeholder="452 Academy Blvd, Suite 100, Education City"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-xs font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl py-2.5 px-3.5 text-xs font-medium focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
                     />
                   </div>
                 )}
@@ -814,11 +824,11 @@ export const AccountModule: React.FC = () => {
                 {/* Bio / Summary */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-bold text-slate-700">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
                       Personal Biography Statement
                     </label>
                     {activeRole === 'Student' && (
-                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
+                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded">
                         Editable for Students
                       </span>
                     )}
@@ -828,20 +838,20 @@ export const AccountModule: React.FC = () => {
                     value={formData.bio}
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                     placeholder="Write a brief overview of your academic focus, responsibilities, or interests..."
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 leading-relaxed"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl p-3.5 text-xs font-medium focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 leading-relaxed"
                   />
                 </div>
 
                 {/* Save Button */}
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-xs text-slate-400 font-medium">
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                  <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
                     {hasCustomPhoto
                       ? 'Custom photo will be saved with profile.'
                       : `Initials avatar [${liveInitials}] is automatically applied.`}
                   </span>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors shadow-md shadow-purple-200 flex items-center gap-2 cursor-pointer"
+                    className="px-6 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors shadow-md shadow-purple-200 dark:shadow-none flex items-center gap-2 cursor-pointer"
                   >
                     <Save className="w-4 h-4" />
                     <span>Save Profile Changes</span>
@@ -855,51 +865,51 @@ export const AccountModule: React.FC = () => {
 
       {/* Password & Security Tab */}
       {activeTab === 'security' && (
-        <div className="max-w-xl bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-2xs space-y-6">
+        <div className="max-w-xl bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-6">
           <div>
-            <h3 className="text-base font-bold text-slate-800">Change Account Password</h3>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Change Account Password</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Secure your credentials. Passwords must be at least 6 characters long.
             </p>
           </div>
 
           <form onSubmit={handlePasswordUpdate} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Current Password</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Current Password</label>
               <input
                 type="password"
                 required
                 value={passwords.current}
                 onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
                 placeholder="••••••••••••"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-xs font-medium"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">New Password</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">New Password</label>
               <input
                 type="password"
                 required
                 value={passwords.newPass}
                 onChange={(e) => setPasswords({ ...passwords, newPass: e.target.value })}
                 placeholder="At least 6 characters"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-xs font-medium"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Confirm New Password</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Confirm New Password</label>
               <input
                 type="password"
                 required
                 value={passwords.confirmPass}
                 onChange={(e) => setPasswords({ ...passwords, confirmPass: e.target.value })}
                 placeholder="Repeat new password"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3.5 text-xs font-medium"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
               />
             </div>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors shadow-md shadow-purple-200 cursor-pointer"
+              className="px-6 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors shadow-md shadow-purple-200 dark:shadow-none cursor-pointer"
             >
               Update Password
             </button>
@@ -1074,15 +1084,15 @@ export const AccountModule: React.FC = () => {
           </div>
 
           {/* User Role Directory */}
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-2xs overflow-hidden">
-            <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs overflow-hidden">
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-100 dark:border-purple-800">
                   <Users className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-800 text-base">System User Accounts</h3>
-                  <p className="text-xs text-slate-400">Total {userProfiles.length} registered institutional accounts</p>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-base">System User Accounts</h3>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">Total {userProfiles.length} registered institutional accounts</p>
                 </div>
               </div>
 
@@ -1094,27 +1104,29 @@ export const AccountModule: React.FC = () => {
                     value={adminSearch}
                     onChange={(e) => setAdminSearch(e.target.value)}
                     placeholder="Search by name, ID, or email..."
-                    className="bg-slate-50 border border-slate-200 rounded-xl py-1.5 pl-8 pr-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                    className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl py-1.5 pl-8 pr-3 text-xs focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                   />
-                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                  <Search className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 </div>
 
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value as any)}
-                  className="bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-3 text-xs font-semibold text-slate-700"
+                  className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-1.5 px-3 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
                 >
                   <option value="All">All Roles</option>
-                  <option value="Admin">Admin</option>
+                  <option value="SuperAdmin">Owner Platform</option>
+                  <option value="OwnerAdmin">School Owner</option>
+                  <option value="Principal">Headteacher</option>
                   <option value="Teacher">Teacher</option>
                   <option value="Student">Student</option>
-                  <option value="Parent">Parent</option>
+                  <option value="AccountAdmin">Accountant</option>
                 </select>
 
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as any)}
-                  className="bg-slate-50 border border-slate-200 rounded-xl py-1.5 px-3 text-xs font-semibold text-slate-700"
+                  className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-1.5 px-3 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
                 >
                   <option value="All">All Statuses</option>
                   <option value="Active">Active</option>
@@ -1127,7 +1139,7 @@ export const AccountModule: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="bg-slate-50/80 text-slate-400 font-bold border-b border-slate-100 uppercase tracking-wider text-[10px]">
+                  <tr className="bg-slate-50/80 dark:bg-slate-800/60 text-slate-400 dark:text-slate-400 font-bold border-b border-slate-100 dark:border-slate-800 uppercase tracking-wider text-[10px]">
                     <th className="py-3.5 px-4">User & School ID</th>
                     <th className="py-3.5 px-4">Locked Role</th>
                     <th className="py-3.5 px-4">Account Status</th>
@@ -1135,9 +1147,9 @@ export const AccountModule: React.FC = () => {
                     <th className="py-3.5 px-4 text-right">Admin Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-purple-50/30 transition-colors">
+                    <tr key={u.id} className="hover:bg-purple-50/30 dark:hover:bg-slate-800/40 transition-colors">
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
                           <UserAvatar
@@ -1149,9 +1161,9 @@ export const AccountModule: React.FC = () => {
                             showStatus={true}
                           />
                           <div>
-                            <span className="font-bold text-slate-800 block text-xs">{u.name}</span>
-                            <span className="text-[11px] text-slate-400 block">{u.email}</span>
-                            <span className="text-[10px] font-mono font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded inline-block mt-0.5">
+                            <span className="font-bold text-slate-900 dark:text-white block text-xs">{u.name}</span>
+                            <span className="text-[11px] text-slate-400 dark:text-slate-400 block">{u.email}</span>
+                            <span className="text-[10px] font-mono font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/80 border border-purple-200/50 dark:border-purple-800 px-1.5 py-0.5 rounded inline-block mt-0.5">
                               {u.schoolId || u.studentId || u.teacherId || u.id}
                             </span>
                           </div>
@@ -1167,8 +1179,8 @@ export const AccountModule: React.FC = () => {
                         <span
                           className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold inline-flex items-center gap-1 ${
                             u.status === 'Disabled'
-                              ? 'bg-rose-50 text-rose-700 border border-rose-200'
-                              : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              ? 'bg-rose-50 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
+                              : 'bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
                           }`}
                         >
                           <span
@@ -1179,11 +1191,11 @@ export const AccountModule: React.FC = () => {
                           {u.status || 'Active'}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-slate-500 text-[11px]">
-                        <span className="font-medium block truncate max-w-[160px]">
+                      <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400 text-[11px]">
+                        <span className="font-medium text-slate-700 dark:text-slate-300 block truncate max-w-[160px]">
                           {u.roleAssignedBy || 'System Administrator'}
                         </span>
-                        <span className="text-[10px] text-slate-400 block">
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 block">
                           {u.roleAssignedAt || '2026-01-01'}
                         </span>
                       </td>
@@ -1193,7 +1205,7 @@ export const AccountModule: React.FC = () => {
                             <>
                               <button
                                 onClick={() => handleOpenReassignModal(u)}
-                                className="px-2.5 py-1.5 rounded-xl bg-purple-50 text-purple-700 font-bold hover:bg-purple-100 transition-colors text-[11px] flex items-center gap-1"
+                                className="px-2.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-bold transition-colors text-[11px] flex items-center gap-1 cursor-pointer"
                                 title="Reassign Role"
                               >
                                 <RefreshCw className="w-3 h-3" />
@@ -1201,10 +1213,10 @@ export const AccountModule: React.FC = () => {
                               </button>
                               <button
                                 onClick={() => handleOpenStatusModal(u)}
-                                className={`px-2.5 py-1.5 rounded-xl font-bold transition-colors text-[11px] flex items-center gap-1 ${
+                                className={`px-2.5 py-1.5 rounded-xl font-bold transition-colors text-[11px] flex items-center gap-1 cursor-pointer ${
                                   u.status === 'Disabled'
-                                    ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                                    : 'bg-rose-50 text-rose-700 hover:bg-rose-100'
+                                    ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                                    : 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 dark:hover:bg-rose-900/60'
                                 }`}
                               >
                                 {u.status === 'Disabled' ? (
@@ -1220,7 +1232,7 @@ export const AccountModule: React.FC = () => {
                             </>
                           )}
                           {u.id === 'usr-admin-1' && (
-                            <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
+                            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-200/60 dark:border-slate-700">
                               Primary Root
                             </span>
                           )}
@@ -1234,21 +1246,21 @@ export const AccountModule: React.FC = () => {
           </div>
 
           {/* Cryptographic Role Audit Trail Ledger */}
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-2xs p-5 space-y-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-800 flex items-center justify-center">
                   <History className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-800 text-sm">Official Role Audit Ledger</h3>
-                  <p className="text-[11px] text-slate-400">Chronological history of administrative role assignments</p>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-sm">Official Role Audit Ledger</h3>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500">Chronological history of administrative role assignments</p>
                 </div>
               </div>
               <button
                 onClick={fetchAuditLogs}
                 disabled={isLoadingAudit}
-                className="p-2 rounded-xl text-slate-400 hover:text-purple-600 hover:bg-purple-50 transition-colors"
+                className="p-2 rounded-xl text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 title="Refresh Audit Logs"
               >
                 <RefreshCw className={`w-4 h-4 ${isLoadingAudit ? 'animate-spin' : ''}`} />
@@ -1259,27 +1271,27 @@ export const AccountModule: React.FC = () => {
               {auditLogs.map((log) => (
                 <div
                   key={log.id}
-                  className="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
+                  className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
                 >
                   <div className="flex items-start gap-2.5">
                     <UserAvatar name={log.userName} size="sm" rounded="full" />
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-800">{log.userName}</span>
-                        <span className="font-mono text-[10px] text-slate-400">({log.userSchoolId})</span>
+                        <span className="font-bold text-slate-900 dark:text-white">{log.userName}</span>
+                        <span className="font-mono text-[10px] text-slate-400 dark:text-slate-400">({log.userSchoolId})</span>
                       </div>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
-                        Role changed from <strong className="text-slate-700">{log.previousRole}</strong> to{' '}
-                        <strong className="text-purple-700">{log.newRole}</strong>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                        Role changed from <strong className="text-slate-700 dark:text-slate-300">{log.previousRole}</strong> to{' '}
+                        <strong className="text-purple-700 dark:text-purple-400">{log.newRole}</strong>
                       </p>
                       {log.reason && (
-                        <p className="text-[10px] text-slate-400 italic mt-0.5">Reason: "{log.reason}"</p>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 italic mt-0.5">Reason: "{log.reason}"</p>
                       )}
                     </div>
                   </div>
 
-                  <div className="text-left sm:text-right text-[10px] text-slate-400 shrink-0">
-                    <span className="block font-medium text-slate-600">By {log.changedByAdminName}</span>
+                  <div className="text-left sm:text-right text-[10px] text-slate-400 dark:text-slate-500 shrink-0">
+                    <span className="block font-medium text-slate-600 dark:text-slate-300">By {log.changedByAdminName}</span>
                     <span className="block">{log.timestamp}</span>
                   </div>
                 </div>
@@ -1297,7 +1309,7 @@ export const AccountModule: React.FC = () => {
           title={`Reassign Role for ${reassignModalUser.name}`}
         >
           <form onSubmit={handleExecuteRoleReassign} className="space-y-4">
-            <div className="p-3 bg-purple-50 rounded-2xl border border-purple-100 text-xs text-purple-900 space-y-1">
+            <div className="p-3 bg-purple-50 dark:bg-purple-950/60 rounded-2xl border border-purple-100 dark:border-purple-800 text-xs text-purple-900 dark:text-purple-200 space-y-1">
               <p>
                 <strong>Current Role:</strong> {reassignModalUser.role}
               </p>
@@ -1307,28 +1319,29 @@ export const AccountModule: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Select New Role</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Select New Role</label>
               <select
                 value={selectedNewRole}
                 onChange={(e) => setSelectedNewRole(e.target.value as UserRole)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-bold text-slate-800"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl py-2 px-3 text-xs font-bold"
               >
-                <option value="Admin">Admin (Full Institutional Privileges)</option>
+                <option value="Admin">School Owner (Admin)</option>
+                <option value="Principal">Headteacher (Principal)</option>
                 <option value="Teacher">Teacher (Curriculum & Grade Entry)</option>
-                <option value="Parent">Parent (Child Academic Monitoring)</option>
                 <option value="Student">Student (Protected Student Portal)</option>
+                <option value="AccountAdmin">Accountant (Financial Management)</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Administrative Reason</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Administrative Reason</label>
               <textarea
                 required
                 rows={2}
                 value={reassignReason}
                 onChange={(e) => setReassignReason(e.target.value)}
                 placeholder="e.g. Promoted to Department Head / Role adjustment per school board decree"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl p-2.5 text-xs font-medium focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
               />
             </div>
 
@@ -1336,14 +1349,14 @@ export const AccountModule: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setReassignModalUser(null)}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50"
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmittingRole}
-                className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 shadow-md shadow-purple-200 flex items-center justify-center gap-1.5"
+                className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 shadow-md shadow-purple-200 dark:shadow-none flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 {isSubmittingRole ? 'Saving...' : 'Confirm Reassignment'}
               </button>
@@ -1360,7 +1373,7 @@ export const AccountModule: React.FC = () => {
           title={statusModalUser.status === 'Disabled' ? 'Enable User Account' : 'Disable User Account'}
         >
           <form onSubmit={handleExecuteStatusToggle} className="space-y-4">
-            <div className="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1">
+            <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 space-y-1">
               <p>
                 <strong>User:</strong> {statusModalUser.name} ({statusModalUser.role})
               </p>
@@ -1372,14 +1385,14 @@ export const AccountModule: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Reason for Status Change</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Reason for Status Change</label>
               <textarea
                 required
                 rows={2}
                 value={statusReason}
                 onChange={(e) => setStatusReason(e.target.value)}
                 placeholder="e.g. Leave of absence / Temporary credential freeze / Reinstated"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl p-2.5 text-xs font-medium focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
               />
             </div>
 
@@ -1387,14 +1400,14 @@ export const AccountModule: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setStatusModalUser(null)}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50"
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmittingStatus}
-                className={`flex-1 py-2.5 rounded-xl text-white font-bold text-xs shadow-md flex items-center justify-center gap-1.5 ${
+                className={`flex-1 py-2.5 rounded-xl text-white font-bold text-xs shadow-md flex items-center justify-center gap-1.5 cursor-pointer ${
                   statusModalUser.status === 'Disabled'
                     ? 'bg-emerald-600 hover:bg-emerald-700'
                     : 'bg-rose-600 hover:bg-rose-700'
@@ -1416,15 +1429,17 @@ export const AccountModule: React.FC = () => {
         >
           <form onSubmit={handleCreateNewUser} className="space-y-4">
             <div className="flex items-center justify-between">
-              <label className="block text-xs font-bold text-slate-700">Select Official Role</label>
-              <div className="flex gap-1">
-                {(['Admin', 'Teacher', 'Student', 'Parent'] as UserRole[]).map((r) => (
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">Select Official Role</label>
+              <div className="flex gap-1 flex-wrap">
+                {(['Admin', 'Principal', 'Teacher', 'Student', 'AccountAdmin'] as UserRole[]).map((r) => (
                   <button
                     key={r}
                     type="button"
                     onClick={() => generateAutoSchoolId(r)}
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                      newUserData.role === r ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-600'
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer ${
+                      newUserData.role === r
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                     }`}
                   >
                     {r}
@@ -1435,62 +1450,62 @@ export const AccountModule: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Official School ID *</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Official School ID *</label>
                 <input
                   type="text"
                   required
                   value={newUserData.schoolId}
                   onChange={(e) => setNewUserData({ ...newUserData, schoolId: e.target.value })}
                   placeholder="e.g. TCH-2026-0089"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-mono font-bold"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl py-2 px-3 text-xs font-mono font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Initial Password *</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Initial Password *</label>
                 <input
                   type="text"
                   required
                   value={newUserData.password}
                   onChange={(e) => setNewUserData({ ...newUserData, password: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-medium"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl py-2 px-3 text-xs font-medium"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Full Name *</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Full Name *</label>
                 <input
                   type="text"
                   required
                   value={newUserData.name}
                   onChange={(e) => setNewUserData({ ...newUserData, name: e.target.value })}
                   placeholder="e.g. Salmaan Fitah"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-medium"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl py-2 px-3 text-xs font-medium"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Email Address *</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Email Address *</label>
                 <input
                   type="email"
                   required
                   value={newUserData.email}
                   onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
                   placeholder="name@eduspike.edu"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-medium"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl py-2 px-3 text-xs font-medium"
                 />
               </div>
             </div>
 
             {/* Generated Initials Avatar Preview */}
-            <div className="p-3 bg-purple-50/70 border border-purple-100 rounded-2xl flex items-center gap-3">
+            <div className="p-3 bg-purple-50/70 dark:bg-purple-950/60 border border-purple-100 dark:border-purple-800 rounded-2xl flex items-center gap-3">
               <UserAvatar name={newUserData.name || 'New User'} avatarUrl="" size="md" />
               <div className="text-xs">
-                <span className="font-bold text-purple-900 block">Automatic Initial Avatar</span>
-                <span className="text-slate-500 text-[11px]">
-                  Generated Initials: <strong>[{getInitials(newUserData.name || 'New User')}]</strong> with light background.
+                <span className="font-bold text-purple-900 dark:text-purple-200 block">Automatic Initial Avatar</span>
+                <span className="text-slate-500 dark:text-slate-400 text-[11px]">
+                  Generated Initials: <strong className="text-purple-700 dark:text-purple-300">[{getInitials(newUserData.name || 'New User')}]</strong> with light background.
                 </span>
               </div>
             </div>
@@ -1499,14 +1514,14 @@ export const AccountModule: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsCreateUserModalOpen(false)}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50"
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmittingNewUser}
-                className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 shadow-md shadow-purple-200 flex items-center justify-center gap-1.5"
+                className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 shadow-md shadow-purple-200 dark:shadow-none flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 {isSubmittingNewUser ? 'Provisioning...' : 'Provision Account'}
               </button>

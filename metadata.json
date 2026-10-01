@@ -1,6 +1,6 @@
 {
   "name": "EduSpike School Management System",
-  "description": "Comprehensive school management platform featuring unique School ID authentication (STU/TCH/PAR/ADM), teacher chat groups with faculty-only access & real-time messaging, fee management with invoicing & receipts, class timetable scheduling with conflict prevention, student/teacher directories, and role-based access control.",
+  "description": "Multi-tenant, multi-role School Management System supporting independent schools with dedicated dashboards for 6 canonical roles (Platform Owner, School Owner, School Headteacher / Principal, Teacher, Student, Accountant), school search & discovery login, examination grade trends with Recharts, attendance CSV/PDF reporting, fee invoicing, and strict tenant data isolation.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

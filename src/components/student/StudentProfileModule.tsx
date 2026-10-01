@@ -119,12 +119,12 @@ export const StudentProfileModule: React.FC = () => {
       </div>
 
       {/* Official Records Security Notice */}
-      <div className="bg-amber-50/80 border border-amber-200/70 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5">
-        <div className="p-2 rounded-xl bg-amber-100 text-amber-800 shrink-0 mt-0.5">
+      <div className="bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/70 dark:border-amber-900/50 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5">
+        <div className="p-2 rounded-xl bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 shrink-0 mt-0.5">
           <Lock className="w-4 h-4" />
         </div>
-        <div className="text-xs text-amber-900 leading-relaxed">
-          <span className="font-bold block text-sm text-amber-950 mb-0.5">Locked Official Academic Records</span>
+        <div className="text-xs text-amber-900 dark:text-amber-200 leading-relaxed">
+          <span className="font-bold block text-sm text-amber-950 dark:text-amber-100 mb-0.5">Locked Official Academic Records</span>
           Official student details including Student ID, legal name, date of birth, class, section, enrollment status, and parent/guardian information are managed exclusively by authorized School Administration. Students are permitted to edit their personal biography statement.
         </div>
       </div>
@@ -133,99 +133,99 @@ export const StudentProfileModule: React.FC = () => {
         {/* Left Column: Official Student Records (Read-Only) */}
         <div className="lg:col-span-2 space-y-6">
           {/* Academic & Personal Details */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-2xs space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
                   <User className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-slate-800">Academic & Personal Profile</h2>
-                  <p className="text-[11px] text-slate-400">Official institutional record</p>
+                  <h2 className="text-sm font-bold text-slate-800 dark:text-white">Academic & Personal Profile</h2>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500">Official institutional record</p>
                 </div>
               </div>
-              <span className="text-[11px] font-semibold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg flex items-center gap-1">
+              <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg flex items-center gap-1">
                 <Lock className="w-3 h-3" /> Read Only
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold block mb-0.5">Official Student ID</span>
-                <span className="text-sm font-mono font-bold text-slate-800">{studentRecord.id}</span>
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 dark:text-slate-500 font-semibold block mb-0.5">Official Student ID</span>
+                <span className="text-sm font-mono font-bold text-slate-800 dark:text-white">{studentRecord.id}</span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold block mb-0.5">Full Legal Name</span>
-                <span className="text-sm font-bold text-slate-800">{studentRecord.name}</span>
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 dark:text-slate-500 font-semibold block mb-0.5">Full Legal Name</span>
+                <span className="text-sm font-bold text-slate-800 dark:text-white">{studentRecord.name}</span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold block mb-0.5">Assigned Class & Section</span>
-                <span className="text-sm font-bold text-purple-700">{studentRecord.class} - Section {studentRecord.section}</span>
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 dark:text-slate-500 font-semibold block mb-0.5">Assigned Class & Section</span>
+                <span className="text-sm font-bold text-purple-700 dark:text-purple-400">{studentRecord.class} - Section {studentRecord.section}</span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold block mb-0.5">Class Roll Number</span>
-                <span className="text-sm font-bold text-slate-800">#{studentRecord.rollNo}</span>
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 dark:text-slate-500 font-semibold block mb-0.5">Class Roll Number</span>
+                <span className="text-sm font-bold text-slate-800 dark:text-white">#{studentRecord.rollNo}</span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold block mb-0.5">Date of Birth</span>
-                <span className="text-sm font-bold text-slate-800">{studentRecord.dob}</span>
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 dark:text-slate-500 font-semibold block mb-0.5">Date of Birth</span>
+                <span className="text-sm font-bold text-slate-800 dark:text-white">{studentRecord.dob}</span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold block mb-0.5">Gender</span>
-                <span className="text-sm font-bold text-slate-800">{studentRecord.gender}</span>
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 dark:text-slate-500 font-semibold block mb-0.5">Gender</span>
+                <span className="text-sm font-bold text-slate-800 dark:text-white">{studentRecord.gender}</span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold block mb-0.5">Blood Group</span>
-                <span className="text-sm font-bold text-rose-600">{studentRecord.bloodGroup}</span>
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 dark:text-slate-500 font-semibold block mb-0.5">Blood Group</span>
+                <span className="text-sm font-bold text-rose-600 dark:text-rose-400">{studentRecord.bloodGroup}</span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold block mb-0.5">Official Student Email</span>
-                <span className="text-sm font-bold text-slate-800">{studentRecord.email}</span>
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 dark:text-slate-500 font-semibold block mb-0.5">Official Student Email</span>
+                <span className="text-sm font-bold text-slate-800 dark:text-white">{studentRecord.email}</span>
               </div>
             </div>
           </div>
 
           {/* Parent & Guardian Information */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-2xs space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
                   <Heart className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-slate-800">Parent / Guardian Information</h2>
-                  <p className="text-[11px] text-slate-400">Emergency contacts & primary guardians</p>
+                  <h2 className="text-sm font-bold text-slate-800 dark:text-white">Parent / Guardian Information</h2>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500">Emergency contacts & primary guardians</p>
                 </div>
               </div>
-              <span className="text-[11px] font-semibold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg flex items-center gap-1">
+              <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg flex items-center gap-1">
                 <Lock className="w-3 h-3" /> Read Only
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold block mb-0.5">Guardian Name</span>
-                <span className="font-bold text-slate-800">{studentRecord.parentName}</span>
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 dark:text-slate-500 font-semibold block mb-0.5">Guardian Name</span>
+                <span className="font-bold text-slate-800 dark:text-white">{studentRecord.parentName}</span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold block mb-0.5">Contact Phone</span>
-                <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5">
-                  <Phone className="w-3 h-3 text-slate-400" /> {studentRecord.parentPhone}
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 dark:text-slate-500 font-semibold block mb-0.5">Contact Phone</span>
+                <span className="font-bold text-slate-800 dark:text-white flex items-center gap-1 mt-0.5">
+                  <Phone className="w-3 h-3 text-slate-400 dark:text-slate-500" /> {studentRecord.parentPhone}
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold block mb-0.5">Guardian Email</span>
-                <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5 truncate">
-                  <Mail className="w-3 h-3 text-slate-400" /> {studentRecord.parentEmail}
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-slate-400 dark:text-slate-500 font-semibold block mb-0.5">Guardian Email</span>
+                <span className="font-bold text-slate-800 dark:text-white flex items-center gap-1 mt-0.5 truncate">
+                  <Mail className="w-3 h-3 text-slate-400 dark:text-slate-500" /> {studentRecord.parentEmail}
                 </span>
               </div>
             </div>
@@ -235,16 +235,16 @@ export const StudentProfileModule: React.FC = () => {
         {/* Right Column: Editable Bio & Enrollment Summary */}
         <div className="space-y-6">
           {/* Editable Student Bio Card */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-2xs space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
-                <h3 className="text-sm font-bold text-slate-800">Student Bio</h3>
-                <p className="text-[11px] text-slate-400">Personal statement & interests</p>
+                <h3 className="text-sm font-bold text-slate-800 dark:text-white">Student Bio</h3>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500">Personal statement & interests</p>
               </div>
               {!isEditingBio && (
                 <button
                   onClick={() => setIsEditingBio(true)}
-                  className="px-3 py-1.5 rounded-xl bg-purple-50 text-purple-700 hover:bg-purple-100 font-bold text-xs flex items-center gap-1.5 transition-colors"
+                  className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/60 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <Edit3 className="w-3.5 h-3.5" /> Edit Bio
                 </button>
@@ -254,7 +254,7 @@ export const StudentProfileModule: React.FC = () => {
             {isEditingBio ? (
               <form onSubmit={handleSaveBio} className="space-y-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">
+                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                     Your Personal Statement
                   </label>
                   <textarea
@@ -262,10 +262,10 @@ export const StudentProfileModule: React.FC = () => {
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Describe your interests, academic goals, favorite subjects..."
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 text-xs font-medium text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                     maxLength={300}
                   />
-                  <div className="flex justify-between items-center text-[10px] text-slate-400 mt-1">
+                  <div className="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 mt-1">
                     <span>Only Bio field can be modified by students</span>
                     <span>{bio.length} / 300</span>
                   </div>
@@ -275,7 +275,7 @@ export const StudentProfileModule: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-purple-200"
+                    className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>{isSaving ? 'Saving...' : 'Save Bio'}</span>
@@ -286,14 +286,14 @@ export const StudentProfileModule: React.FC = () => {
                       setBio(currentUser.bio || '');
                       setIsEditingBio(false);
                     }}
-                    className="px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 font-semibold text-xs hover:bg-slate-200 transition-colors"
+                    className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                 </div>
               </form>
             ) : (
-              <div className="p-4 rounded-2xl bg-purple-50/50 border border-purple-100/60 text-xs text-slate-700 leading-relaxed italic">
+              <div className="p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/30 border border-purple-100/60 dark:border-purple-900/40 text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
                 "{bio || 'No bio entered yet. Click Edit Bio to add your hobbies, interests, or favorite subjects!'}"
               </div>
             )}

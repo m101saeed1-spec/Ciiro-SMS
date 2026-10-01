@@ -30,7 +30,7 @@ export const NoticesModule: React.FC = () => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    audience: 'All' as 'All' | 'Teachers' | 'Students' | 'Parents',
+    audience: 'All' as 'All' | 'Teachers' | 'Students',
     priority: 'High' as 'High' | 'Medium' | 'Low',
   });
 
@@ -86,19 +86,18 @@ export const NoticesModule: React.FC = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 w-full sm:w-auto">
+      <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/60 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 w-full sm:w-auto">
           <Filter className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-xs font-semibold text-slate-500">Audience:</span>
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Audience:</span>
           <select
             value={selectedAudienceFilter}
             onChange={(e) => setSelectedAudienceFilter(e.target.value)}
-            className="bg-transparent text-xs font-bold text-slate-700 focus:outline-none cursor-pointer"
+            className="bg-transparent text-xs font-bold text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer"
           >
-            <option value="All">All Audiences</option>
-            <option value="Teachers">Teachers Only</option>
-            <option value="Students">Students Only</option>
-            <option value="Parents">Parents Only</option>
+            <option value="All" className="dark:bg-slate-800">All Audiences</option>
+            <option value="Teachers" className="dark:bg-slate-800">Teachers Only</option>
+            <option value="Students" className="dark:bg-slate-800">Students Only</option>
           </select>
         </div>
       </div>
@@ -108,44 +107,44 @@ export const NoticesModule: React.FC = () => {
         {filteredNotices.map((n) => (
           <div
             key={n.id}
-            className="bg-white rounded-3xl border border-slate-100 shadow-2xs p-6 hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+            className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs p-6 hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
           >
             <div className="space-y-2 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <span
                   className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                     n.priority === 'High'
-                      ? 'bg-rose-100 text-rose-700'
-                      : 'bg-purple-100 text-purple-700'
+                      ? 'bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
+                      : 'bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
                   }`}
                 >
                   {n.priority} Priority
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">
+                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold border border-slate-200 dark:border-slate-700">
                   Target: {n.audience}
                 </span>
-                <span className="text-[11px] text-slate-400">Published on {n.date}</span>
+                <span className="text-[11px] text-slate-400 dark:text-slate-500">Published on {n.date}</span>
               </div>
 
-              <h3 className="text-base font-bold text-slate-800">{n.title}</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">{n.content}</p>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">{n.title}</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{n.content}</p>
 
-              <p className="text-[11px] text-purple-600 font-semibold pt-1">
+              <p className="text-[11px] text-purple-600 dark:text-purple-400 font-semibold pt-1">
                 Posted by {n.postedBy} ({n.postedByRole})
               </p>
             </div>
 
-            <div className="flex items-center gap-2 border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-4">
+            <div className="flex items-center gap-2 border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-800 pt-3 md:pt-0 md:pl-4">
               <button
                 onClick={() => setViewingNotice(n)}
-                className="p-2 rounded-xl text-slate-400 hover:text-purple-600 hover:bg-purple-50 transition-colors"
+                className="p-2 rounded-xl text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/50 transition-colors"
                 title="Full View"
               >
                 <Eye className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setDeletingNotice(n)}
-                className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                className="p-2 rounded-xl text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors"
                 title="Delete Notice"
               >
                 <Trash2 className="w-4 h-4" />
@@ -159,37 +158,36 @@ export const NoticesModule: React.FC = () => {
       <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Publish School Notice">
         <form onSubmit={handleCreateNotice} className="space-y-3">
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Notice Title</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Notice Title</label>
             <input
               type="text"
               required
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="e.g. Science Fair Registration Deadline Extended"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-medium"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-purple-600"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Target Audience</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Target Audience</label>
               <select
                 value={formData.audience}
                 onChange={(e) => setFormData({ ...formData, audience: e.target.value as any })}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-medium"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-purple-600"
               >
                 <option value="All">All School</option>
                 <option value="Teachers">Teachers Only</option>
                 <option value="Students">Students Only</option>
-                <option value="Parents">Parents Only</option>
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Priority Level</label>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Priority Level</label>
               <select
                 value={formData.priority}
                 onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-medium"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-purple-600"
               >
                 <option value="High">High</option>
                 <option value="Medium">Medium</option>
@@ -199,20 +197,20 @@ export const NoticesModule: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Notice Content</label>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Notice Content</label>
             <textarea
               required
               rows={4}
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
               placeholder="Enter complete notice announcement text here..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-medium"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-purple-600"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors shadow-md shadow-purple-200 mt-2"
+            className="w-full py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors shadow-md shadow-purple-200 dark:shadow-none mt-2"
           >
             Publish Notice
           </button>
@@ -229,16 +227,16 @@ export const NoticesModule: React.FC = () => {
         >
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 font-bold text-xs">
+              <span className="px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 font-bold text-xs border border-purple-200 dark:border-purple-800">
                 {viewingNotice.priority} Priority
               </span>
-              <span className="text-xs text-slate-400">Date: {viewingNotice.date}</span>
+              <span className="text-xs text-slate-400 dark:text-slate-500">Date: {viewingNotice.date}</span>
             </div>
-            <h3 className="text-lg font-bold text-slate-800">{viewingNotice.title}</h3>
-            <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">{viewingNotice.title}</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
               {viewingNotice.content}
             </p>
-            <p className="text-xs font-bold text-purple-700">
+            <p className="text-xs font-bold text-purple-700 dark:text-purple-400">
               Publisher: {viewingNotice.postedBy} ({viewingNotice.postedByRole})
             </p>
           </div>
@@ -253,13 +251,13 @@ export const NoticesModule: React.FC = () => {
           title="Delete Notice"
           maxWidth="sm"
         >
-          <p className="text-xs text-slate-600 mb-6">
-            Are you sure you want to delete <span className="font-bold text-slate-800">{deletingNotice.title}</span>?
+          <p className="text-xs text-slate-600 dark:text-slate-300 mb-6">
+            Are you sure you want to delete <span className="font-bold text-slate-900 dark:text-white">{deletingNotice.title}</span>?
           </p>
           <div className="flex items-center justify-end gap-3">
             <button
               onClick={() => setDeletingNotice(null)}
-              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700"
             >
               Cancel
             </button>
@@ -268,7 +266,7 @@ export const NoticesModule: React.FC = () => {
                 deleteNotice(deletingNotice.id);
                 setDeletingNotice(null);
               }}
-              className="px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700"
             >
               Confirm Delete
             </button>

@@ -27,7 +27,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
 
-  const hasPhoto = isCustomPhoto(avatarUrl) && !imageError;
+  const hasPhoto = Boolean(avatarUrl && typeof avatarUrl === 'string' && avatarUrl.trim() !== '' && isCustomPhoto(avatarUrl) && !imageError);
   const initials = getInitials(name);
   const palette = getAvatarColorPalette(name);
 

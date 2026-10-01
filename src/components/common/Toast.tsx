@@ -1,11 +1,29 @@
-import React from 'react';
-import { useSchoolData } from '../../context/SchoolDataContext';
+import React, { useEffect } from 'react';
+import { useSchoolData, ToastType } from '../../context/SchoolDataContext';
 import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-react';
 
+let toastDispatch: ((message: string, type?: ToastType, title?: string) => void) | null = null;
+
+export const showToast = (message: string, type: ToastType = 'info', title?: string) => {
+  if (toastDispatch) {
+    toastDispatch(message, type, title);
+  }
+};
+
 export const ToastContainer: React.FC = () => {
-  const { toasts, removeToast } = useSchoolData();
+  const { toasts, removeToast, addToast } = useSchoolData();
+
+  useEffect(() => {
+    toastDispatch = (msg: string, type: ToastType = 'info', title?: string) => {
+      addToast(title ? { title, message: msg, type } : { message: msg, type });
+    };
+    return () => {
+      toastDispatch = null;
+    };
+  }, [addToast]);
 
   if (!toasts.length) return null;
+
 
   return (
     <div

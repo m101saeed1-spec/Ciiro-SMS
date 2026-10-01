@@ -7,8 +7,8 @@ import {
   Users,
   Bell,
   BellOff,
-  MoreVertical,
   Trash2,
+  Edit,
   Reply,
   Smile,
   Paperclip,
@@ -25,15 +25,24 @@ import {
   FileText,
   Download,
   CheckCheck,
-  Filter,
+  ChevronLeft,
+  Lock,
+  Compass,
+  Eye,
+  Image as ImageIcon,
+  CheckCircle2,
+  AlertCircle,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { ChatGroup, ChatMessage, ChatMember, ChatGroupType } from '../../types';
 import { UserAvatar } from '../common/UserAvatar';
+import { FilePreviewModal } from '../library/FilePreviewModal';
+import { ChatThreadDrawer } from './ChatThreadDrawer';
+import { auditLogService } from '../../services/auditLogService';
 
 export const ChatModule: React.FC = () => {
-  const { currentUser, activeRole } = useAuth();
+  const { currentUser, activeRole, activeSchoolId, activeSchool } = useAuth();
   const {
     teachers,
     chatGroups,
@@ -41,15 +50,16 @@ export const ChatModule: React.FC = () => {
     setActiveChatGroupId,
     activeChatMessages,
     sendChatMessage,
+    editChatMessage,
     deleteChatMessage,
     toggleMessageReaction,
     createChatGroup,
     deleteChatGroup,
-    joinChatGroup,
     leaveChatGroup,
     toggleMuteGroup,
     markGroupRead,
     fetchChatMessages,
+    downloadFile,
     addToast,
   } = useSchoolData();
 
@@ -61,10 +71,31 @@ export const ChatModule: React.FC = () => {
   const [messageInput, setMessageInput] = useState<string>('');
   const [isAnnouncementMode, setIsAnnouncementMode] = useState<boolean>(false);
   const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
+  const [editingMessage, setEditingMessage] = useState<ChatMessage | null>(null);
+  const [activeThreadPostId, setActiveThreadPostId] = useState<string | null>(null);
   const [showMemberDrawer, setShowMemberDrawer] = useState<boolean>(false);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [showAddMemberModal, setShowAddMemberModal] = useState<boolean>(false);
-  const [mockAttachment, setMockAttachment] = useState<{ name: string; size: string; type: string } | null>(null);
+  const [isUploadingMain, setIsUploadingMain] = useState<boolean>(false);
+  const [mainUploadProgress, setMainUploadProgress] = useState<number>(0);
+  const [pendingAttachment, setPendingAttachment] = useState<{
+    name: string;
+    size: string;
+    type: string;
+    fileData?: string;
+  } | null>(null);
+  const [previewAttachment, setPreviewAttachment] = useState<{
+    name: string;
+    size: string;
+    type: string;
+    fileData?: string;
+  } | null>(null);
+  const [mobileActiveView, setMobileActiveView] = useState<'list' | 'chat'>('list');
+  const [memberSearchQuery, setMemberSearchQuery] = useState<string>('');
+  const [isDraggingFile, setIsDraggingFile] = useState<boolean>(false);
+
+  // File Input Ref
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Create Group Form State
   const [newGroupName, setNewGroupName] = useState<string>('');
@@ -92,6 +123,12 @@ export const ChatModule: React.FC = () => {
     }
   }, [activeGroup?.id]);
 
+  // Sync mobile view on active chat group selection
+  const handleSelectGroup = (groupId: string) => {
+    setActiveChatGroupId(groupId);
+    setMobileActiveView('chat');
+  };
+
   // Filter groups
   const filteredGroups = chatGroups.filter((g) => {
     const matchesSearch =
@@ -105,10 +142,109 @@ export const ChatModule: React.FC = () => {
     return g.type.toLowerCase() === selectedTypeFilter.toLowerCase();
   });
 
-  // Handle message sending
+  // Real File Upload Handler with Progress and Validation
+  const handleProcessFile = (file: File) => {
+    if (file.size > 25 * 1024 * 1024) {
+      addToast('File exceeds maximum allowable size (25 MB)', 'error');
+      return;
+    }
+
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    const allowed = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg', 'webp', 'svg', 'txt', 'zip'];
+    if (!allowed.includes(ext)) {
+      addToast(`Invalid file format .${ext}. Allowed: PDF, DOCX, PPTX, XLSX, Images`, 'error');
+      return;
+    }
+
+    let fileType = 'pdf';
+    if (['doc', 'docx'].includes(ext)) fileType = 'docx';
+    else if (['ppt', 'pptx'].includes(ext)) fileType = 'pptx';
+    else if (['xls', 'xlsx'].includes(ext)) fileType = 'xlsx';
+    else if (['png', 'jpg', 'jpeg', 'webp', 'svg'].includes(ext)) fileType = 'image';
+
+    const formatSize = (bytes: number) => {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    };
+
+    setIsUploadingMain(true);
+    setMainUploadProgress(20);
+
+    const isImg = file.type.startsWith('image/');
+    const reader = new FileReader();
+
+    const progressTimer = setInterval(() => {
+      setMainUploadProgress((prev) => {
+        if (prev >= 90) {
+          clearInterval(progressTimer);
+          return 90;
+        }
+        return prev + 25;
+      });
+    }, 100);
+
+    reader.onload = () => {
+      clearInterval(progressTimer);
+      setMainUploadProgress(100);
+      setTimeout(() => {
+        setIsUploadingMain(false);
+        const resultString = typeof reader.result === 'string' ? reader.result : '';
+        setPendingAttachment({
+          name: file.name,
+          size: formatSize(file.size),
+          type: fileType,
+          fileData: isImg ? resultString : (resultString.slice(0, 10000) || `Resource Content for ${file.name}`),
+        });
+        addToast(`Attached "${file.name}"`, 'info');
+        auditLogService.logAction(currentUser?.id || 'usr-1', 'file_attached', 'Chat', {
+          fileName: file.name,
+          fileSize: file.size,
+          fileType,
+          schoolId: activeSchoolId,
+        });
+      }, 250);
+    };
+
+    reader.onerror = () => {
+      clearInterval(progressTimer);
+      setIsUploadingMain(false);
+      addToast('Failed to read file', 'error');
+    };
+
+    if (isImg) {
+      reader.readAsDataURL(file);
+    } else {
+      reader.readAsText(file);
+    }
+  };
+
+  const handleStartEditMessage = (msg: ChatMessage) => {
+    setEditingMessage(msg);
+    setMessageInput(msg.content);
+    setReplyingTo(null);
+  };
+
+  const handleCancelEditMessage = () => {
+    setEditingMessage(null);
+    setMessageInput('');
+  };
+
+  // Handle message sending & editing
   const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if ((!messageInput.trim() && !mockAttachment) || !activeGroup) return;
+    if (!messageInput.trim() && !pendingAttachment) return;
+    if (!activeGroup) return;
+
+    // Handle Edit Mode
+    if (editingMessage) {
+      const success = await editChatMessage(activeGroup.id, editingMessage.id, messageInput.trim());
+      if (success) {
+        setEditingMessage(null);
+        setMessageInput('');
+      }
+      return;
+    }
 
     const payload = {
       groupId: activeGroup.id,
@@ -121,14 +257,15 @@ export const ChatModule: React.FC = () => {
             content: replyingTo.content,
           }
         : undefined,
-      attachments: mockAttachment
+      attachments: pendingAttachment
         ? [
             {
               id: `att-${Date.now()}`,
-              name: mockAttachment.name,
-              size: mockAttachment.size,
-              type: mockAttachment.type,
+              name: pendingAttachment.name,
+              size: pendingAttachment.size,
+              type: pendingAttachment.type,
               url: '#',
+              fileData: pendingAttachment.fileData,
             },
           ]
         : undefined,
@@ -139,7 +276,7 @@ export const ChatModule: React.FC = () => {
       setMessageInput('');
       setIsAnnouncementMode(false);
       setReplyingTo(null);
-      setMockAttachment(null);
+      setPendingAttachment(null);
     }
   };
 
@@ -166,6 +303,7 @@ export const ChatModule: React.FC = () => {
       setNewGroupName('');
       setNewGroupDesc('');
       setSelectedMemberIds([]);
+      setMobileActiveView('chat');
     }
   };
 
@@ -184,53 +322,61 @@ export const ChatModule: React.FC = () => {
     currentUserMember?.groupRole === 'owner' ||
     currentUserMember?.groupRole === 'moderator';
 
-  const getGroupBadgeColor = (type: ChatGroupType) => {
+  // Audienta Brand badge styles for classifications
+  const getGroupBadgeStyle = (type: ChatGroupType) => {
     switch (type) {
       case 'AllTeachers':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return 'bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800/80';
       case 'Department':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800/80';
       case 'Subject':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+        return 'bg-cyan-100 dark:bg-cyan-950/60 text-cyan-800 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800/80';
       case 'ClassTeacher':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
+        return 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800/80';
       default:
-        return 'bg-slate-100 text-slate-700 border-slate-200';
+        return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
     }
   };
 
   const getGroupIcon = (type: ChatGroupType) => {
     switch (type) {
       case 'AllTeachers':
-        return <Megaphone className="w-4 h-4 text-purple-600" />;
+        return <Megaphone className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
       case 'Department':
-        return <Layers className="w-4 h-4 text-blue-600" />;
+        return <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />;
       case 'Subject':
-        return <BookOpen className="w-4 h-4 text-emerald-600" />;
+        return <BookOpen className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />;
       case 'ClassTeacher':
-        return <GraduationCap className="w-4 h-4 text-amber-600" />;
+        return <GraduationCap className="w-4 h-4 text-amber-600 dark:text-amber-400" />;
       default:
-        return <MessageSquare className="w-4 h-4 text-indigo-600" />;
+        return <MessageSquare className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
     }
   };
 
+  const filteredMembers = activeGroup?.members.filter((m) =>
+    m.teacherName.toLowerCase().includes(memberSearchQuery.toLowerCase()) ||
+    (m.designation && m.designation.toLowerCase().includes(memberSearchQuery.toLowerCase()))
+  ) || [];
+
   return (
-    <div id="teacher-chat-module" className="flex flex-col h-[calc(100vh-8.5rem)] min-h-[640px] bg-slate-50">
-      {/* Top Banner: Faculty-Only Security Guarantee */}
-      <div className="bg-gradient-to-r from-emerald-700 via-teal-700 to-indigo-800 text-white px-4 py-2.5 flex items-center justify-between shadow-xs border-b border-emerald-800 shrink-0">
-        <div className="flex items-center space-x-2.5">
-          <div className="p-1 bg-white/10 rounded-md backdrop-blur-xs">
-            <ShieldAlert className="w-4 h-4 text-emerald-200" />
+    <div id="teacher-chat-module" className="flex flex-col h-[calc(100vh-8.5rem)] min-h-[640px] bg-slate-50 dark:bg-slate-950 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm">
+      {/* Top Banner: Faculty-Only Security Guarantee with Audienta Brand Gradient */}
+      <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white px-4 py-3 flex items-center justify-between shadow-xs border-b border-purple-800/50 shrink-0">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-white/10 rounded-xl backdrop-blur-md border border-white/10 shadow-inner">
+            <Lock className="w-4 h-4 text-purple-300" />
           </div>
           <div>
-            <p className="text-xs font-semibold tracking-wide flex items-center gap-1.5">
-              <span>FACULTY ENCRYPTED CHANNEL</span>
-              <span className="bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 text-[10px] px-1.5 py-0.5 rounded-full font-medium">
-                Verified Faculty & Admins Only
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold tracking-wide uppercase text-white">
+                Faculty Encrypted Workspace
               </span>
-            </p>
-            <p className="text-[11px] text-emerald-100/80 leading-tight">
-              Strict isolation: Students and parents have zero visibility or membership access to teacher chats.
+              <span className="bg-purple-500/20 text-purple-200 border border-purple-400/30 text-[10px] px-2 py-0.5 rounded-full font-semibold">
+                Staff & Admins Only
+              </span>
+            </div>
+            <p className="text-[11px] text-purple-200/80 leading-tight hidden sm:block mt-0.5">
+              Secure internal channels for curriculum planning, student performance discussions, and department announcements.
             </p>
           </div>
         </div>
@@ -239,34 +385,38 @@ export const ChatModule: React.FC = () => {
           <button
             id="create-group-btn"
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-1.5 bg-white text-emerald-900 hover:bg-emerald-50 text-xs font-semibold px-3 py-1.5 rounded-lg shadow-xs transition-colors"
+            className="flex items-center gap-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm shadow-purple-900/30 transition-all cursor-pointer border border-purple-400/30"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>New Chat Group</span>
+            <span>New Group</span>
           </button>
         </div>
       </div>
 
       {/* Main Workspace: 3-column Layout (Groups Sidebar | Active Chat | Group Info Drawer) */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
         {/* LEFT COLUMN: Groups Navigation */}
-        <div className="w-80 sm:w-88 border-r border-slate-200 bg-white flex flex-col shrink-0">
+        <div
+          className={`w-full md:w-80 lg:w-88 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col shrink-0 transition-all ${
+            mobileActiveView === 'chat' ? 'hidden md:flex' : 'flex'
+          }`}
+        >
           {/* Search Groups */}
-          <div className="p-3 border-b border-slate-100 space-y-2">
+          <div className="p-3.5 border-b border-slate-100 dark:border-slate-800/80 space-y-2.5">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+              <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-2.5" />
               <input
                 id="search-groups-input"
                 type="text"
                 value={groupSearchQuery}
                 onChange={(e) => setGroupSearchQuery(e.target.value)}
-                placeholder="Search teacher groups..."
-                className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-hidden"
+                placeholder="Search teacher channels..."
+                className="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all"
               />
               {groupSearchQuery && (
                 <button
                   onClick={() => setGroupSearchQuery('')}
-                  className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"
+                  className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -274,7 +424,7 @@ export const ChatModule: React.FC = () => {
             </div>
 
             {/* Filter Chips */}
-            <div className="flex items-center gap-1 overflow-x-auto pb-1 text-[11px] no-scrollbar">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-[11px] no-scrollbar">
               {[
                 { id: 'all', label: 'All' },
                 { id: 'department', label: 'Departments' },
@@ -285,10 +435,10 @@ export const ChatModule: React.FC = () => {
                 <button
                   key={filter.id}
                   onClick={() => setSelectedTypeFilter(filter.id)}
-                  className={`px-2.5 py-1 rounded-full whitespace-nowrap font-medium transition-colors ${
+                  className={`px-3 py-1.5 rounded-xl whitespace-nowrap text-xs font-semibold transition-all cursor-pointer ${
                     selectedTypeFilter === filter.id
-                      ? 'bg-emerald-700 text-white shadow-2xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-purple-600 text-white shadow-sm shadow-purple-600/25'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >
                   {filter.label}
@@ -298,12 +448,12 @@ export const ChatModule: React.FC = () => {
           </div>
 
           {/* Groups List */}
-          <div className="flex-1 overflow-y-auto divide-y divide-slate-100">
+          <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60">
             {filteredGroups.length === 0 ? (
-              <div className="p-8 text-center text-slate-400">
-                <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-40 text-slate-400" />
-                <p className="text-xs font-medium">No chat groups found</p>
-                <p className="text-[11px] mt-1">Try adjusting your search or create a new group.</p>
+              <div className="p-8 text-center text-slate-400 dark:text-slate-500">
+                <MessageSquare className="w-10 h-10 mx-auto mb-2 opacity-30 text-purple-600" />
+                <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">No channels found</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Try adjusting your search or create a new group.</p>
               </div>
             ) : (
               filteredGroups.map((group) => {
@@ -312,61 +462,67 @@ export const ChatModule: React.FC = () => {
                   <button
                     key={group.id}
                     id={`chat-group-item-${group.id}`}
-                    onClick={() => setActiveChatGroupId(group.id)}
-                    className={`w-full text-left p-3 transition-colors flex items-start gap-3 relative ${
+                    onClick={() => handleSelectGroup(group.id)}
+                    className={`w-full text-left p-3.5 transition-all flex items-start gap-3 relative cursor-pointer ${
                       isActive
-                        ? 'bg-emerald-50/70 border-l-4 border-emerald-600'
-                        : 'hover:bg-slate-50'
+                        ? 'bg-purple-50/80 dark:bg-purple-950/40 border-l-4 border-purple-600 dark:border-purple-500'
+                        : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
                     }`}
                   >
                     {/* Icon / Avatar */}
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-slate-100 to-slate-200 border border-slate-200 flex items-center justify-center shrink-0 shadow-2xs">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-2xs border ${
+                      isActive
+                        ? 'bg-purple-100 dark:bg-purple-900/60 border-purple-300 dark:border-purple-700'
+                        : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
+                    }`}>
                       {getGroupIcon(group.type)}
                     </div>
 
                     {/* Group info */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-1 mb-0.5">
-                        <h4 className="text-xs font-semibold text-slate-900 truncate">
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <h4 className={`text-xs font-bold truncate ${
+                          isActive ? 'text-purple-950 dark:text-purple-200' : 'text-slate-900 dark:text-white'
+                        }`}>
                           {group.name}
                         </h4>
-                        <span className="text-[10px] text-slate-400 whitespace-nowrap">
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 whitespace-nowrap">
                           {group.lastMessage?.timestamp || ''}
                         </span>
                       </div>
 
                       {/* Last Message Snippet */}
-                      <p className="text-[11px] text-slate-500 truncate flex items-center gap-1">
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 truncate flex items-center gap-1">
                         {group.lastMessage ? (
                           <>
-                            <span className="font-medium text-slate-700">
+                            <span className="font-semibold text-slate-800 dark:text-slate-200">
                               {group.lastMessage.senderName.split(' ')[0]}:
                             </span>{' '}
                             {group.lastMessage.isAnnouncement ? '📢 ' : ''}
                             {group.lastMessage.content}
                           </>
                         ) : (
-                          <span className="italic text-slate-400">No messages yet</span>
+                          <span className="italic text-slate-400 dark:text-slate-500">No messages yet</span>
                         )}
                       </p>
 
                       {/* Group badges & status */}
-                      <div className="flex items-center gap-1.5 mt-1.5">
+                      <div className="flex items-center gap-1.5 mt-2">
                         <span
-                          className={`text-[9px] font-semibold px-1.5 py-0.2 rounded border ${getGroupBadgeColor(
+                          className={`text-[9px] font-bold px-2 py-0.5 rounded-md border ${getGroupBadgeStyle(
                             group.type
                           )}`}
                         >
                           {group.type}
                         </span>
-                        <span className="text-[10px] text-slate-400 flex items-center gap-0.5">
-                          <Users className="w-3 h-3" /> {group.members.length}
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                          <Users className="w-3 h-3 text-slate-400" /> {group.members.length}
                         </span>
                         {group.isMutedForCurrentUser && (
-                          <BellOff className="w-3 h-3 text-slate-400 ml-auto" />
+                          <BellOff className="w-3 h-3 text-amber-500 dark:text-amber-400 ml-auto" />
                         )}
                         {(group.unreadCount || 0) > 0 && !group.isMutedForCurrentUser && (
-                          <span className="ml-auto bg-emerald-600 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full shadow-2xs">
+                          <span className="ml-auto bg-purple-600 text-white text-[10px] font-extrabold px-1.5 py-0.2 rounded-full shadow-2xs">
                             {group.unreadCount}
                           </span>
                         )}
@@ -381,20 +537,33 @@ export const ChatModule: React.FC = () => {
 
         {/* CENTER COLUMN: Active Chat Panel */}
         {activeGroup ? (
-          <div className="flex-1 flex flex-col bg-white overflow-hidden">
+          <div
+            className={`flex-1 flex flex-col bg-white dark:bg-slate-900 overflow-hidden ${
+              mobileActiveView === 'list' ? 'hidden md:flex' : 'flex'
+            }`}
+          >
             {/* Active Group Header */}
-            <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between bg-slate-50/70 shrink-0">
+            <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/80 dark:bg-slate-900/90 shrink-0">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-2xs">
+                {/* Mobile Back Button */}
+                <button
+                  onClick={() => setMobileActiveView('list')}
+                  className="md:hidden p-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800"
+                  title="Back to channel list"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/80 flex items-center justify-center shadow-2xs shrink-0">
                   {getGroupIcon(activeGroup.type)}
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-slate-900 truncate">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">
                       {activeGroup.name}
                     </h3>
                     <span
-                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getGroupBadgeColor(
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-md border shrink-0 ${getGroupBadgeStyle(
                         activeGroup.type
                       )}`}
                     >
@@ -403,8 +572,11 @@ export const ChatModule: React.FC = () => {
                         : activeGroup.department || activeGroup.subject || activeGroup.targetClass || activeGroup.type}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-500 truncate flex items-center gap-1.5 mt-0.5">
-                    <span>{activeGroup.members.length} faculty members</span>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate flex items-center gap-1.5 mt-0.5">
+                    <span className="flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                      {activeGroup.members.length} faculty members
+                    </span>
                     <span>•</span>
                     <span className="truncate">
                       {activeGroup.members.slice(0, 3).map((m) => m.teacherName).join(', ')}
@@ -419,8 +591,8 @@ export const ChatModule: React.FC = () => {
                 {/* Search In Chat */}
                 <div className="relative">
                   {isSearchingMessages ? (
-                    <div className="flex items-center bg-white border border-slate-300 rounded-lg px-2 py-1 shadow-2xs">
-                      <Search className="w-3.5 h-3.5 text-slate-400 mr-1.5" />
+                    <div className="flex items-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1.5 shadow-2xs">
+                      <Search className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 mr-1.5" />
                       <input
                         type="text"
                         value={messageSearchQuery}
@@ -428,8 +600,8 @@ export const ChatModule: React.FC = () => {
                           setMessageSearchQuery(e.target.value);
                           fetchChatMessages(activeGroup.id, e.target.value);
                         }}
-                        placeholder="Search conversation..."
-                        className="text-xs outline-hidden w-36"
+                        placeholder="Search chat..."
+                        className="text-xs text-slate-900 dark:text-white outline-none w-32 sm:w-44 bg-transparent"
                         autoFocus
                       />
                       <button
@@ -438,7 +610,7 @@ export const ChatModule: React.FC = () => {
                           setMessageSearchQuery('');
                           fetchChatMessages(activeGroup.id);
                         }}
-                        className="text-slate-400 hover:text-slate-600 ml-1"
+                        className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 ml-1 p-0.5"
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -447,7 +619,7 @@ export const ChatModule: React.FC = () => {
                     <button
                       id="search-in-chat-btn"
                       onClick={() => setIsSearchingMessages(true)}
-                      className="p-2 text-slate-600 hover:bg-slate-200/70 rounded-lg transition-colors"
+                      className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                       title="Search messages in group"
                     >
                       <Search className="w-4 h-4" />
@@ -459,12 +631,12 @@ export const ChatModule: React.FC = () => {
                 <button
                   id="mute-group-btn"
                   onClick={() => toggleMuteGroup(activeGroup.id)}
-                  className={`p-2 rounded-lg transition-colors ${
+                  className={`p-2 rounded-xl transition-colors cursor-pointer ${
                     activeGroup.isMutedForCurrentUser
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'text-slate-600 hover:bg-slate-200/70'
+                      ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800'
                   }`}
-                  title={activeGroup.isMutedForCurrentUser ? 'Unmute Group' : 'Mute Notifications'}
+                  title={activeGroup.isMutedForCurrentUser ? 'Unmute Channel' : 'Mute Notifications'}
                 >
                   {activeGroup.isMutedForCurrentUser ? (
                     <BellOff className="w-4 h-4" />
@@ -477,10 +649,10 @@ export const ChatModule: React.FC = () => {
                 <button
                   id="toggle-group-members-btn"
                   onClick={() => setShowMemberDrawer(!showMemberDrawer)}
-                  className={`p-2 rounded-lg transition-colors ${
+                  className={`p-2 rounded-xl transition-colors cursor-pointer ${
                     showMemberDrawer
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : 'text-slate-600 hover:bg-slate-200/70'
+                      ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 ring-1 ring-purple-300 dark:ring-purple-700'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800'
                   }`}
                   title="Group Members & Details"
                 >
@@ -490,15 +662,15 @@ export const ChatModule: React.FC = () => {
             </div>
 
             {/* Messages Feed Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
-              {/* Security Reminder Box */}
-              <div className="bg-emerald-50/90 border border-emerald-200 rounded-xl p-3 text-center max-w-xl mx-auto">
-                <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-900">
-                  <ShieldAlert className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Teacher-to-Teacher Confidential Communication</span>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/60 dark:bg-slate-950/60">
+              {/* Security Reminder Card */}
+              <div className="bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-800/60 rounded-2xl p-3 text-center max-w-xl mx-auto shadow-2xs">
+                <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-purple-900 dark:text-purple-200">
+                  <ShieldAlert className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                  <span>Confidential Faculty Communication</span>
                 </div>
-                <p className="text-[11px] text-emerald-700 mt-0.5">
-                  Created {activeGroup.createdAt} by {activeGroup.createdByName}. All messages are isolated from student & parent profiles.
+                <p className="text-[11px] text-purple-700 dark:text-purple-300 mt-0.5">
+                  Created {activeGroup.createdAt} by {activeGroup.createdByName}. Strictly isolated from student & parent views.
                 </p>
               </div>
 
@@ -513,8 +685,8 @@ export const ChatModule: React.FC = () => {
 
                 if (isSystem) {
                   return (
-                    <div key={msg.id} className="flex justify-center my-2">
-                      <span className="bg-slate-200/80 text-slate-600 text-[11px] px-3 py-1 rounded-full">
+                    <div key={msg.id} className="flex justify-center my-3">
+                      <span className="bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-medium px-3 py-1 rounded-full shadow-2xs">
                         {msg.content}
                       </span>
                     </div>
@@ -529,44 +701,46 @@ export const ChatModule: React.FC = () => {
                       isCurrentUser ? 'flex-row-reverse' : 'flex-row'
                     }`}
                   >
-                    {/* Avatar */}
+                    {/* Avatar with subtle active status */}
                     <UserAvatar
                       name={msg.senderName}
                       avatarUrl={msg.senderAvatar}
                       size="sm"
+                      status="Active"
+                      showStatus={true}
                     />
 
                     {/* Bubble Content */}
                     <div
-                      className={`max-w-[75%] sm:max-w-[65%] flex flex-col ${
+                      className={`max-w-[85%] sm:max-w-[70%] flex flex-col ${
                         isCurrentUser ? 'items-end' : 'items-start'
                       }`}
                     >
                       {/* Sender Meta Info */}
                       <div className="flex items-center gap-1.5 mb-1 text-[11px]">
-                        <span className="font-semibold text-slate-800">{msg.senderName}</span>
+                        <span className="font-bold text-slate-800 dark:text-slate-200">{msg.senderName}</span>
                         {msg.senderRole === 'Admin' ? (
-                          <span className="bg-purple-100 text-purple-800 text-[9px] font-bold px-1.5 py-0.2 rounded border border-purple-200">
+                          <span className="bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-[9px] font-bold px-1.5 py-0.2 rounded border border-purple-200 dark:border-purple-800">
                             Admin
                           </span>
                         ) : (
-                          <span className="text-slate-400 text-[10px]">
+                          <span className="text-slate-500 dark:text-slate-400 text-[10px]">
                             {msg.senderDesignation || 'Faculty'}
                           </span>
                         )}
-                        <span className="text-slate-400 text-[10px]">• {msg.timestamp}</span>
+                        <span className="text-slate-400 dark:text-slate-500 text-[10px]">• {msg.timestamp}</span>
                       </div>
 
                       {/* Replying-to Preview */}
                       {msg.replyTo && (
                         <div
-                          className={`mb-1 p-2 rounded-lg text-xs border-l-2 bg-slate-100 text-slate-600 max-w-full truncate ${
+                          className={`mb-1 p-2 rounded-xl text-xs border-l-2 max-w-full truncate ${
                             isCurrentUser
-                              ? 'border-emerald-600 bg-emerald-50/50'
-                              : 'border-slate-400'
+                              ? 'border-purple-400 bg-purple-900/30 text-purple-100'
+                              : 'border-purple-500 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                           }`}
                         >
-                          <span className="font-semibold text-slate-700 block text-[10px]">
+                          <span className="font-bold text-[10px] opacity-85 block">
                             Replying to {msg.replyTo.senderName}:
                           </span>
                           <p className="truncate text-[11px]">{msg.replyTo.content}</p>
@@ -575,49 +749,90 @@ export const ChatModule: React.FC = () => {
 
                       {/* Main Message Box */}
                       <div
-                        className={`rounded-2xl p-3 text-xs shadow-2xs relative ${
+                        className={`rounded-2xl p-3.5 text-xs shadow-xs relative transition-all ${
                           msg.isAnnouncement
-                            ? 'bg-amber-50 border-2 border-amber-300 text-amber-950 font-medium'
+                            ? 'bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 text-amber-950 dark:text-amber-100 font-medium'
                             : isCurrentUser
-                            ? 'bg-emerald-700 text-white rounded-tr-xs'
-                            : 'bg-white border border-slate-200 text-slate-800 rounded-tl-xs'
+                            ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-tr-xs shadow-md shadow-purple-600/15'
+                            : 'bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 text-slate-900 dark:text-white rounded-tl-xs'
                         }`}
                       >
                         {/* Announcement Header */}
                         {msg.isAnnouncement && (
-                          <div className="flex items-center gap-1 text-[11px] font-bold text-amber-800 pb-1 mb-1.5 border-b border-amber-200">
-                            <Megaphone className="w-3.5 h-3.5 text-amber-600" />
+                          <div className="flex items-center gap-1.5 text-[11px] font-extrabold text-amber-800 dark:text-amber-300 pb-1.5 mb-2 border-b border-amber-200 dark:border-amber-800/80">
+                            <Megaphone className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                             <span>FACULTY ANNOUNCEMENT</span>
                           </div>
                         )}
 
                         {/* Content text */}
-                        <p className="whitespace-pre-wrap leading-relaxed select-text">{msg.content}</p>
+                        <div className="flex flex-wrap items-baseline gap-1.5">
+                          <p className="whitespace-pre-wrap leading-relaxed select-text font-normal inline">{msg.content}</p>
+                          {msg.isEdited && (
+                            <span
+                              className={`text-[9px] font-semibold italic ${
+                                isCurrentUser ? 'text-purple-200' : 'text-slate-400 dark:text-slate-500'
+                              }`}
+                            >
+                              (edited)
+                            </span>
+                          )}
+                        </div>
 
                         {/* Attachments */}
                         {msg.attachments && msg.attachments.length > 0 && (
-                          <div className="mt-2 space-y-1.5">
+                          <div className="mt-2.5 space-y-1.5">
                             {msg.attachments.map((att, attIdx) => (
                               <div
                                 key={att.id || `att-${msg.id}-${attIdx}`}
-                                className={`flex items-center justify-between p-2 rounded-lg text-xs gap-3 ${
+                                className={`flex items-center justify-between p-2.5 rounded-xl text-xs gap-3 transition-colors ${
                                   isCurrentUser
-                                    ? 'bg-emerald-800/60 border border-emerald-600 text-emerald-50'
-                                    : 'bg-slate-100 border border-slate-200 text-slate-700'
+                                    ? 'bg-white/15 border border-white/20 text-white'
+                                    : 'bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200'
                                 }`}
                               >
-                                <div className="flex items-center gap-2 truncate">
-                                  <FileText className="w-4 h-4 shrink-0" />
-                                  <span className="truncate font-medium">{att.name}</span>
-                                  <span className="text-[10px] opacity-75">({att.size})</span>
-                                </div>
                                 <button
-                                  onClick={() => addToast(`Downloading ${att.name}...`, 'info')}
-                                  className="p-1 hover:bg-black/10 rounded transition-colors"
-                                  title="Download"
+                                  type="button"
+                                  onClick={() =>
+                                    setPreviewAttachment({
+                                      name: att.name,
+                                      size: att.size,
+                                      type: att.type,
+                                      fileData: att.fileData,
+                                    })
+                                  }
+                                  className="flex items-center gap-2 truncate text-left hover:underline cursor-pointer flex-1"
                                 >
-                                  <Download className="w-3.5 h-3.5" />
+                                  <FileText className="w-4 h-4 shrink-0 text-purple-400" />
+                                  <span className="truncate font-semibold">{att.name}</span>
+                                  <span className="text-[10px] opacity-75">({att.size})</span>
                                 </button>
+
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setPreviewAttachment({
+                                        name: att.name,
+                                        size: att.size,
+                                        type: att.type,
+                                        fileData: att.fileData,
+                                      })
+                                    }
+                                    className="p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                                    title="Preview Attachment"
+                                  >
+                                    <Eye className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => downloadFile(att.name, att.fileData, att.type)}
+                                    className="p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
+                                    title="Download File"
+                                  >
+                                    <Download className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -626,67 +841,103 @@ export const ChatModule: React.FC = () => {
 
                       {/* Emoji Reactions display */}
                       {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-1">
+                        <div className="flex flex-wrap gap-1 mt-1.5">
                           {Object.entries(msg.reactions).map(([emoji, usersList], rIdx) => {
                             const users = (usersList || []) as string[];
+                            const hasReacted = users.includes(currentUser?.name || '');
                             return (
                               <button
                                 key={`reaction-${emoji}-${msg.id}-${rIdx}`}
                                 onClick={() => toggleMessageReaction(activeGroup.id, msg.id, emoji)}
-                                className={`flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full border shadow-2xs transition-all ${
-                                  users.includes(currentUser?.name || '')
-                                    ? 'bg-emerald-100 border-emerald-300 text-emerald-800'
-                                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                                className={`flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full border shadow-2xs transition-all cursor-pointer ${
+                                  hasReacted
+                                    ? 'bg-purple-100 dark:bg-purple-950/70 border-purple-300 dark:border-purple-700 text-purple-900 dark:text-purple-200 font-bold'
+                                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                                 }`}
                                 title={`Reacted by: ${users.join(', ')}`}
                               >
                                 <span>{emoji}</span>
-                                <span className="font-semibold text-[10px]">{users.length}</span>
+                                <span className="text-[10px]">{users.length}</span>
                               </button>
                             );
                           })}
                         </div>
                       )}
 
-                      {/* Action Bar (Hover Overlay) */}
+                        {/* Action Bar (Hover Overlay) */}
                       <div
-                        className={`flex items-center gap-1 mt-1 opacity-0 group-hover:opacity-100 transition-opacity ${
+                        className={`flex items-center gap-1.5 mt-1 opacity-0 group-hover:opacity-100 transition-opacity ${
                           isCurrentUser ? 'flex-row-reverse' : 'flex-row'
                         }`}
                       >
                         {/* Quick Reaction Pills */}
-                        <div className="flex items-center bg-white border border-slate-200 rounded-full px-1.5 py-0.5 shadow-xs">
+                        <div className="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full px-1.5 py-0.5 shadow-xs">
                           {COMMON_EMOJIS.slice(0, 4).map((emoji, eIdx) => (
                             <button
                               key={`quick-${emoji}-${msg.id}-${eIdx}`}
                               onClick={() => toggleMessageReaction(activeGroup.id, msg.id, emoji)}
-                              className="text-xs hover:scale-125 px-1 transition-transform"
+                              className="text-xs hover:scale-125 px-1 py-0.5 transition-transform cursor-pointer"
                             >
                               {emoji}
                             </button>
                           ))}
                         </div>
 
-                        {/* Reply button */}
+                        {/* Reply in Thread button */}
+                        <button
+                          onClick={() => setActiveThreadPostId(msg.id)}
+                          className="p-1.5 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-2xs transition-colors cursor-pointer"
+                          title="Reply in thread"
+                        >
+                          <MessageSquare className="w-3 h-3" />
+                        </button>
+
+                        {/* Quote Reply button */}
                         <button
                           onClick={() => setReplyingTo(msg)}
-                          className="p-1 text-slate-400 hover:text-slate-700 bg-white border border-slate-200 rounded-full shadow-2xs transition-colors"
-                          title="Reply to message"
+                          className="p-1.5 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-2xs transition-colors cursor-pointer"
+                          title="Quote reply"
                         >
                           <Reply className="w-3 h-3" />
                         </button>
+
+                        {/* Edit button (for sender or Admin) */}
+                        {(isCurrentUser || activeRole === 'Admin') && (
+                          <button
+                            onClick={() => handleStartEditMessage(msg)}
+                            className="p-1.5 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-2xs transition-colors cursor-pointer"
+                            title="Edit message"
+                          >
+                            <Edit className="w-3 h-3" />
+                          </button>
+                        )}
 
                         {/* Delete (if owner/sender/admin) */}
                         {(isCurrentUser || activeRole === 'Admin') && (
                           <button
                             onClick={() => deleteChatMessage(activeGroup.id, msg.id)}
-                            className="p-1 text-slate-400 hover:text-red-600 bg-white border border-slate-200 rounded-full shadow-2xs transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-2xs transition-colors cursor-pointer"
                             title="Delete message"
                           >
                             <Trash2 className="w-3 h-3" />
                           </button>
                         )}
                       </div>
+
+                      {/* Thread Replies Counter Button */}
+                      {((msg.replies && msg.replies.length > 0) || (msg.replyCount && msg.replyCount > 0)) && (
+                        <button
+                          onClick={() => setActiveThreadPostId(msg.id)}
+                          className="flex items-center gap-1.5 text-xs text-purple-700 dark:text-purple-300 font-semibold hover:underline mt-1.5 cursor-pointer bg-purple-50/90 dark:bg-purple-950/60 px-2.5 py-1 rounded-xl border border-purple-200/80 dark:border-purple-800/80 transition-all hover:border-purple-400 shadow-2xs"
+                        >
+                          <MessageSquare className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                          <span>
+                            {msg.replies?.length || msg.replyCount}{' '}
+                            {(msg.replies?.length || msg.replyCount) === 1 ? 'reply' : 'replies'}
+                          </span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">• View thread</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
@@ -696,72 +947,120 @@ export const ChatModule: React.FC = () => {
 
             {/* Replying-To Banner */}
             {replyingTo && (
-              <div className="px-4 py-2 bg-emerald-50 border-t border-emerald-200 flex items-center justify-between text-xs text-emerald-900">
+              <div className="px-4 py-2 bg-purple-50 dark:bg-purple-950/40 border-t border-purple-200 dark:border-purple-800/80 flex items-center justify-between text-xs text-purple-900 dark:text-purple-200">
                 <div className="flex items-center gap-2 truncate">
-                  <Reply className="w-4 h-4 text-emerald-700 shrink-0" />
-                  <span className="font-semibold">{replyingTo.senderName}:</span>
-                  <span className="truncate text-emerald-700">{replyingTo.content}</span>
+                  <Reply className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                  <span className="font-bold">{replyingTo.senderName}:</span>
+                  <span className="truncate text-purple-700 dark:text-purple-300">{replyingTo.content}</span>
                 </div>
                 <button
                   onClick={() => setReplyingTo(null)}
-                  className="text-emerald-700 hover:text-emerald-900 ml-2"
+                  className="text-purple-700 dark:text-purple-300 hover:text-purple-900 dark:hover:text-white ml-2 p-1 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             )}
 
-            {/* Pending Mock Attachment Banner */}
-            {mockAttachment && (
-              <div className="px-4 py-2 bg-slate-100 border-t border-slate-200 flex items-center justify-between text-xs text-slate-700">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-slate-600" />
-                  <span className="font-semibold">{mockAttachment.name}</span>
-                  <span className="text-[10px] text-slate-500">({mockAttachment.size})</span>
+            {/* Editing-Message Banner */}
+            {editingMessage && (
+              <div className="px-4 py-2 bg-amber-50 dark:bg-amber-950/40 border-t border-amber-200 dark:border-amber-800/80 flex items-center justify-between text-xs text-amber-900 dark:text-amber-200">
+                <div className="flex items-center gap-2 truncate">
+                  <Edit className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span className="font-bold">Editing Message:</span>
+                  <span className="truncate text-amber-700 dark:text-amber-300">{editingMessage.content}</span>
                 </div>
                 <button
-                  onClick={() => setMockAttachment(null)}
-                  className="text-slate-500 hover:text-slate-700"
+                  onClick={handleCancelEditMessage}
+                  className="text-amber-700 dark:text-amber-300 hover:text-amber-900 dark:hover:text-white ml-2 p-1 font-semibold flex items-center gap-1 cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                  <span className="text-[11px]">Cancel</span>
+                </button>
+              </div>
+            )}
+
+            {/* Pending Real Attachment Banner */}
+            {pendingAttachment && (
+              <div className="px-4 py-2 bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs text-slate-800 dark:text-slate-200">
+                <div className="flex items-center gap-2 truncate">
+                  <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                  <span className="font-bold truncate">{pendingAttachment.name}</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 shrink-0">
+                    ({pendingAttachment.size})
+                  </span>
+                </div>
+                <button
+                  onClick={() => setPendingAttachment(null)}
+                  className="text-slate-500 hover:text-slate-800 dark:hover:text-white p-1 cursor-pointer shrink-0"
                 >
                   <X className="w-4 h-4" />
                 </button>
+              </div>
+            )}
+
+            {/* Hidden File Input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  handleProcessFile(file);
+                  e.target.value = '';
+                }
+              }}
+              accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.webp,.svg"
+            />
+
+            {/* Upload Progress Bar */}
+            {isUploadingMain && (
+              <div className="px-4 py-2 bg-purple-50 dark:bg-purple-950/60 border-t border-purple-200 dark:border-purple-800 text-xs">
+                <div className="flex items-center justify-between mb-1 text-purple-900 dark:text-purple-200 font-semibold">
+                  <span className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-purple-600 animate-spin" />
+                    <span>Validating & uploading attachment...</span>
+                  </span>
+                  <span>{mainUploadProgress}%</span>
+                </div>
+                <div className="w-full bg-purple-200 dark:bg-purple-900 rounded-full h-1.5 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-purple-600 to-indigo-600 h-1.5 rounded-full transition-all duration-150"
+                    style={{ width: `${mainUploadProgress}%` }}
+                  ></div>
+                </div>
               </div>
             )}
 
             {/* Chat Input Bar */}
             <form
               onSubmit={handleSendMessage}
-              className="p-3 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0"
+              className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center gap-2 shrink-0"
             >
               {/* Announcement Mode Toggle */}
               <button
                 type="button"
                 id="toggle-announcement-mode-btn"
                 onClick={() => setIsAnnouncementMode(!isAnnouncementMode)}
-                className={`p-2 rounded-lg transition-colors text-xs font-semibold flex items-center gap-1 ${
+                className={`p-2 rounded-xl transition-all text-xs font-bold flex items-center gap-1.5 cursor-pointer ${
                   isAnnouncementMode
-                    ? 'bg-amber-500 text-white shadow-2xs ring-2 ring-amber-300'
-                    : 'text-slate-500 hover:bg-slate-100'
+                    ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/30 ring-2 ring-amber-300 dark:ring-amber-600'
+                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                 }`}
-                title="Toggle Announcement formatting"
+                title="Broadcast as Faculty Announcement"
               >
                 <Megaphone className="w-4 h-4" />
                 <span className="hidden sm:inline">Announcement</span>
               </button>
 
-              {/* Attach File simulation */}
+              {/* Attach File Button */}
               <button
                 type="button"
                 id="attach-file-btn"
-                onClick={() =>
-                  setMockAttachment({
-                    name: 'Faculty_Lesson_Plan_Q3.pdf',
-                    size: '245 KB',
-                    type: 'pdf',
-                  })
-                }
-                className="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors"
-                title="Attach Document / Lesson Plan"
+                onClick={() => fileInputRef.current?.click()}
+                className="p-2 text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                title="Upload Document / File (PDF, DOC, PPT, XLS, Image)"
               >
                 <Paperclip className="w-4 h-4" />
               </button>
@@ -773,50 +1072,78 @@ export const ChatModule: React.FC = () => {
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
                 placeholder={
-                  isAnnouncementMode
+                  editingMessage
+                    ? 'Edit your message...'
+                    : isAnnouncementMode
                     ? 'Broadcast an important faculty announcement...'
                     : `Message ${activeGroup.name}...`
                 }
-                className={`flex-1 px-4 py-2 border rounded-xl text-xs outline-hidden focus:ring-2 transition-all ${
-                  isAnnouncementMode
-                    ? 'border-amber-400 bg-amber-50/50 focus:ring-amber-400'
-                    : 'border-slate-200 bg-slate-50 focus:bg-white focus:ring-emerald-500'
+                className={`flex-1 px-4 py-2.5 border rounded-xl text-xs text-slate-900 dark:text-white outline-none focus:ring-2 transition-all ${
+                  editingMessage
+                    ? 'border-amber-400 bg-amber-50/30 dark:bg-amber-950/20 focus:ring-amber-400'
+                    : isAnnouncementMode
+                    ? 'border-amber-400 bg-amber-50/50 dark:bg-amber-950/20 focus:ring-amber-400 placeholder:text-amber-800/60 dark:placeholder:text-amber-300/60'
+                    : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 focus:bg-white dark:focus:bg-slate-800 focus:ring-purple-500 placeholder:text-slate-400 dark:placeholder:text-slate-500'
                 }`}
               />
 
-              {/* Send Button */}
+              {/* Send or Save Button */}
               <button
                 type="submit"
                 id="send-chat-message-btn"
-                disabled={!messageInput.trim() && !mockAttachment}
-                className="bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 text-white p-2.5 rounded-xl shadow-xs transition-colors"
+                disabled={!messageInput.trim() && !pendingAttachment}
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-40 text-white p-2.5 rounded-xl shadow-md shadow-purple-600/20 transition-all cursor-pointer"
+                title={editingMessage ? 'Save Changes' : 'Send Message'}
               >
-                <Send className="w-4 h-4" />
+                {editingMessage ? <CheckCircle2 className="w-4 h-4" /> : <Send className="w-4 h-4" />}
               </button>
             </form>
           </div>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-50 text-slate-400">
-            <MessageSquare className="w-12 h-12 mb-3 opacity-30 text-emerald-700" />
-            <h3 className="text-sm font-semibold text-slate-700">Select a Teacher Chat Group</h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-sm text-center">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-50 dark:bg-slate-950 text-slate-400 dark:text-slate-500">
+            <MessageSquare className="w-12 h-12 mb-3 opacity-30 text-purple-600" />
+            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Select a Teacher Channel</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm text-center">
               Choose a channel on the left to participate in real-time faculty discussions, share announcements, or coordinate curriculum.
             </p>
           </div>
         )}
 
+        {/* THREAD DRAWER */}
+        {activeThreadPostId && activeGroup && (
+          (() => {
+            const threadPost = activeChatMessages.find((m) => m.id === activeThreadPostId);
+            if (!threadPost) return null;
+            return (
+              <ChatThreadDrawer
+                post={threadPost}
+                groupId={activeGroup.id}
+                onClose={() => setActiveThreadPostId(null)}
+                onPreviewAttachment={(att) =>
+                  setPreviewAttachment({
+                    name: att.name,
+                    size: att.size,
+                    type: att.type,
+                    fileData: att.fileData,
+                  })
+                }
+              />
+            );
+          })()
+        )}
+
         {/* RIGHT COLUMN: Collapsible Group Info & Faculty Members Drawer */}
         {showMemberDrawer && activeGroup && (
-          <div className="w-80 border-l border-slate-200 bg-white flex flex-col shrink-0">
+          <div className="w-full sm:w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col shrink-0 absolute sm:static right-0 top-0 bottom-0 z-20 shadow-lg sm:shadow-none animate-in slide-in-from-right duration-200">
             {/* Header */}
-            <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-              <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                <Info className="w-4 h-4 text-slate-600" />
+            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/90">
+              <h4 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Info className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                 <span>Group Information</span>
               </h4>
               <button
                 onClick={() => setShowMemberDrawer(false)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -825,17 +1152,17 @@ export const ChatModule: React.FC = () => {
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-4 space-y-5">
               {/* Group Overview Card */}
-              <div className="text-center pb-4 border-b border-slate-100">
-                <div className="w-16 h-16 rounded-2xl bg-emerald-100 border border-emerald-200 mx-auto flex items-center justify-center shadow-2xs mb-2">
+              <div className="text-center pb-4 border-b border-slate-100 dark:border-slate-800">
+                <div className="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/80 mx-auto flex items-center justify-center shadow-2xs mb-2">
                   {getGroupIcon(activeGroup.type)}
                 </div>
-                <h3 className="text-sm font-bold text-slate-900">{activeGroup.name}</h3>
-                <p className="text-xs text-slate-500 mt-1">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">{activeGroup.name}</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   {activeGroup.description || 'Dedicated faculty collaboration workspace.'}
                 </p>
                 <div className="flex items-center justify-center gap-2 mt-2">
                   <span
-                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getGroupBadgeColor(
+                    className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${getGroupBadgeStyle(
                       activeGroup.type
                     )}`}
                   >
@@ -847,13 +1174,14 @@ export const ChatModule: React.FC = () => {
               {/* Members Section */}
               <div>
                 <div className="flex items-center justify-between mb-2.5">
-                  <h5 className="text-xs font-bold text-slate-800">
-                    Faculty Members ({activeGroup.members.length})
+                  <h5 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                    <span>Faculty Members ({activeGroup.members.length})</span>
                   </h5>
                   {isOwnerOrMod && (
                     <button
                       onClick={() => setShowAddMemberModal(true)}
-                      className="text-xs text-emerald-700 hover:text-emerald-800 font-semibold flex items-center gap-1"
+                      className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-bold flex items-center gap-1 cursor-pointer"
                     >
                       <UserPlus className="w-3.5 h-3.5" />
                       <span>Add</span>
@@ -861,23 +1189,36 @@ export const ChatModule: React.FC = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
-                  {activeGroup.members.map((member, mIdx) => (
+                {/* Member search input */}
+                <div className="mb-2">
+                  <input
+                    type="text"
+                    placeholder="Search members..."
+                    value={memberSearchQuery}
+                    onChange={(e) => setMemberSearchQuery(e.target.value)}
+                    className="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:ring-1 focus:ring-purple-500"
+                  />
+                </div>
+
+                <div className="space-y-1.5 max-h-64 overflow-y-auto">
+                  {filteredMembers.map((member, mIdx) => (
                     <div
                       key={`member-${member.teacherId || member.teacherName}-${mIdx}`}
-                      className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-100"
+                      className="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 border border-transparent hover:border-slate-100 dark:hover:border-slate-800 transition-colors"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <UserAvatar
                           name={member.teacherName}
                           avatarUrl={member.avatar}
                           size="sm"
+                          status="Active"
+                          showStatus={true}
                         />
                         <div className="min-w-0">
-                          <p className="text-xs font-semibold text-slate-800 truncate">
+                          <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
                             {member.teacherName}
                           </p>
-                          <p className="text-[10px] text-slate-500 truncate">
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
                             {member.designation || member.role}
                           </p>
                         </div>
@@ -885,15 +1226,15 @@ export const ChatModule: React.FC = () => {
 
                       {/* Group Role Badge */}
                       {member.groupRole === 'owner' ? (
-                        <span className="text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded border border-amber-200 shrink-0">
+                        <span className="text-[9px] bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-bold px-2 py-0.5 rounded-md border border-amber-200 dark:border-amber-800/60 shrink-0">
                           Creator
                         </span>
                       ) : member.groupRole === 'moderator' ? (
-                        <span className="text-[9px] bg-blue-100 text-blue-800 font-bold px-1.5 py-0.2 rounded border border-blue-200 shrink-0">
+                        <span className="text-[9px] bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 font-bold px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-800/60 shrink-0">
                           Moderator
                         </span>
                       ) : (
-                        <span className="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded shrink-0">
+                        <span className="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium px-2 py-0.5 rounded-md shrink-0">
                           Faculty
                         </span>
                       )}
@@ -903,7 +1244,7 @@ export const ChatModule: React.FC = () => {
               </div>
 
               {/* Danger / Action Zone */}
-              <div className="pt-4 border-t border-slate-200 space-y-2">
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
                 {activeGroup.type !== 'AllTeachers' && (
                   <button
                     onClick={() => {
@@ -911,7 +1252,7 @@ export const ChatModule: React.FC = () => {
                         leaveChatGroup(activeGroup.id);
                       }
                     }}
-                    className="w-full flex items-center justify-center gap-2 text-xs font-semibold text-slate-700 hover:text-red-700 bg-slate-100 hover:bg-red-50 py-2 rounded-lg transition-colors border border-slate-200"
+                    className="w-full flex items-center justify-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 bg-slate-100 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 py-2 rounded-xl transition-colors border border-slate-200 dark:border-slate-700 cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Leave Group</span>
@@ -925,7 +1266,7 @@ export const ChatModule: React.FC = () => {
                         deleteChatGroup(activeGroup.id);
                       }
                     }}
-                    className="w-full flex items-center justify-center gap-2 text-xs font-semibold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 py-2 rounded-lg transition-colors border border-red-200"
+                    className="w-full flex items-center justify-center gap-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:text-rose-700 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-950/70 py-2 rounded-xl transition-colors border border-rose-200 dark:border-rose-900/60 cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>Delete Group (Admin/Owner)</span>
@@ -940,22 +1281,22 @@ export const ChatModule: React.FC = () => {
       {/* ADD MEMBER MODAL */}
       {showAddMemberModal && activeGroup && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-slate-200 animate-in fade-in zoom-in duration-150">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-emerald-100 text-emerald-800 rounded-lg">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-150">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/60">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 rounded-xl">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Add Faculty Member</h3>
-                  <p className="text-[11px] text-slate-500">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">Add Faculty Member</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     Invite colleagues to {activeGroup.name}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setShowAddMemberModal(false)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -963,15 +1304,15 @@ export const ChatModule: React.FC = () => {
 
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                   Select Teacher
                 </label>
                 <select
                   value={selectedMemberToAdd}
                   onChange={(e) => setSelectedMemberToAdd(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-hidden bg-white"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none bg-white dark:bg-slate-800"
                 >
-                  <option value="">-- Choose a teacher --</option>
+                  <option value="">-- Choose a faculty member --</option>
                   {teachers
                     .filter((t) => !activeGroup.members.some((m) => m.teacherId === t.id || m.teacherId === t.teacherId))
                     .map((t, tIdx) => (
@@ -982,11 +1323,11 @@ export const ChatModule: React.FC = () => {
                 </select>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowAddMemberModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -1008,8 +1349,6 @@ export const ChatModule: React.FC = () => {
                         joinedAt: new Date().toISOString().slice(0, 10),
                       };
                       const updatedMemberList = [...activeGroup.members, newMember];
-                      const { updateChatGroup } = useSchoolData as any;
-                      // Update group through context
                       await fetch(`/api/chat/groups/${activeGroup.id}`, {
                         method: 'PUT',
                         headers: {
@@ -1020,12 +1359,12 @@ export const ChatModule: React.FC = () => {
                         },
                         body: JSON.stringify({ members: updatedMemberList }),
                       });
-                      addToast(`${teacher.name} added to ${activeGroup.name}!`);
+                      addToast(`${teacher.name} added to ${activeGroup.name}!`, 'success');
                       setShowAddMemberModal(false);
                       setSelectedMemberToAdd('');
                     }
                   }}
-                  className="px-4 py-2 text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white rounded-lg shadow-xs transition-colors"
+                  className="px-4 py-2 text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white rounded-xl shadow-xs transition-colors cursor-pointer"
                 >
                   Add to Group
                 </button>
@@ -1038,22 +1377,22 @@ export const ChatModule: React.FC = () => {
       {/* CREATE NEW CHAT GROUP MODAL */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-200 animate-in fade-in zoom-in duration-150">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-emerald-100 text-emerald-800 rounded-lg">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-150">
+            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/60">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 rounded-xl">
                   <Users className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Create Teacher Chat Group</h3>
-                  <p className="text-[11px] text-slate-500">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">Create Teacher Chat Group</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     Faculty-restricted communication channel for staff collaboration
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1062,8 +1401,8 @@ export const ChatModule: React.FC = () => {
             <form onSubmit={handleCreateGroupSubmit} className="p-6 space-y-4">
               {/* Group Name */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Group Name <span className="text-red-500">*</span>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Group Name <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -1071,13 +1410,13 @@ export const ChatModule: React.FC = () => {
                   value={newGroupName}
                   onChange={(e) => setNewGroupName(e.target.value)}
                   placeholder="e.g. Science Faculty, Grade 8 Coordinators"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-hidden"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs focus:ring-2 focus:ring-purple-500 outline-none"
                 />
               </div>
 
               {/* Group Description */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                   Description / Purpose
                 </label>
                 <textarea
@@ -1085,37 +1424,37 @@ export const ChatModule: React.FC = () => {
                   value={newGroupDesc}
                   onChange={(e) => setNewGroupDesc(e.target.value)}
                   placeholder="Briefly describe the purpose of this faculty group..."
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-hidden resize-none"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs focus:ring-2 focus:ring-purple-500 outline-none resize-none"
                 />
               </div>
 
               {/* Group Type Selector */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Group Classification
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Classification
                   </label>
                   <select
                     value={newGroupType}
                     onChange={(e) => setNewGroupType(e.target.value as ChatGroupType)}
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-hidden bg-white"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none bg-white dark:bg-slate-800"
                   >
                     <option value="Department">Department Group</option>
                     <option value="Subject">Subject Group</option>
                     <option value="ClassTeacher">Class Teachers Group</option>
-                    <option value="Custom">Custom Faculty Committee</option>
+                    <option value="Custom">Custom Committee</option>
                   </select>
                 </div>
 
                 {newGroupType === 'Department' && (
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                       Department
                     </label>
                     <select
                       value={newGroupDept}
                       onChange={(e) => setNewGroupDept(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-hidden bg-white"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none bg-white dark:bg-slate-800"
                     >
                       <option value="Science">Science</option>
                       <option value="Mathematics">Mathematics</option>
@@ -1129,13 +1468,13 @@ export const ChatModule: React.FC = () => {
 
                 {newGroupType === 'Subject' && (
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                       Subject
                     </label>
                     <select
                       value={newGroupSubject}
                       onChange={(e) => setNewGroupSubject(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-hidden bg-white"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none bg-white dark:bg-slate-800"
                     >
                       <option value="Mathematics">Mathematics</option>
                       <option value="Physics">Physics</option>
@@ -1149,13 +1488,13 @@ export const ChatModule: React.FC = () => {
 
                 {newGroupType === 'ClassTeacher' && (
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Target Grade/Class
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Target Class
                     </label>
                     <select
                       value={newGroupClass}
                       onChange={(e) => setNewGroupClass(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 outline-hidden bg-white"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none bg-white dark:bg-slate-800"
                     >
                       <option value="Class 8">Class 8</option>
                       <option value="Class 9">Class 9</option>
@@ -1169,16 +1508,16 @@ export const ChatModule: React.FC = () => {
 
               {/* Select Faculty Members */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                   Invite Teachers ({selectedMemberIds.length} selected)
                 </label>
-                <div className="max-h-40 overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100 p-1">
+                <div className="max-h-40 overflow-y-auto border border-slate-200 dark:border-slate-700 rounded-xl divide-y divide-slate-100 dark:divide-slate-800 p-1 bg-slate-50 dark:bg-slate-800/50">
                   {teachers.map((t, tIdx) => {
                     const isChecked = selectedMemberIds.includes(t.id) || selectedMemberIds.includes(t.teacherId);
                     return (
                       <label
                         key={`create-group-tch-${t.id || t.teacherId || tIdx}`}
-                        className="flex items-center gap-2.5 p-1.5 hover:bg-slate-50 rounded cursor-pointer text-xs"
+                        className="flex items-center gap-2.5 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer text-xs"
                       >
                         <input
                           type="checkbox"
@@ -1191,16 +1530,12 @@ export const ChatModule: React.FC = () => {
                               setSelectedMemberIds((prev) => prev.filter((id) => id !== idToUse && id !== t.id));
                             }
                           }}
-                          className="rounded text-emerald-600 focus:ring-emerald-500"
+                          className="rounded text-purple-600 focus:ring-purple-500 cursor-pointer"
                         />
-                        <img
-                          src={t.avatar}
-                          alt={t.name}
-                          className="w-6 h-6 rounded-full object-cover"
-                        />
+                        <UserAvatar name={t.name} avatarUrl={t.avatar} size="xs" />
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-slate-800 truncate">{t.name}</p>
-                          <p className="text-[10px] text-slate-500 truncate">{t.subjects.join(', ')}</p>
+                          <p className="font-bold text-slate-900 dark:text-white truncate">{t.name}</p>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{t.subjects.join(', ')}</p>
                         </div>
                       </label>
                     );
@@ -1209,17 +1544,17 @@ export const ChatModule: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg shadow-xs transition-colors"
+                  className="px-4 py-2 text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl shadow-xs transition-colors cursor-pointer"
                 >
                   Create Group
                 </button>
@@ -1227,6 +1562,21 @@ export const ChatModule: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+      {/* Attachment Preview Modal */}
+      {previewAttachment && (
+        <FilePreviewModal
+          isOpen={!!previewAttachment}
+          onClose={() => setPreviewAttachment(null)}
+          title={previewAttachment.name}
+          subtitle={`Chat Attachment • ${previewAttachment.size}`}
+          fileName={previewAttachment.name}
+          fileType={previewAttachment.type}
+          fileSize={previewAttachment.size}
+          uploadedBy="Teacher Chat Channel"
+          uploadedAt="Recent"
+          fileData={previewAttachment.fileData}
+        />
       )}
     </div>
   );
