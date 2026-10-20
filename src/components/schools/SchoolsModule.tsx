@@ -39,11 +39,13 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { School } from '../../types';
+import { SchoolOwnerOverview } from './SchoolOwnerOverview';
 
 export const SchoolsModule: React.FC = () => {
   const {
     currentUser,
     isSuperAdmin,
+    activeRole,
     schools,
     activeSchoolId,
     setActiveSchoolId,
@@ -52,6 +54,11 @@ export const SchoolsModule: React.FC = () => {
     deleteSchool,
     toggleSchoolStatus,
   } = useAuth();
+
+  // If the active user is not the Platform Super Admin, show their specific School Overview
+  if (!isSuperAdmin) {
+    return <SchoolOwnerOverview />;
+  }
 
   const {
     students,
@@ -237,13 +244,13 @@ export const SchoolsModule: React.FC = () => {
   return (
     <div id="schools-module" className="space-y-6">
       {/* Top Banner: Super Admin Authority & Active Tenant Context */}
-      <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white rounded-2xl p-6 shadow-sm border border-purple-800/40 relative overflow-hidden">
-        <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="bg-gradient-to-r from-[#122E52] via-[#0B1B32] to-[#122E52] text-white rounded-2xl p-6 shadow-sm border border-[#1E3A63] relative overflow-hidden">
+        <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-64 h-64 bg-[#EFF6FF]0/10 rounded-full blur-3xl pointer-events-none" />
         
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-purple-300 shadow-inner">
+              <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-[#F7A914] shadow-inner">
                 <Building2 className="w-5 h-5" />
               </div>
               <div>
@@ -255,8 +262,8 @@ export const SchoolsModule: React.FC = () => {
                     Super Admin Console
                   </span>
                 </div>
-                <p className="text-xs text-purple-200/80 mt-0.5">
-                  Multi-tenant isolation engine: Every student, teacher, attendance record, and chat group is cryptographically bound to its <code className="bg-white/10 px-1 py-0.5 rounded text-purple-200">school_id</code>.
+                <p className="text-xs text-[#F7A914]/80 mt-0.5">
+                  Multi-tenant isolation engine: Every student, teacher, attendance record, and chat group is cryptographically bound to its <code className="bg-white/10 px-1 py-0.5 rounded text-[#F7A914]">school_id</code>.
                 </p>
               </div>
             </div>
@@ -267,7 +274,7 @@ export const SchoolsModule: React.FC = () => {
               <button
                 id="btn-add-new-school"
                 onClick={handleOpenCreateModal}
-                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md shadow-purple-950/40 transition-all cursor-pointer border border-purple-400/30"
+                className="flex items-center gap-2 btn-gold"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add New School</span>
@@ -279,8 +286,8 @@ export const SchoolsModule: React.FC = () => {
         {/* Multi-School Tenant Switcher Bar for Super Admin */}
         <div className="mt-6 pt-5 border-t border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <SlidersHorizontal className="w-4 h-4 text-purple-300" />
-            <span className="text-xs font-semibold text-purple-200">Active Tenant Scope:</span>
+            <SlidersHorizontal className="w-4 h-4 text-[#F7A914]" />
+            <span className="text-xs font-semibold text-[#F7A914]">Active Tenant Scope:</span>
             <div className="flex flex-wrap items-center gap-2">
               {schools.map((school) => {
                 const isActive = activeSchoolId === school.id;
@@ -294,8 +301,8 @@ export const SchoolsModule: React.FC = () => {
                     }}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       isActive
-                        ? 'bg-purple-500 text-white shadow-sm ring-2 ring-white/40'
-                        : 'bg-white/10 text-purple-100 hover:bg-white/20 border border-white/10'
+                        ? 'bg-[#EFF6FF]0 text-white shadow-sm ring-2 ring-white/40'
+                        : 'bg-white/10 text-slate-200 hover:bg-white/20 border border-white/10'
                     }`}
                   >
                     <Building2 className="w-3.5 h-3.5" />
@@ -307,7 +314,7 @@ export const SchoolsModule: React.FC = () => {
             </div>
           </div>
 
-          <div className="text-[11px] text-purple-200/70 flex items-center gap-2">
+          <div className="text-[11px] text-[#F7A914]/70 flex items-center gap-2">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
             <span>Strict Tenant RLS Enforced</span>
           </div>
@@ -319,7 +326,7 @@ export const SchoolsModule: React.FC = () => {
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Total Institutions</span>
-            <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
@@ -333,13 +340,13 @@ export const SchoolsModule: React.FC = () => {
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Global Student Base</span>
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center">
               <GraduationCap className="w-4 h-4" />
             </div>
           </div>
           <div className="text-2xl font-black text-slate-900 dark:text-white">{totalStudentsAcrossPlatform}</div>
           <div className="flex items-center gap-1.5 mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-            <Layers className="w-3 h-3 text-indigo-500" />
+            <Layers className="w-3 h-3 text-[#3B82F6]" />
             <span>Isolated per school domain</span>
           </div>
         </div>
@@ -384,7 +391,7 @@ export const SchoolsModule: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, code, principal, city..."
-              className="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-purple-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all"
+              className="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-[#3B82F6] focus:bg-white dark:focus:bg-slate-800 outline-none transition-all"
             />
             {searchQuery && (
               <button
@@ -403,7 +410,7 @@ export const SchoolsModule: React.FC = () => {
                 onClick={() => setStatusFilter(st)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   statusFilter === st
-                    ? 'bg-purple-600 text-white shadow-xs'
+                    ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] font-bold shadow-xs'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                 }`}
               >
@@ -418,7 +425,7 @@ export const SchoolsModule: React.FC = () => {
             onClick={() => setViewMode('cards')}
             className={`p-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               viewMode === 'cards'
-                ? 'bg-purple-100 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
+                ? 'bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] border border-[#1E3A63]'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
             }`}
             title="Grid View"
@@ -429,7 +436,7 @@ export const SchoolsModule: React.FC = () => {
             onClick={() => setViewMode('table')}
             className={`p-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               viewMode === 'table'
-                ? 'bg-purple-100 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
+                ? 'bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] border border-[#1E3A63]'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
             }`}
             title="Table View"
@@ -450,7 +457,7 @@ export const SchoolsModule: React.FC = () => {
                 id={`school-card-${school.id}`}
                 className={`bg-white dark:bg-slate-900 rounded-2xl border transition-all duration-200 flex flex-col overflow-hidden shadow-xs hover:shadow-md ${
                   isCurrentlyActive
-                    ? 'border-purple-500 dark:border-purple-500 ring-2 ring-purple-500/20'
+                    ? 'border-[#1E3A63] dark:border-[#1E3A63] ring-2 ring-[#F7A914]/30'
                     : 'border-slate-200/80 dark:border-slate-800'
                 }`}
               >
@@ -468,7 +475,7 @@ export const SchoolsModule: React.FC = () => {
                     />
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-black tracking-wider uppercase px-2 py-0.5 rounded-md bg-purple-100 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                        <span className="text-[11px] font-black tracking-wider uppercase px-2 py-0.5 rounded-md bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] border border-[#1E3A63]">
                           {school.code}
                         </span>
                         {isCurrentlyActive && (
@@ -499,7 +506,7 @@ export const SchoolsModule: React.FC = () => {
                 {/* Card Body */}
                 <div className="p-5 flex-1 space-y-4 text-xs">
                   {school.motto && (
-                    <p className="text-[11px] italic text-purple-600 dark:text-purple-400 font-medium">
+                    <p className="text-[11px] italic text-[#3B82F6] dark:text-[#60A5FA] font-medium">
                       "{school.motto}"
                     </p>
                   )}
@@ -551,8 +558,8 @@ export const SchoolsModule: React.FC = () => {
                     }}
                     className={`flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
                       isCurrentlyActive
-                        ? 'bg-purple-600 text-white shadow-xs'
-                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-purple-50 dark:hover:bg-purple-950/50 border border-slate-200 dark:border-slate-700'
+                        ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] font-bold shadow-xs'
+                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-[#122E52]/10 dark:hover:bg-[#0B1B32] border border-slate-200 dark:border-slate-700'
                     }`}
                   >
                     <span>{isCurrentlyActive ? 'Current Context' : 'Select Context'}</span>
@@ -562,7 +569,7 @@ export const SchoolsModule: React.FC = () => {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => setSelectedSchoolDetail(school)}
-                      className="p-1.5 rounded-lg text-slate-500 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                      className="p-1.5 rounded-lg text-slate-500 hover:text-[#3B82F6] dark:hover:text-[#F7A914] hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                       title="View Details"
                     >
                       <Eye className="w-3.5 h-3.5" />
@@ -571,7 +578,7 @@ export const SchoolsModule: React.FC = () => {
                       <>
                         <button
                           onClick={() => handleOpenEditModal(school)}
-                          className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-[#3B82F6] dark:hover:text-[#60A5FA] hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                           title="Edit School"
                         >
                           <Edit className="w-3.5 h-3.5" />
@@ -616,7 +623,7 @@ export const SchoolsModule: React.FC = () => {
                     <tr
                       key={school.id}
                       className={`hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors ${
-                        isCurrentlyActive ? 'bg-purple-50/40 dark:bg-purple-950/20' : ''
+                        isCurrentlyActive ? 'bg-[#EFF6FF] dark:bg-[#1E3A63]' : ''
                       }`}
                     >
                       <td className="py-3.5 px-4">
@@ -630,7 +637,7 @@ export const SchoolsModule: React.FC = () => {
                           <div>
                             <div className="flex items-center gap-1.5">
                               <span className="font-bold text-slate-900 dark:text-white">{school.name}</span>
-                              <span className="text-[10px] font-black uppercase px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300">
+                              <span className="text-[10px] font-black uppercase px-1.5 py-0.5 rounded bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA]">
                                 {school.code}
                               </span>
                             </div>
@@ -672,8 +679,8 @@ export const SchoolsModule: React.FC = () => {
                             }}
                             className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                               isCurrentlyActive
-                                ? 'bg-purple-600 text-white'
-                                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-purple-100'
+                                ? 'bg-[#122E52] text-white'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-[#122E52]/20'
                             }`}
                           >
                             {isCurrentlyActive ? 'Active' : 'Select'}
@@ -682,7 +689,7 @@ export const SchoolsModule: React.FC = () => {
                             <>
                               <button
                                 onClick={() => handleOpenEditModal(school)}
-                                className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                                className="p-1.5 rounded-lg text-slate-500 hover:text-[#3B82F6] dark:hover:text-[#60A5FA] hover:bg-slate-100 dark:hover:bg-slate-800"
                               >
                                 <Edit className="w-3.5 h-3.5" />
                               </button>
@@ -713,7 +720,7 @@ export const SchoolsModule: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200 my-8">
             <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-800/40">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-md shadow-purple-500/20">
+                <div className="w-9 h-9 rounded-xl bg-[#122E52] text-white flex items-center justify-center shadow-md shadow-md">
                   <Building2 className="w-4 h-4" />
                 </div>
                 <div>
@@ -748,7 +755,7 @@ export const SchoolsModule: React.FC = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="e.g. Oakridge Science & Tech Academy"
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   />
                 </div>
 
@@ -762,7 +769,7 @@ export const SchoolsModule: React.FC = () => {
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
                     placeholder="e.g. OAKRIDGE"
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white uppercase font-bold outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white uppercase font-bold outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   />
                 </div>
 
@@ -775,7 +782,7 @@ export const SchoolsModule: React.FC = () => {
                     value={formData.principalName}
                     onChange={(e) => setFormData({ ...formData, principalName: e.target.value })}
                     placeholder="e.g. Dr. Julian Hayes"
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   />
                 </div>
 
@@ -788,7 +795,7 @@ export const SchoolsModule: React.FC = () => {
                     value={formData.ownerAdminEmail}
                     onChange={(e) => setFormData({ ...formData, ownerAdminEmail: e.target.value })}
                     placeholder="admin@oakridge.edu"
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   />
                 </div>
 
@@ -801,7 +808,7 @@ export const SchoolsModule: React.FC = () => {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="contact@oakridge.edu"
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   />
                 </div>
 
@@ -814,7 +821,7 @@ export const SchoolsModule: React.FC = () => {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+1 (555) 832-1049"
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   />
                 </div>
 
@@ -827,7 +834,7 @@ export const SchoolsModule: React.FC = () => {
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     placeholder="88 Innovation Parkway, Silicon Valley, CA 94025"
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   />
                 </div>
 
@@ -840,7 +847,7 @@ export const SchoolsModule: React.FC = () => {
                     value={formData.academicYear}
                     onChange={(e) => setFormData({ ...formData, academicYear: e.target.value })}
                     placeholder="2025-2026"
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   />
                 </div>
 
@@ -851,7 +858,7 @@ export const SchoolsModule: React.FC = () => {
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
@@ -862,7 +869,7 @@ export const SchoolsModule: React.FC = () => {
                 <div className="md:col-span-2">
                   <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
                     <span className="flex items-center gap-1.5">
-                      <ImageIcon className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      <ImageIcon className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                       School Logo & Official Crest
                     </span>
                     <span className="text-[11px] font-normal text-slate-400">PNG, JPG, SVG, WebP (Max 5MB)</span>
@@ -871,7 +878,7 @@ export const SchoolsModule: React.FC = () => {
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-dashed border-slate-300 dark:border-slate-700">
                     {/* Live Crest / Logo Preview */}
                     <div className="relative shrink-0">
-                      <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-800 shadow-sm flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border-2 border-[#1E3A63] shadow-sm flex items-center justify-center">
                         {formData.logo ? (
                           <img
                             src={formData.logo}
@@ -894,7 +901,7 @@ export const SchoolsModule: React.FC = () => {
                     {/* Upload Controls */}
                     <div className="flex-1 space-y-2">
                       <div className="flex flex-wrap items-center gap-2">
-                        <label className="px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-sm shadow-purple-500/20 transition-all hover:scale-105 active:scale-95">
+                        <label className="px-3.5 py-2 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-sm shadow-md transition-all hover:scale-105 active:scale-95">
                           <Upload className="w-3.5 h-3.5" />
                           <span>Upload Logo File</span>
                           <input
@@ -926,7 +933,7 @@ export const SchoolsModule: React.FC = () => {
                           value={formData.logo.startsWith('data:') ? '' : formData.logo}
                           onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
                           placeholder={formData.logo.startsWith('data:') ? 'Custom file uploaded (data URI)' : 'https://example.com/logo.png'}
-                          className="flex-1 px-2.5 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-purple-500"
+                          className="flex-1 px-2.5 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-[#3B82F6]"
                         />
                       </div>
                     </div>
@@ -942,7 +949,7 @@ export const SchoolsModule: React.FC = () => {
                     value={formData.motto}
                     onChange={(e) => setFormData({ ...formData, motto: e.target.value })}
                     placeholder="e.g. Innovate, Discover, Excel"
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   />
                 </div>
 
@@ -955,14 +962,14 @@ export const SchoolsModule: React.FC = () => {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Overview of the institution's programs, focus areas, and history..."
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   />
                 </div>
               </div>
 
-              <div className="p-4 bg-purple-50 dark:bg-purple-950/40 rounded-xl border border-purple-200 dark:border-purple-800 flex items-start gap-2.5">
-                <ShieldCheck className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-                <p className="text-[11px] text-purple-800 dark:text-purple-200">
+              <div className="p-4 bg-[#EFF6FF] dark:bg-[#1E3A63] rounded-xl border border-[#1E3A63] flex items-start gap-2.5">
+                <ShieldCheck className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA] shrink-0 mt-0.5" />
+                <p className="text-[11px] text-[#122E52] dark:text-[#F7A914]">
                   Creating this school will automatically initialize isolated databases, student & teacher registries, gradebooks, and encrypted faculty channels bound exclusively to this tenant.
                 </p>
               </div>
@@ -974,13 +981,13 @@ export const SchoolsModule: React.FC = () => {
                     setIsCreateModalOpen(false);
                     resetForm();
                   }}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="btn-outline-navy text-xs py-2 px-4"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-md shadow-purple-900/30 cursor-pointer"
+                  className="btn-gold text-xs py-2 px-5"
                 >
                   {editingSchool ? 'Save Changes' : 'Provision School'}
                 </button>
@@ -994,7 +1001,7 @@ export const SchoolsModule: React.FC = () => {
       {selectedSchoolDetail && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-purple-900/80 to-slate-900 text-white flex items-center justify-between">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-[#122E52] to-slate-900 text-white flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <img
                   src={selectedSchoolDetail.logo || 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=200'}
@@ -1007,7 +1014,7 @@ export const SchoolsModule: React.FC = () => {
                     <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-white/20 text-white">
                       {selectedSchoolDetail.code}
                     </span>
-                    <span className="text-[10px] font-bold text-purple-200">
+                    <span className="text-[10px] font-bold text-[#F7A914]">
                       ID: {selectedSchoolDetail.id}
                     </span>
                   </div>
@@ -1046,7 +1053,7 @@ export const SchoolsModule: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[10px] text-slate-400 block font-semibold">Academic Cycle</span>
-                  <span className="font-bold text-purple-600 dark:text-purple-400">{selectedSchoolDetail.academicYear}</span>
+                  <span className="font-bold text-[#3B82F6] dark:text-[#60A5FA]">{selectedSchoolDetail.academicYear}</span>
                 </div>
               </div>
 
@@ -1057,7 +1064,7 @@ export const SchoolsModule: React.FC = () => {
                     setSelectedSchoolDetail(null);
                     addToast(`Active tenant switched to ${selectedSchoolDetail.name}`, 'success');
                   }}
-                  className="px-4 py-2 bg-purple-600 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-sm"
+                  className="px-4 py-2 bg-[#122E52] text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-sm"
                 >
                   <Check className="w-3.5 h-3.5" />
                   <span>Set as Active Context</span>
@@ -1091,7 +1098,7 @@ export const SchoolsModule: React.FC = () => {
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setDeleteConfirmationId(null)}
-                className="px-3.5 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl"
+                className="btn-outline-navy text-xs py-2 px-3.5"
               >
                 Cancel
               </button>

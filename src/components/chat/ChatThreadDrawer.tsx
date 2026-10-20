@@ -192,13 +192,13 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
       {/* Header */}
       <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/90 dark:bg-slate-900/90 shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="p-2 bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 rounded-xl">
+          <div className="p-2 bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] rounded-xl">
             <MessageSquare className="w-4 h-4" />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
               <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">Thread Discussion</h4>
-              <span className="bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-[10px] font-bold px-2 py-0.2 rounded-full border border-purple-200 dark:border-purple-800/80 shrink-0">
+              <span className="bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] text-[10px] font-bold px-2 py-0.2 rounded-full border border-[#1E3A63]/80 shrink-0">
                 {replies.length} {replies.length === 1 ? 'reply' : 'replies'}
               </span>
             </div>
@@ -230,7 +230,7 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
                 </span>
                 <span className="text-[10px] text-slate-400 dark:text-slate-500">{post.timestamp}</span>
               </div>
-              <span className="text-[10px] text-purple-600 dark:text-purple-400 font-semibold">
+              <span className="text-[10px] text-[#3B82F6] dark:text-[#60A5FA] font-semibold">
                 {post.senderDesignation || post.senderRole}
               </span>
             </div>
@@ -253,7 +253,7 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
                     onClick={() => onPreviewAttachment(att)}
                     className="flex items-center gap-2 truncate text-left hover:underline cursor-pointer flex-1"
                   >
-                    <FileText className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                    <FileText className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
                     <span className="truncate font-semibold text-slate-800 dark:text-slate-200">{att.name}</span>
                     <span className="text-[10px] text-slate-400">({att.size})</span>
                   </button>
@@ -292,7 +292,7 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
                     onClick={() => toggleMessageReaction(groupId, post.id, emoji)}
                     className={`flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
                       hasReacted
-                        ? 'bg-purple-100 dark:bg-purple-950/70 border-purple-300 dark:border-purple-700 text-purple-900 dark:text-purple-200 font-bold'
+                        ? 'bg-[#EFF6FF] dark:bg-[#1E3A63] border-[#1E3A63] text-[#12233F] dark:text-white font-bold'
                         : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
                     }`}
                   >
@@ -338,7 +338,7 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
                         {reply.authorName}
                       </span>
                       {reply.authorRole === 'Admin' || reply.authorRole === 'SuperAdmin' ? (
-                        <span className="bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-[9px] font-bold px-1.5 py-0.2 rounded border border-purple-200 dark:border-purple-800">
+                        <span className="bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] text-[9px] font-bold px-1.5 py-0.2 rounded border border-[#1E3A63]">
                           Admin
                         </span>
                       ) : null}
@@ -355,7 +355,7 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
                           setEditingReplyId(reply.id);
                           setEditInput(reply.content);
                         }}
-                        className="p-1 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 rounded hover:bg-slate-100 dark:hover:bg-slate-800"
+                        className="p-1 text-slate-400 hover:text-[#3B82F6] dark:hover:text-[#F7A914] rounded hover:bg-slate-100 dark:hover:bg-slate-800"
                         title="Edit Reply"
                       >
                         <Edit className="w-3 h-3" />
@@ -379,7 +379,7 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
                     type="text"
                     value={editInput}
                     onChange={(e) => setEditInput(e.target.value)}
-                    className="w-full px-3 py-1.5 text-xs border border-purple-400 bg-purple-50/30 dark:bg-purple-950/20 rounded-xl text-slate-900 dark:text-white outline-none"
+                    className="w-full px-3 py-1.5 text-xs border border-[#1E3A63] bg-[#EFF6FF]/30 dark:bg-[#1E3A63] rounded-xl text-slate-900 dark:text-white outline-none"
                     autoFocus
                   />
                   <div className="flex items-center justify-end gap-1.5">
@@ -391,7 +391,7 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
                     </button>
                     <button
                       onClick={() => handleSaveEditReply(reply.id)}
-                      className="px-3 py-1 text-[11px] font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-lg"
+                      className="px-3 py-1 text-[11px] font-bold bg-[#122E52] hover:bg-[#0B1B32] text-white rounded-lg"
                     >
                       Save
                     </button>
@@ -419,7 +419,7 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
                         onClick={() => onPreviewAttachment(att)}
                         className="flex items-center gap-1.5 truncate text-left hover:underline cursor-pointer flex-1"
                       >
-                        <FileText className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                        <FileText className="w-3.5 h-3.5 text-[#3B82F6] shrink-0" />
                         <span className="truncate font-semibold text-slate-800 dark:text-slate-200">{att.name}</span>
                         <span className="text-[10px] text-slate-400">({att.size})</span>
                       </button>
@@ -459,7 +459,7 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
                         onClick={() => toggleReplyReaction(groupId, post.id, reply.id, emoji)}
                         className={`flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
                           hasReacted
-                            ? 'bg-purple-100 dark:bg-purple-950/70 border-purple-300 dark:border-purple-700 text-purple-900 dark:text-purple-200 font-bold'
+                            ? 'bg-[#EFF6FF] dark:bg-[#1E3A63] border-[#1E3A63] text-[#12233F] dark:text-white font-bold'
                             : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
                         }`}
                       >
@@ -478,17 +478,17 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
 
       {/* Upload Progress Bar */}
       {isUploading && (
-        <div className="px-4 py-2 bg-purple-50 dark:bg-purple-950/60 border-t border-purple-200 dark:border-purple-800 text-xs">
-          <div className="flex items-center justify-between mb-1 text-purple-900 dark:text-purple-200 font-semibold">
+        <div className="px-4 py-2 bg-slate-50 dark:bg-[#122E52]/20 border-t border-[#1E3A63] text-xs">
+          <div className="flex items-center justify-between mb-1 text-[#12233F] dark:text-white font-semibold">
             <span className="flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-purple-600 animate-spin" />
+              <Sparkles className="w-3.5 h-3.5 text-[#3B82F6] animate-spin" />
               <span>Validating & encrypting file attachment...</span>
             </span>
             <span>{uploadProgress}%</span>
           </div>
-          <div className="w-full bg-purple-200 dark:bg-purple-900 rounded-full h-1.5 overflow-hidden">
+          <div className="w-full bg-[#FEF3C7] dark:bg-[#1E3A63] rounded-full h-1.5 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 h-1.5 rounded-full transition-all duration-150"
+              className="bg-gradient-to-r from-[#122E52] to-[#1E3A63] h-1.5 rounded-full transition-all duration-150"
               style={{ width: `${uploadProgress}%` }}
             ></div>
           </div>
@@ -499,7 +499,7 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
       {pendingAttachment && !isUploading && (
         <div className="px-4 py-2 bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs text-slate-800 dark:text-slate-200">
           <div className="flex items-center gap-2 truncate">
-            <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+            <FileText className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA] shrink-0" />
             <span className="font-bold truncate">{pendingAttachment.name}</span>
             <span className="text-[10px] text-slate-500 shrink-0">({pendingAttachment.size})</span>
           </div>
@@ -520,7 +520,7 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="p-2 text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+          className="p-2 text-slate-500 dark:text-slate-400 hover:text-[#3B82F6] dark:hover:text-[#F7A914] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
           title="Attach PDF, DOCX, PPTX, XLSX, Images"
         >
           <Paperclip className="w-4 h-4" />
@@ -545,13 +545,13 @@ export const ChatThreadDrawer: React.FC<ChatThreadDrawerProps> = ({
           value={replyInput}
           onChange={(e) => setReplyInput(e.target.value)}
           placeholder={`Reply to ${post.senderName}...`}
-          className="flex-1 px-3.5 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500 bg-slate-50 dark:bg-slate-800 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+          className="flex-1 px-3.5 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-[#3B82F6] bg-slate-50 dark:bg-slate-800 placeholder:text-slate-400 dark:placeholder:text-slate-500"
         />
 
         <button
           type="submit"
           disabled={!replyInput.trim() && !pendingAttachment}
-          className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-40 text-white p-2 rounded-xl shadow-xs transition-all cursor-pointer"
+          className="btn-navy disabled:opacity-40 text-white p-2 rounded-xl shadow-xs transition-all cursor-pointer"
           title="Send Thread Reply"
         >
           <Send className="w-4 h-4" />

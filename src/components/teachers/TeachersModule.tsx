@@ -5,6 +5,8 @@ import { Teacher } from '../../types';
 import { Modal } from '../common/Modal';
 import { Pagination } from '../common/Pagination';
 import { UserAvatar } from '../common/UserAvatar';
+import { TeacherRegistrationWizard } from './TeacherRegistrationWizard';
+import { RegistrationSuccessModal } from '../common/RegistrationSuccessModal';
 import { exportTeachersCSV } from '../../utils/csvExport';
 import { exportTeacherListPDF } from '../../utils/pdfExport';
 import {
@@ -82,6 +84,7 @@ export const TeachersModule: React.FC = () => {
 
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [createdTeacherSuccess, setCreatedTeacherSuccess] = useState<Teacher | null>(null);
   const [viewingTeacher, setViewingTeacher] = useState<Teacher | null>(null);
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [deletingTeacher, setDeletingTeacher] = useState<Teacher | null>(null);
@@ -343,7 +346,7 @@ export const TeachersModule: React.FC = () => {
             type="button"
             id="export-teachers-csv-btn"
             onClick={() => exportTeachersCSV(filteredTeachers)}
-            className="px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-700/60 hover:text-purple-600 dark:hover:text-purple-400 transition-all flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
+            className="px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-700/60 hover:text-[#3B82F6] dark:hover:text-[#F7A914] transition-all flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
             title="Export faculty directory as CSV file"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
@@ -353,10 +356,10 @@ export const TeachersModule: React.FC = () => {
             type="button"
             id="export-teachers-pdf-btn"
             onClick={() => exportTeacherListPDF(filteredTeachers)}
-            className="px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-700/60 hover:text-purple-600 dark:hover:text-purple-400 transition-all flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
+            className="px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-700/60 hover:text-[#3B82F6] dark:hover:text-[#F7A914] transition-all flex items-center justify-center gap-2 shadow-2xs cursor-pointer"
             title="Export faculty roster report as PDF"
           >
-            <Download className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            <Download className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
             <span>Export Roster PDF</span>
           </button>
           {canNominateClassTeacher && (
@@ -364,10 +367,10 @@ export const TeachersModule: React.FC = () => {
               id="nominate-class-teacher-btn"
               type="button"
               onClick={() => handleOpenNominateModal()}
-              className="px-4 py-2.5 rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-bold text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer hover:scale-105 active:scale-95"
+              className="px-4 py-2.5 rounded-xl border border-[#1E3A63] dark:border-[#1E3A63] bg-[#EFF6FF] hover:bg-[#122E52]/20 dark:bg-[#1E3A63] dark:hover:bg-[#0B1B32] text-[#3B82F6] dark:text-[#60A5FA] font-bold text-xs transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer hover:scale-105 active:scale-95"
               title="Principal Class Teacher Nomination"
             >
-              <UserCheck className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <UserCheck className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
               <span>Nominate Class Teacher</span>
             </button>
           )}
@@ -381,17 +384,17 @@ export const TeachersModule: React.FC = () => {
                   setBulkValidationResults([]);
                   setIsBulkModalOpen(true);
                 }}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                className="btn-outline-navy text-xs py-2 px-3.5"
                 title="Bulk import teachers via CSV"
               >
-                <Upload className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <Upload className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                 <span>Bulk Import CSV</span>
               </button>
               <button
                 id="add-new-teacher-btn"
                 type="button"
                 onClick={openAddModal}
-                className="px-4 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-all shadow-md shadow-purple-500/20 flex items-center justify-center gap-2 cursor-pointer hover:scale-105 active:scale-95"
+                className="btn-gold"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add New Teacher</span>
@@ -410,7 +413,7 @@ export const TeachersModule: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by teacher name, subject, ID..."
-            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 pl-10 pr-4 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 pl-10 pr-4 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6]"
           />
         </div>
       </div>
@@ -420,7 +423,7 @@ export const TeachersModule: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-purple-50/50 dark:bg-purple-950/40 border-b border-purple-100/50 dark:border-purple-900/50 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <tr className="bg-[#EFF6FF] dark:bg-[#1E3A63] border-b border-[#1E3A63] dark:border-[#1E3A63] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 <th className="py-3.5 px-4 pl-6">Teacher ID</th>
                 <th className="py-3.5 px-4">Name & Qualification</th>
                 <th className="py-3.5 px-4">Assigned Subjects</th>
@@ -464,8 +467,8 @@ export const TeachersModule: React.FC = () => {
                               <div className="flex flex-wrap items-center gap-1.5">
                                 <p className="font-bold text-slate-800 dark:text-slate-100">{t.name}</p>
                                 {designatedClasses.length > 0 && (
-                                  <span className="px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 font-bold text-[9px] border border-purple-200 dark:border-purple-800 flex items-center gap-1">
-                                    <Award className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                                  <span className="px-2 py-0.5 rounded-full bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] font-bold text-[9px] border border-[#1E3A63] dark:border-[#1E3A63] flex items-center gap-1">
+                                    <Award className="w-3 h-3 text-[#3B82F6] dark:text-[#60A5FA]" />
                                     Class Teacher ({designatedClasses.map((c) => c.name).join(', ')})
                                   </span>
                                 )}
@@ -481,7 +484,7 @@ export const TeachersModule: React.FC = () => {
                         {t.subjects.map((sub, idx) => (
                           <span
                             key={idx}
-                            className="px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-[10px] font-semibold border border-purple-100 dark:border-purple-900/60"
+                            className="px-2 py-0.5 rounded-md bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] text-[10px] font-semibold border border-[#1E3A63] dark:border-[#1E3A63]"
                           >
                             {sub}
                           </span>
@@ -501,7 +504,7 @@ export const TeachersModule: React.FC = () => {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => setViewingTeacher(t)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/50 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-[#3B82F6] dark:hover:text-[#F7A914] hover:bg-[#122E52]/10 dark:hover:bg-[#0B1B32] transition-colors cursor-pointer"
                           title="View Faculty Details"
                         >
                           <Eye className="w-4 h-4" />
@@ -510,17 +513,17 @@ export const TeachersModule: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleOpenNominateModal(t)}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/50 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-[#3B82F6] dark:hover:text-[#F7A914] hover:bg-[#122E52]/10 dark:hover:bg-[#0B1B32] transition-colors cursor-pointer"
                             title={`Nominate ${t.name} as Class Teacher`}
                           >
-                            <UserCheck className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                            <UserCheck className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                           </button>
                         )}
                         {canManageTeachers && (
                           <>
                             <button
                               onClick={() => openEditModal(t)}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-[#3B82F6] dark:hover:text-[#60A5FA] hover:bg-[#3B82F6]/10 dark:hover:bg-[#3B82F6]/20 transition-colors cursor-pointer"
                               title="Edit Teacher"
                             >
                               <Edit className="w-4 h-4" />
@@ -569,18 +572,18 @@ export const TeachersModule: React.FC = () => {
           maxWidth="md"
         >
           <div className="space-y-4">
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-purple-50/60 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#EFF6FF] dark:bg-[#1E3A63] border border-[#1E3A63] dark:border-[#1E3A63]">
               <UserAvatar
                 name={viewingTeacher.name}
                 avatarUrl={viewingTeacher.avatar}
                 size="xl"
-                ring="ring-2 ring-purple-300 dark:ring-purple-700 shadow-sm"
+                ring="ring-2 ring-[#F7A914]/30 dark:ring-[#F7A914]/30 shadow-sm"
                 status={viewingTeacher.status}
                 showStatus={true}
               />
               <div>
                 <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">{viewingTeacher.name}</h3>
-                <p className="text-xs font-semibold text-purple-700 dark:text-purple-300">{viewingTeacher.qualification}</p>
+                <p className="text-xs font-semibold text-[#3B82F6] dark:text-[#60A5FA]">{viewingTeacher.qualification}</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   ID: <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{viewingTeacher.teacherId}</span> • Joined {viewingTeacher.joiningDate || '2026-08-01'}
                 </p>
@@ -612,7 +615,7 @@ export const TeachersModule: React.FC = () => {
                 {viewingTeacher.subjects.map((sub, idx) => (
                   <span
                     key={idx}
-                    className="px-2.5 py-1 rounded-lg bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 text-xs font-semibold border border-purple-200 dark:border-purple-800"
+                    className="px-2.5 py-1 rounded-lg bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] text-xs font-semibold border border-[#1E3A63] dark:border-[#1E3A63]"
                   >
                     {sub}
                   </span>
@@ -638,151 +641,37 @@ export const TeachersModule: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* ADD TEACHER MODAL */}
+      {/* ADD TEACHER MULTI-STEP WIZARD MODAL */}
       {/* ========================================================================= */}
-      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Recruit Faculty Member">
-        <form onSubmit={handleCreateTeacher} className="space-y-3">
-          {formError && (
-            <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs font-semibold flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{formError}</span>
-            </div>
-          )}
+      {isAddModalOpen && (
+        <Modal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          title="Recruit & Onboard Faculty Member"
+          maxWidth="2xl"
+        >
+          <TeacherRegistrationWizard
+            onClose={() => setIsAddModalOpen(false)}
+            onSuccess={(teacher) => {
+              setIsAddModalOpen(false);
+              setCreatedTeacherSuccess(teacher);
+            }}
+          />
+        </Modal>
+      )}
 
-          {idError && (
-            <div className="p-2.5 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs font-semibold">
-              {idError}
-            </div>
-          )}
-
-          {/* Teacher School ID Field */}
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                Teacher School ID Number <span className="text-red-500">*</span>
-              </label>
-              <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded border border-purple-100 dark:border-purple-900/60">
-                UNIQUE ID
-              </span>
-            </div>
-            <input
-              type="text"
-              required
-              value={formData.teacherId}
-              onChange={(e) => {
-                const val = e.target.value.toUpperCase();
-                setFormData({ ...formData, teacherId: val });
-                setIdError(validateTeacherId(val));
-              }}
-              placeholder="e.g. TCH-2026-0008"
-              className="w-full bg-purple-50/50 dark:bg-slate-800 border border-purple-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-mono font-bold text-slate-800 dark:text-slate-100 uppercase focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-              Teacher Full Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder="e.g. Dr. Robert Vance"
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Email</label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="teacher@eduspike.edu"
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Phone</label>
-              <input
-                type="text"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="+1 (555) 123-4567"
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Qualification</label>
-              <input
-                type="text"
-                value={formData.qualification}
-                onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
-                placeholder="e.g. M.Sc in Physics"
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Gender</label>
-              <select
-                value={formData.gender}
-                onChange={(e) => setFormData({ ...formData, gender: e.target.value as any })}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 cursor-pointer"
-              >
-                <option value="Female">Female</option>
-                <option value="Male">Male</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-              Assigned Subjects (comma-separated)
-            </label>
-            <input
-              type="text"
-              value={formData.subjects}
-              onChange={(e) => setFormData({ ...formData, subjects: e.target.value })}
-              placeholder="Mathematics, Physics, Chemistry"
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-              Assigned Classes (comma-separated)
-            </label>
-            <input
-              type="text"
-              value={formData.classesAssigned}
-              onChange={(e) => setFormData({ ...formData, classesAssigned: e.target.value })}
-              placeholder="Class 01, Class 02, Class 03"
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSavingTeacher}
-            className="w-full py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors shadow-md shadow-purple-500/20 mt-2 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {isSavingTeacher ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Saving Faculty Record...</span>
-              </>
-            ) : (
-              <span>Save Faculty Record</span>
-            )}
-          </button>
-        </form>
-      </Modal>
+      {/* Teacher Created Success Modal (Screen 14 from Blueprint) */}
+      {createdTeacherSuccess && (
+        <RegistrationSuccessModal
+          isOpen={!!createdTeacherSuccess}
+          onClose={() => setCreatedTeacherSuccess(null)}
+          title="Teacher Created Successfully!"
+          name={createdTeacherSuccess.name}
+          role="Teacher"
+          ileysId={createdTeacherSuccess.teacherId.slice(-4) || '2001'}
+          schoolName="Al-Hikma School"
+        />
+      )}
 
       {/* ========================================================================= */}
       {/* EDIT TEACHER MODAL */}
@@ -820,7 +709,7 @@ export const TeachersModule: React.FC = () => {
                 required
                 value={editFormData.name}
                 onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20"
               />
             </div>
 
@@ -831,7 +720,7 @@ export const TeachersModule: React.FC = () => {
                   type="email"
                   value={editFormData.email}
                   onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20"
                 />
               </div>
               <div>
@@ -840,7 +729,7 @@ export const TeachersModule: React.FC = () => {
                   type="text"
                   value={editFormData.phone}
                   onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20"
                 />
               </div>
             </div>
@@ -852,7 +741,7 @@ export const TeachersModule: React.FC = () => {
                   type="text"
                   value={editFormData.qualification}
                   onChange={(e) => setEditFormData({ ...editFormData, qualification: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20"
                 />
               </div>
               <div>
@@ -860,7 +749,7 @@ export const TeachersModule: React.FC = () => {
                 <select
                   value={editFormData.status}
                   onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value as any })}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 cursor-pointer"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 cursor-pointer"
                 >
                   <option value="Active">Active</option>
                   <option value="On Leave">On Leave</option>
@@ -877,7 +766,7 @@ export const TeachersModule: React.FC = () => {
                 type="text"
                 value={editFormData.subjects}
                 onChange={(e) => setEditFormData({ ...editFormData, subjects: e.target.value })}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20"
               />
             </div>
 
@@ -889,7 +778,7 @@ export const TeachersModule: React.FC = () => {
                 type="text"
                 value={editFormData.classesAssigned}
                 onChange={(e) => setEditFormData({ ...editFormData, classesAssigned: e.target.value })}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20"
               />
             </div>
 
@@ -904,7 +793,7 @@ export const TeachersModule: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSavingTeacher}
-                className="px-4 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-700 transition-colors shadow-md shadow-purple-500/20 disabled:opacity-50 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#122E52] text-white text-xs font-bold hover:bg-[#0B1B32] transition-colors shadow-md shadow-md disabled:opacity-50 cursor-pointer"
               >
                 {isSavingTeacher ? 'Updating...' : 'Save Changes'}
               </button>
@@ -925,14 +814,14 @@ export const TeachersModule: React.FC = () => {
         >
           <div className="space-y-4">
             {/* Top Info & Template Download Bar */}
-            <div className="p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="p-4 rounded-2xl bg-[#EFF6FF] dark:bg-[#1E3A63] border border-[#1E3A63] dark:border-[#1E3A63] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-start gap-3">
-                <FileSpreadsheet className="w-5 h-5 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
+                <FileSpreadsheet className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA] shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-xs font-bold text-purple-900 dark:text-purple-200">
+                  <h4 className="text-xs font-bold text-[#12233F] dark:text-white">
                     Bulk Faculty Onboarding Template
                   </h4>
-                  <p className="text-[11px] text-purple-700 dark:text-purple-300 mt-0.5">
+                  <p className="text-[11px] text-[#3B82F6] dark:text-[#60A5FA] mt-0.5">
                     Download our structured CSV template, fill in teacher details, and upload below for instant batch verification.
                   </p>
                 </div>
@@ -940,7 +829,7 @@ export const TeachersModule: React.FC = () => {
               <button
                 type="button"
                 onClick={() => downloadTeacherImportTemplate()}
-                className="px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 font-bold text-xs hover:bg-purple-100 dark:hover:bg-purple-900/60 transition-all flex items-center gap-1.5 shadow-2xs shrink-0 cursor-pointer"
+                className="px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-[#1E3A63] dark:border-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] font-bold text-xs hover:bg-[#122E52]/20 dark:hover:bg-[#0B1B32] transition-all flex items-center gap-1.5 shadow-2xs shrink-0 cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download Template</span>
@@ -954,7 +843,7 @@ export const TeachersModule: React.FC = () => {
                 onClick={() => setBulkTab('upload')}
                 className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                   bulkTab === 'upload'
-                    ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                    ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                     : 'text-slate-600 dark:text-slate-400'
                 }`}
               >
@@ -965,7 +854,7 @@ export const TeachersModule: React.FC = () => {
                 onClick={() => setBulkTab('paste')}
                 className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                   bulkTab === 'paste'
-                    ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                    ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                     : 'text-slate-600 dark:text-slate-400'
                 }`}
               >
@@ -976,7 +865,7 @@ export const TeachersModule: React.FC = () => {
             {bulkTab === 'upload' ? (
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-purple-200 dark:border-purple-800 rounded-2xl p-6 text-center hover:bg-purple-50/50 dark:hover:bg-purple-950/20 transition-all cursor-pointer group"
+                className="border-2 border-dashed border-[#1E3A63] dark:border-[#1E3A63] rounded-2xl p-6 text-center hover:bg-[#122E52]/10 dark:hover:bg-[#0B1B32] transition-all cursor-pointer group"
               >
                 <input
                   ref={fileInputRef}
@@ -985,7 +874,7 @@ export const TeachersModule: React.FC = () => {
                   onChange={handleFileUpload}
                   className="hidden"
                 />
-                <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-2xl bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
                   <Upload className="w-5 h-5" />
                 </div>
                 <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
@@ -1005,7 +894,7 @@ export const TeachersModule: React.FC = () => {
                   value={bulkCsvRawText}
                   onChange={(e) => processCsvText(e.target.value)}
                   placeholder={`Teacher ID,Full Name,Email,Phone,Gender,Qualification,Subjects,Classes Assigned\nTCH-2026-0091,Dr. Marcus Vance,marcus.vance@eduspike.edu,+1 555-345-6789,Male,Ph.D Math,"Mathematics, Physics","Class 01"`}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-mono text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-mono text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20"
                 />
               </div>
             )}
@@ -1087,7 +976,7 @@ export const TeachersModule: React.FC = () => {
                 type="button"
                 disabled={validCount === 0 || isSubmittingBulk}
                 onClick={handleConfirmBulkImport}
-                className="px-5 py-2.5 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-700 transition-all shadow-md shadow-purple-500/20 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-[#122E52] text-white text-xs font-bold hover:bg-[#0B1B32] transition-all shadow-md shadow-md disabled:opacity-50 flex items-center gap-2 cursor-pointer"
               >
                 {isSubmittingBulk ? (
                   <>
@@ -1147,13 +1036,13 @@ export const TeachersModule: React.FC = () => {
           maxWidth="md"
         >
           <form onSubmit={handleConfirmNomination} className="space-y-4">
-            <div className="p-3.5 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50 flex items-start gap-3">
-              <ShieldCheck className="w-5 h-5 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-2xl bg-[#EFF6FF] dark:bg-[#1E3A63] border border-[#1E3A63] dark:border-[#1E3A63] flex items-start gap-3">
+              <ShieldCheck className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA] shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-xs font-bold text-purple-900 dark:text-purple-200">
+                <h4 className="text-xs font-bold text-[#12233F] dark:text-white">
                   Principal Executive Authority
                 </h4>
-                <p className="text-[11px] text-purple-700 dark:text-purple-300 mt-0.5">
+                <p className="text-[11px] text-[#3B82F6] dark:text-[#60A5FA] mt-0.5">
                   As School Principal, you have the sole authority to designate and nominate official Class Teachers.
                   The nominated teacher will receive operational authority for the class while all historical student,
                   attendance, and exam marks records remain permanently preserved.
@@ -1171,7 +1060,7 @@ export const TeachersModule: React.FC = () => {
                   const found = teachers.find((t) => t.id === e.target.value);
                   if (found) setSelectedTeacherForNomination(found);
                 }}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-purple-600"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#3B82F6]"
               >
                 {teachers.map((t) => (
                   <option key={t.id} value={t.id} className="dark:bg-slate-800">
@@ -1188,7 +1077,7 @@ export const TeachersModule: React.FC = () => {
               <select
                 value={selectedClassIdForNomination}
                 onChange={(e) => setSelectedClassIdForNomination(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-purple-600"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#3B82F6]"
               >
                 {classes.map((c) => (
                   <option key={c.id} value={c.id} className="dark:bg-slate-800">
@@ -1216,7 +1105,7 @@ export const TeachersModule: React.FC = () => {
                 value={nominationRationale}
                 onChange={(e) => setNominationRationale(e.target.value)}
                 placeholder="e.g. Appointed as Class Teacher for Academic Year 2026-2027 by Principal order"
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-purple-600"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#3B82F6]"
               />
             </div>
 
@@ -1231,7 +1120,7 @@ export const TeachersModule: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmittingNomination}
-                className="px-4 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-700 transition-colors flex items-center gap-1.5 shadow-md shadow-purple-500/20 disabled:opacity-50 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#122E52] text-white text-xs font-bold hover:bg-[#0B1B32] transition-colors flex items-center gap-1.5 shadow-md shadow-md disabled:opacity-50 cursor-pointer"
               >
                 <UserCheck className="w-4 h-4" />
                 <span>{isSubmittingNomination ? 'Appointing...' : 'Confirm Nomination'}</span>

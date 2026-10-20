@@ -405,10 +405,10 @@ export const AccountModule: React.FC = () => {
   const getRoleBadge = (role: UserRole) => {
     switch (role) {
       case 'SuperAdmin':
-        return 'bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-800';
+        return 'bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] border-[#1E3A63]';
       case 'OwnerAdmin':
       case 'Admin':
-        return 'bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
+        return 'bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 text-[#3B82F6] dark:text-[#60A5FA] border-[#3B82F6]/30 dark:border-[#3B82F6]/40';
       case 'Principal':
         return 'bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800';
       case 'Teacher':
@@ -431,7 +431,7 @@ export const AccountModule: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800 flex items-center gap-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] text-xs font-bold border border-[#1E3A63] flex items-center gap-1">
               <User className="w-3.5 h-3.5" />
               {activeRole === 'Admin' ? 'Administrator Profile' : `${activeRole} Profile & Settings`}
             </span>
@@ -454,9 +454,9 @@ export const AccountModule: React.FC = () => {
         {activeRole === 'Admin' && (
           <button
             onClick={() => setActiveTab('admin-governance')}
-            className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-purple-600 text-white font-bold text-xs hover:bg-purple-900 dark:hover:bg-purple-700 transition-colors shadow-sm flex items-center gap-2 self-start sm:self-auto cursor-pointer"
+            className="btn-navy self-start sm:self-auto"
           >
-            <ShieldAlert className="w-4 h-4 text-purple-400 dark:text-white" />
+            <ShieldAlert className="w-4 h-4 text-[#F7A914] dark:text-white" />
             <span>Role Governance</span>
           </button>
         )}
@@ -468,7 +468,7 @@ export const AccountModule: React.FC = () => {
           onClick={() => setActiveTab('profile')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'profile'
-              ? 'bg-purple-600 text-white shadow-xs'
+              ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-xs'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
           }`}
         >
@@ -479,7 +479,7 @@ export const AccountModule: React.FC = () => {
           onClick={() => setActiveTab('security')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'security'
-              ? 'bg-purple-600 text-white shadow-xs'
+              ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-xs'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
           }`}
         >
@@ -490,7 +490,7 @@ export const AccountModule: React.FC = () => {
           onClick={() => setActiveTab('appearance')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
             activeTab === 'appearance'
-              ? 'bg-purple-600 text-white shadow-xs'
+              ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-xs'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
           }`}
         >
@@ -502,7 +502,7 @@ export const AccountModule: React.FC = () => {
             onClick={() => setActiveTab('admin-governance')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'admin-governance'
-                ? 'bg-purple-600 text-white shadow-xs'
+                ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
@@ -524,7 +524,7 @@ export const AccountModule: React.FC = () => {
                   name={formData.name || currentUser.name}
                   avatarUrl={formData.avatar}
                   size="profile"
-                  ring="ring-4 ring-purple-100 dark:ring-purple-900/50 shadow-md"
+                  ring="ring-4 ring-[#F7A914]/30 dark:ring-[#F7A914]/30 shadow-md"
                   status={currentUser.status || 'Active'}
                   showStatus={true}
                 />
@@ -532,13 +532,13 @@ export const AccountModule: React.FC = () => {
 
               <div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">{formData.name || currentUser.name}</h3>
-                <p className="text-xs text-purple-600 dark:text-purple-400 font-bold mt-0.5">
+                <p className="text-xs text-[#3B82F6] dark:text-[#60A5FA] font-bold mt-0.5">
                   {formData.designation || currentUser.designation || currentUser.role}
                 </p>
 
                 {/* Initial Avatar Reference Display */}
                 <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-slate-200/80 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-300 font-mono">
-                  <span className="font-bold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-950/80 px-1.5 py-0.5 rounded">
+                  <span className="font-bold text-[#3B82F6] dark:text-[#60A5FA] bg-[#EFF6FF] dark:bg-[#1E3A63] px-1.5 py-0.5 rounded">
                     [ {liveInitials} ]
                   </span>
                   <span className="font-sans font-semibold text-slate-700 dark:text-slate-200 truncate max-w-[180px]">
@@ -554,8 +554,8 @@ export const AccountModule: React.FC = () => {
                     <Camera className="w-3 h-3" /> Custom Photo Active
                   </span>
                 ) : (
-                  <span className="px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-[11px] font-bold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-purple-500 dark:text-purple-400" /> Automatic Initials Avatar ({liveInitials})
+                  <span className="px-2.5 py-1 rounded-full bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] border border-[#1E3A63] text-[11px] font-bold flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-[#3B82F6] dark:text-[#F7A914]" /> Automatic Initials Avatar ({liveInitials})
                   </span>
                 )}
               </div>
@@ -574,7 +574,7 @@ export const AccountModule: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full py-2 px-3 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-purple-200 dark:border-purple-800 cursor-pointer"
+                      className="w-full py-2 px-3 rounded-xl bg-slate-50 dark:bg-[#122E52]/20 hover:bg-[#EFF6FF] dark:hover:bg-[#0B1B32] text-[#3B82F6] dark:text-[#60A5FA] text-xs font-bold flex items-center justify-center gap-1.5 transition-colors border border-[#1E3A63] cursor-pointer"
                     >
                       <Upload className="w-3.5 h-3.5" /> Upload Profile Photo
                     </button>
@@ -597,7 +597,7 @@ export const AccountModule: React.FC = () => {
             <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-1.5">
-                  <Shield className="w-4 h-4 text-purple-600 dark:text-purple-400" /> Protected Identity
+                  <Shield className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" /> Protected Identity
                 </span>
                 <span className={`px-2.5 py-0.5 rounded-full border text-[11px] font-black flex items-center gap-1 ${getRoleBadge(currentUser.role)}`}>
                   <Lock className="w-3 h-3" />
@@ -615,8 +615,8 @@ export const AccountModule: React.FC = () => {
 
                 <div className="p-2.5 bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-200/80 dark:border-slate-700 flex items-center justify-between">
                   <span className="text-slate-500 dark:text-slate-400 font-medium">Role Authority</span>
-                  <span className="font-bold text-purple-700 dark:text-purple-300 flex items-center gap-1">
-                    <BadgeCheck className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                  <span className="font-bold text-[#3B82F6] dark:text-[#60A5FA] flex items-center gap-1">
+                    <BadgeCheck className="w-3.5 h-3.5 text-[#3B82F6] dark:text-[#60A5FA]" />
                     {currentUser.role === 'Admin' ? 'Super Administrator' : `${currentUser.role} Access`}
                   </span>
                 </div>
@@ -638,8 +638,8 @@ export const AccountModule: React.FC = () => {
               </div>
 
               {/* Role Protection Security Banner */}
-              <div className="p-3 bg-purple-50/70 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-800/60 rounded-2xl text-[11px] text-purple-900 dark:text-purple-200 leading-relaxed flex items-start gap-2">
-                <Lock className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
+              <div className="p-3 bg-[#EFF6FF]/70 dark:bg-[#1E3A63] border border-[#1E3A63] dark:border-[#1E3A63] rounded-2xl text-[11px] text-[#12233F] dark:text-white leading-relaxed flex items-start gap-2">
+                <Lock className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA] shrink-0 mt-0.5" />
                 <span>
                   <strong>Strict Security Policy:</strong> Your role ({currentUser.role}) and Official ID are locked by institutional security rules and cannot be modified by the user.
                 </span>
@@ -680,14 +680,14 @@ export const AccountModule: React.FC = () => {
                         onClick={() => setFormData({ ...formData, avatar: '' })}
                         className={`px-3 py-2 rounded-2xl border flex items-center gap-2 transition-all cursor-pointer ${
                           !hasCustomPhoto
-                            ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
+                            ? 'bg-[#122E52] text-white border-[#122E52] shadow-sm'
                             : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750'
                         }`}
                       >
                         <UserAvatar name={formData.name || 'User'} avatarUrl="" size="sm" />
                         <div className="text-left">
                           <span className="text-xs font-bold block leading-none">Use Initials [{liveInitials}]</span>
-                          <span className={`text-[10px] block mt-0.5 ${!hasCustomPhoto ? 'text-purple-200' : 'text-slate-400 dark:text-slate-500'}`}>
+                          <span className={`text-[10px] block mt-0.5 ${!hasCustomPhoto ? 'text-[#F7A914]' : 'text-slate-400 dark:text-slate-500'}`}>
                             Auto generated
                           </span>
                         </div>
@@ -707,12 +707,12 @@ export const AccountModule: React.FC = () => {
                               src={imgUrl}
                               alt="Preset avatar"
                               className={`w-10 h-10 rounded-full object-cover border-2 ${
-                                formData.avatar === imgUrl ? 'border-purple-600 shadow-md ring-2 ring-purple-200 dark:ring-purple-900' : 'border-slate-200 dark:border-slate-700'
+                                formData.avatar === imgUrl ? 'border-[#122E52] shadow-md ring-2 ring-[#F7A914]/30 dark:ring-[#F7A914]/30' : 'border-slate-200 dark:border-slate-700'
                               }`}
                             />
                           ) : null}
                           {formData.avatar === imgUrl && (
-                            <span className="absolute -top-1 -right-1 bg-purple-600 text-white rounded-full p-0.5">
+                            <span className="absolute -top-1 -right-1 bg-[#122E52] text-white rounded-full p-0.5">
                               <Check className="w-2.5 h-2.5" />
                             </span>
                           )}
@@ -726,7 +726,7 @@ export const AccountModule: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                      Full Name {activeRole !== 'Student' && <span className="text-purple-600 dark:text-purple-400">*</span>}
+                      Full Name {activeRole !== 'Student' && <span className="text-[#3B82F6] dark:text-[#60A5FA]">*</span>}
                     </label>
                     <input
                       type="text"
@@ -738,19 +738,19 @@ export const AccountModule: React.FC = () => {
                       className={`w-full border rounded-xl py-2.5 px-3.5 text-xs font-medium transition-all ${
                         activeRole === 'Student'
                           ? 'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
-                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500'
+                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]'
                       }`}
                     />
                     {activeRole !== 'Student' && (
                       <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
-                        Initials avatar will automatically regenerate as: <strong className="text-purple-700 dark:text-purple-300">[{liveInitials}]</strong>
+                        Initials avatar will automatically regenerate as: <strong className="text-[#3B82F6] dark:text-[#60A5FA]">[{liveInitials}]</strong>
                       </p>
                     )}
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                      Email Address {activeRole !== 'Student' && <span className="text-purple-600 dark:text-purple-400">*</span>}
+                      Email Address {activeRole !== 'Student' && <span className="text-[#3B82F6] dark:text-[#60A5FA]">*</span>}
                     </label>
                     <input
                       type="email"
@@ -762,7 +762,7 @@ export const AccountModule: React.FC = () => {
                       className={`w-full border rounded-xl py-2.5 px-3.5 text-xs font-medium transition-all ${
                         activeRole === 'Student'
                           ? 'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
-                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500'
+                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]'
                       }`}
                     />
                   </div>
@@ -781,7 +781,7 @@ export const AccountModule: React.FC = () => {
                       className={`w-full border rounded-xl py-2.5 px-3.5 text-xs font-medium transition-all ${
                         activeRole === 'Student'
                           ? 'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
-                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500'
+                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]'
                       }`}
                     />
                   </div>
@@ -799,7 +799,7 @@ export const AccountModule: React.FC = () => {
                       className={`w-full border rounded-xl py-2.5 px-3.5 text-xs font-medium transition-all ${
                         activeRole === 'Student'
                           ? 'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
-                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500'
+                          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]'
                       }`}
                     />
                   </div>
@@ -816,7 +816,7 @@ export const AccountModule: React.FC = () => {
                       value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                       placeholder="452 Academy Blvd, Suite 100, Education City"
-                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl py-2.5 px-3.5 text-xs font-medium focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl py-2.5 px-3.5 text-xs font-medium focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]"
                     />
                   </div>
                 )}
@@ -838,7 +838,7 @@ export const AccountModule: React.FC = () => {
                     value={formData.bio}
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                     placeholder="Write a brief overview of your academic focus, responsibilities, or interests..."
-                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl p-3.5 text-xs font-medium focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 leading-relaxed"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl p-3.5 text-xs font-medium focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6] leading-relaxed"
                   />
                 </div>
 
@@ -851,7 +851,7 @@ export const AccountModule: React.FC = () => {
                   </span>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors shadow-md shadow-purple-200 dark:shadow-none flex items-center gap-2 cursor-pointer"
+                    className="btn-navy"
                   >
                     <Save className="w-4 h-4" />
                     <span>Save Profile Changes</span>
@@ -882,7 +882,7 @@ export const AccountModule: React.FC = () => {
                 value={passwords.current}
                 onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
                 placeholder="••••••••••••"
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]"
               />
             </div>
             <div>
@@ -893,7 +893,7 @@ export const AccountModule: React.FC = () => {
                 value={passwords.newPass}
                 onChange={(e) => setPasswords({ ...passwords, newPass: e.target.value })}
                 placeholder="At least 6 characters"
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]"
               />
             </div>
             <div>
@@ -904,12 +904,12 @@ export const AccountModule: React.FC = () => {
                 value={passwords.confirmPass}
                 onChange={(e) => setPasswords({ ...passwords, confirmPass: e.target.value })}
                 placeholder="Repeat new password"
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-3.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]"
               />
             </div>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors shadow-md shadow-purple-200 dark:shadow-none cursor-pointer"
+              className="btn-navy"
             >
               Update Password
             </button>
@@ -923,14 +923,14 @@ export const AccountModule: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h3 className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                <Palette className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                <Palette className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA]" />
                 Appearance & Theme Preferences
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Customize your visual interface preference. Changes take effect immediately across all modules.
               </p>
             </div>
-            <div className="text-xs font-semibold px-3 py-1 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 self-start sm:self-auto">
+            <div className="text-xs font-semibold px-3 py-1 rounded-xl bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] border border-[#1E3A63] self-start sm:self-auto">
               Current: <strong className="capitalize">{theme} Mode</strong> ({resolvedTheme} active)
             </div>
           </div>
@@ -942,8 +942,8 @@ export const AccountModule: React.FC = () => {
               onClick={() => setTheme('light')}
               className={`p-4 rounded-2xl border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
                 theme === 'light'
-                  ? 'border-purple-600 bg-purple-50/50 dark:bg-purple-950/20 ring-2 ring-purple-600/30'
-                  : 'border-slate-200 dark:border-slate-750 bg-slate-50/50 dark:bg-slate-800/40 hover:border-purple-300 dark:hover:border-purple-700'
+                  ? 'border-[#122E52] bg-[#122E52]/5 dark:bg-[#122E52]/20 ring-2 ring-[#F7A914]/40'
+                  : 'border-slate-200 dark:border-slate-750 bg-slate-50/50 dark:bg-slate-800/40 hover:border-[#1E3A63] dark:hover:border-[#1E3A63]'
               }`}
             >
               <div>
@@ -952,7 +952,7 @@ export const AccountModule: React.FC = () => {
                     <Sun className="w-5 h-5" />
                   </div>
                   {theme === 'light' && (
-                    <span className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs">
+                    <span className="w-5 h-5 rounded-full bg-[#122E52] text-white flex items-center justify-center text-xs">
                       <Check className="w-3.5 h-3.5" />
                     </span>
                   )}
@@ -963,7 +963,7 @@ export const AccountModule: React.FC = () => {
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-700/60">
-                <span className={`text-[11px] font-bold ${theme === 'light' ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400 dark:text-slate-500'}`}>
+                <span className={`text-[11px] font-bold ${theme === 'light' ? 'text-[#3B82F6] dark:text-[#60A5FA]' : 'text-slate-400 dark:text-slate-500'}`}>
                   {theme === 'light' ? 'Active Theme' : 'Click to activate'}
                 </span>
               </div>
@@ -975,17 +975,17 @@ export const AccountModule: React.FC = () => {
               onClick={() => setTheme('dark')}
               className={`p-4 rounded-2xl border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
                 theme === 'dark'
-                  ? 'border-purple-600 bg-purple-50/50 dark:bg-purple-950/20 ring-2 ring-purple-600/30'
-                  : 'border-slate-200 dark:border-slate-750 bg-slate-50/50 dark:bg-slate-800/40 hover:border-purple-300 dark:hover:border-purple-700'
+                  ? 'border-[#122E52] bg-[#122E52]/5 dark:bg-[#122E52]/20 ring-2 ring-[#F7A914]/40'
+                  : 'border-slate-200 dark:border-slate-750 bg-slate-50/50 dark:bg-slate-800/40 hover:border-[#1E3A63] dark:hover:border-[#1E3A63]'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="p-2.5 rounded-xl bg-purple-900 text-purple-200">
+                  <div className="p-2.5 rounded-xl bg-[#0B1B32] text-[#F7A914]">
                     <Moon className="w-5 h-5" />
                   </div>
                   {theme === 'dark' && (
-                    <span className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs">
+                    <span className="w-5 h-5 rounded-full bg-[#122E52] text-white flex items-center justify-center text-xs">
                       <Check className="w-3.5 h-3.5" />
                     </span>
                   )}
@@ -996,7 +996,7 @@ export const AccountModule: React.FC = () => {
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-700/60">
-                <span className={`text-[11px] font-bold ${theme === 'dark' ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400 dark:text-slate-500'}`}>
+                <span className={`text-[11px] font-bold ${theme === 'dark' ? 'text-[#3B82F6] dark:text-[#60A5FA]' : 'text-slate-400 dark:text-slate-500'}`}>
                   {theme === 'dark' ? 'Active Theme' : 'Click to activate'}
                 </span>
               </div>
@@ -1008,8 +1008,8 @@ export const AccountModule: React.FC = () => {
               onClick={() => setTheme('system')}
               className={`p-4 rounded-2xl border text-left transition-all relative flex flex-col justify-between cursor-pointer ${
                 theme === 'system'
-                  ? 'border-purple-600 bg-purple-50/50 dark:bg-purple-950/20 ring-2 ring-purple-600/30'
-                  : 'border-slate-200 dark:border-slate-750 bg-slate-50/50 dark:bg-slate-800/40 hover:border-purple-300 dark:hover:border-purple-700'
+                  ? 'border-[#122E52] bg-[#122E52]/5 dark:bg-[#122E52]/20 ring-2 ring-[#F7A914]/40'
+                  : 'border-slate-200 dark:border-slate-750 bg-slate-50/50 dark:bg-slate-800/40 hover:border-[#1E3A63] dark:hover:border-[#1E3A63]'
               }`}
             >
               <div>
@@ -1018,7 +1018,7 @@ export const AccountModule: React.FC = () => {
                     <Laptop className="w-5 h-5" />
                   </div>
                   {theme === 'system' && (
-                    <span className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs">
+                    <span className="w-5 h-5 rounded-full bg-[#122E52] text-white flex items-center justify-center text-xs">
                       <Check className="w-3.5 h-3.5" />
                     </span>
                   )}
@@ -1029,7 +1029,7 @@ export const AccountModule: React.FC = () => {
                 </p>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-700/60">
-                <span className={`text-[11px] font-bold ${theme === 'system' ? 'text-purple-600 dark:text-purple-400' : 'text-slate-400 dark:text-slate-500'}`}>
+                <span className={`text-[11px] font-bold ${theme === 'system' ? 'text-[#3B82F6] dark:text-[#60A5FA]' : 'text-slate-400 dark:text-slate-500'}`}>
                   {theme === 'system' ? `Active (${resolvedTheme})` : 'Click to activate'}
                 </span>
               </div>
@@ -1039,7 +1039,7 @@ export const AccountModule: React.FC = () => {
           {/* Real-time Theme Status Box */}
           <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 text-xs flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300">
+              <div className="p-2 rounded-xl bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA]">
                 <Palette className="w-4 h-4" />
               </div>
               <div>
@@ -1049,7 +1049,7 @@ export const AccountModule: React.FC = () => {
                 </p>
               </div>
             </div>
-            <span className="font-mono text-xs font-bold text-purple-700 dark:text-purple-400 uppercase bg-white dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-2xs">
+            <span className="font-mono text-xs font-bold text-[#122E52] dark:text-[#F7A914] uppercase bg-white dark:bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-2xs">
               {theme}
             </span>
           </div>
@@ -1060,24 +1060,24 @@ export const AccountModule: React.FC = () => {
       {activeTab === 'admin-governance' && activeRole === 'Admin' && (
         <div className="space-y-6">
           {/* Top Admin Banner */}
-          <div className="bg-gradient-to-r from-purple-900 to-indigo-900 text-white p-6 sm:p-8 rounded-3xl shadow-lg relative overflow-hidden">
+          <div className="bg-gradient-to-r from-[#122E52] to-[#0B1B32] text-white p-6 sm:p-8 rounded-3xl shadow-lg relative overflow-hidden">
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <span className="px-3 py-1 rounded-full bg-purple-800/80 border border-purple-600/50 text-[11px] font-extrabold uppercase tracking-wider text-purple-200 inline-flex items-center gap-1.5 mb-2">
-                  <ShieldAlert className="w-3.5 h-3.5 text-purple-300" />
+                <span className="px-3 py-1 rounded-full bg-[#0B1B32] border border-[#122E52]/50 text-[11px] font-extrabold uppercase tracking-wider text-[#F7A914] inline-flex items-center gap-1.5 mb-2">
+                  <ShieldAlert className="w-3.5 h-3.5 text-[#F7A914]" />
                   Institutional Security & Role Authority
                 </span>
                 <h2 className="text-xl font-extrabold tracking-tight">Institutional Role Governance & Audit Directory</h2>
-                <p className="text-xs text-purple-200/90 mt-1 max-w-2xl">
+                <p className="text-xs text-[#F7A914]/90 mt-1 max-w-2xl">
                   Only authorized School Administrators can assign, upgrade, or reassign user roles. Every role modification is logged permanently into the security audit ledger.
                 </p>
               </div>
 
               <button
                 onClick={() => setIsCreateUserModalOpen(true)}
-                className="px-4 py-2.5 rounded-xl bg-white text-purple-900 hover:bg-purple-50 font-bold text-xs transition-all shadow-md flex items-center gap-2 self-start md:self-auto cursor-pointer"
+                className="px-4 py-2.5 rounded-xl bg-white text-[#12233F] hover:bg-[#EFF6FF] font-bold text-xs transition-all shadow-md flex items-center gap-2 self-start md:self-auto cursor-pointer"
               >
-                <Plus className="w-4 h-4 text-purple-600" />
+                <Plus className="w-4 h-4 text-[#3B82F6]" />
                 <span>Provision New User</span>
               </button>
             </div>
@@ -1087,7 +1087,7 @@ export const AccountModule: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs overflow-hidden">
             <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 border border-purple-100 dark:border-purple-800">
+                <div className="w-10 h-10 rounded-2xl bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center shrink-0 border border-[#1E3A63] dark:border-[#1E3A63]">
                   <Users className="w-5 h-5" />
                 </div>
                 <div>
@@ -1104,7 +1104,7 @@ export const AccountModule: React.FC = () => {
                     value={adminSearch}
                     onChange={(e) => setAdminSearch(e.target.value)}
                     placeholder="Search by name, ID, or email..."
-                    className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl py-1.5 pl-8 pr-3 text-xs focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                    className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl py-1.5 pl-8 pr-3 text-xs focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20"
                   />
                   <Search className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 </div>
@@ -1149,7 +1149,7 @@ export const AccountModule: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-purple-50/30 dark:hover:bg-slate-800/40 transition-colors">
+                    <tr key={u.id} className="hover:bg-[#EFF6FF]/30 dark:hover:bg-slate-800/40 transition-colors">
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
                           <UserAvatar
@@ -1163,7 +1163,7 @@ export const AccountModule: React.FC = () => {
                           <div>
                             <span className="font-bold text-slate-900 dark:text-white block text-xs">{u.name}</span>
                             <span className="text-[11px] text-slate-400 dark:text-slate-400 block">{u.email}</span>
-                            <span className="text-[10px] font-mono font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/80 border border-purple-200/50 dark:border-purple-800 px-1.5 py-0.5 rounded inline-block mt-0.5">
+                            <span className="text-[10px] font-mono font-bold text-[#3B82F6] dark:text-[#60A5FA] bg-[#EFF6FF] dark:bg-[#1E3A63] border border-[#1E3A63] dark:border-[#1E3A63] px-1.5 py-0.5 rounded inline-block mt-0.5">
                               {u.schoolId || u.studentId || u.teacherId || u.id}
                             </span>
                           </div>
@@ -1205,7 +1205,7 @@ export const AccountModule: React.FC = () => {
                             <>
                               <button
                                 onClick={() => handleOpenReassignModal(u)}
-                                className="px-2.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-bold transition-colors text-[11px] flex items-center gap-1 cursor-pointer"
+                                className="px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-[#122E52]/20 hover:bg-[#EFF6FF] dark:hover:bg-[#0B1B32] text-[#3B82F6] dark:text-[#60A5FA] border border-[#1E3A63] font-bold transition-colors text-[11px] flex items-center gap-1 cursor-pointer"
                                 title="Reassign Role"
                               >
                                 <RefreshCw className="w-3 h-3" />
@@ -1249,7 +1249,7 @@ export const AccountModule: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-800 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] border border-[#1E3A63] dark:border-[#1E3A63] flex items-center justify-center">
                   <History className="w-4 h-4" />
                 </div>
                 <div>
@@ -1260,7 +1260,7 @@ export const AccountModule: React.FC = () => {
               <button
                 onClick={fetchAuditLogs}
                 disabled={isLoadingAudit}
-                className="p-2 rounded-xl text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                className="p-2 rounded-xl text-slate-400 hover:text-[#3B82F6] dark:hover:text-[#F7A914] hover:bg-[#EFF6FF] dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 title="Refresh Audit Logs"
               >
                 <RefreshCw className={`w-4 h-4 ${isLoadingAudit ? 'animate-spin' : ''}`} />
@@ -1282,7 +1282,7 @@ export const AccountModule: React.FC = () => {
                       </div>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                         Role changed from <strong className="text-slate-700 dark:text-slate-300">{log.previousRole}</strong> to{' '}
-                        <strong className="text-purple-700 dark:text-purple-400">{log.newRole}</strong>
+                        <strong className="text-[#122E52] dark:text-[#F7A914]">{log.newRole}</strong>
                       </p>
                       {log.reason && (
                         <p className="text-[10px] text-slate-400 dark:text-slate-500 italic mt-0.5">Reason: "{log.reason}"</p>
@@ -1309,7 +1309,7 @@ export const AccountModule: React.FC = () => {
           title={`Reassign Role for ${reassignModalUser.name}`}
         >
           <form onSubmit={handleExecuteRoleReassign} className="space-y-4">
-            <div className="p-3 bg-purple-50 dark:bg-purple-950/60 rounded-2xl border border-purple-100 dark:border-purple-800 text-xs text-purple-900 dark:text-purple-200 space-y-1">
+            <div className="p-3 bg-slate-50 dark:bg-[#122E52]/20 rounded-2xl border border-[#1E3A63] dark:border-[#1E3A63] text-xs text-[#12233F] dark:text-white space-y-1">
               <p>
                 <strong>Current Role:</strong> {reassignModalUser.role}
               </p>
@@ -1341,7 +1341,7 @@ export const AccountModule: React.FC = () => {
                 value={reassignReason}
                 onChange={(e) => setReassignReason(e.target.value)}
                 placeholder="e.g. Promoted to Department Head / Role adjustment per school board decree"
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl p-2.5 text-xs font-medium focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl p-2.5 text-xs font-medium focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20"
               />
             </div>
 
@@ -1356,7 +1356,7 @@ export const AccountModule: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmittingRole}
-                className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 shadow-md shadow-purple-200 dark:shadow-none flex items-center justify-center gap-1.5 cursor-pointer"
+                className="btn-gold flex-1"
               >
                 {isSubmittingRole ? 'Saving...' : 'Confirm Reassignment'}
               </button>
@@ -1392,7 +1392,7 @@ export const AccountModule: React.FC = () => {
                 value={statusReason}
                 onChange={(e) => setStatusReason(e.target.value)}
                 placeholder="e.g. Leave of absence / Temporary credential freeze / Reinstated"
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl p-2.5 text-xs font-medium focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 rounded-xl p-2.5 text-xs font-medium focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20"
               />
             </div>
 
@@ -1438,7 +1438,7 @@ export const AccountModule: React.FC = () => {
                     onClick={() => generateAutoSchoolId(r)}
                     className={`px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer ${
                       newUserData.role === r
-                        ? 'bg-purple-600 text-white'
+                        ? 'bg-[#122E52] text-white'
                         : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                     }`}
                   >
@@ -1500,12 +1500,12 @@ export const AccountModule: React.FC = () => {
             </div>
 
             {/* Generated Initials Avatar Preview */}
-            <div className="p-3 bg-purple-50/70 dark:bg-purple-950/60 border border-purple-100 dark:border-purple-800 rounded-2xl flex items-center gap-3">
+            <div className="p-3 bg-[#EFF6FF]/70 dark:bg-[#1E3A63] border border-[#1E3A63] dark:border-[#1E3A63] rounded-2xl flex items-center gap-3">
               <UserAvatar name={newUserData.name || 'New User'} avatarUrl="" size="md" />
               <div className="text-xs">
-                <span className="font-bold text-purple-900 dark:text-purple-200 block">Automatic Initial Avatar</span>
+                <span className="font-bold text-[#12233F] dark:text-white block">Automatic Initial Avatar</span>
                 <span className="text-slate-500 dark:text-slate-400 text-[11px]">
-                  Generated Initials: <strong className="text-purple-700 dark:text-purple-300">[{getInitials(newUserData.name || 'New User')}]</strong> with light background.
+                  Generated Initials: <strong className="text-[#3B82F6] dark:text-[#60A5FA]">[{getInitials(newUserData.name || 'New User')}]</strong> with light background.
                 </span>
               </div>
             </div>
@@ -1521,7 +1521,7 @@ export const AccountModule: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmittingNewUser}
-                className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 shadow-md shadow-purple-200 dark:shadow-none flex items-center justify-center gap-1.5 cursor-pointer"
+                className="btn-gold flex-1"
               >
                 {isSubmittingNewUser ? 'Provisioning...' : 'Provision Account'}
               </button>

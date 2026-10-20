@@ -37,6 +37,7 @@ export function getRoleDisplayName(role: UserRole | string): string {
 }
 
 export type SubscriptionPlan = 'Basic' | 'Standard' | 'Premium' | 'Enterprise';
+export type ProBillingCycle = 'monthly' | '3month' | '6month' | 'yearly';
 
 export interface PreviousPrincipal {
   id: string;
@@ -151,9 +152,19 @@ export interface ClassTeacherAssignment {
   history?: ClassTeacherAssignmentHistory[];
 }
 
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  avatar?: string;
+  provider: 'email' | 'google';
+  createdAt?: string;
+}
+
 export interface UserProfile {
   id: string;
-  schoolId: string; // Identification number e.g., "SUP-2026-0001", "ADM-2026-0001", "PRP-2026-0001", "TCH-2026-0007", "STU-2026-0125", "PAR-2026-0042", "ACC-2026-0001", "LIB-2026-0001"
+  ileysId?: string; // 4-digit numeric Ileys ID e.g. "1001", "2001", "3001", "4001", "5001"
+  schoolId: string; // Identification number e.g., "SUP-2026-0001", "ADM-2026-0001", "PRP-2026-0001", "TCH-2026-0007", "STU-2026-0125"
   tenantSchoolId?: string; // Current or primary School Database ID e.g., "school-1", "school-2", "platform"
   password?: string;
   name: string;
@@ -195,6 +206,7 @@ export interface RoleAuditLog {
 
 export interface Student {
   id: string; // Unique Student School ID e.g. STU-2026-0125
+  ileysId?: string; // 4-digit Ileys ID e.g. 1001
   schoolId?: string;
   rollNo: string;
   name: string;
@@ -216,6 +228,7 @@ export interface Student {
 
 export interface Teacher {
   id: string;
+  ileysId?: string; // 4-digit Ileys ID e.g. 2001
   teacherId: string; // Teacher School ID e.g. TCH-2026-0007
   schoolId?: string;
   name: string;
@@ -725,6 +738,22 @@ export interface QuizAttempt {
   userAnswers: Record<string, number>;
   completedAt: string;
   timeSpentSeconds: number;
+}
+
+export type SchoolEventType = 'exam' | 'holiday' | 'academic' | 'sports' | 'meeting' | 'cultural';
+
+export interface SchoolCalendarEvent {
+  id: string;
+  title: string;
+  type: SchoolEventType;
+  date: string; // YYYY-MM-DD
+  endDate?: string;
+  time?: string;
+  location?: string;
+  description?: string;
+  targetAudience?: 'All' | 'Students' | 'Teachers' | 'Parents';
+  schoolId?: string;
+  status?: 'Upcoming' | 'Ongoing' | 'Completed';
 }
 
 // ==========================================

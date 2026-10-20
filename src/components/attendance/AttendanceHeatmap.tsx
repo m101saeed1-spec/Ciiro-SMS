@@ -303,17 +303,17 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
     ];
   }, []);
 
-  // D3 Color Scale for Cohort View (Purple intensity scale)
+  // D3 Color Scale for Cohort View (Ileys Blue / Navy intensity scale)
   const cohortColorScale = useMemo(() => {
     return d3
       .scaleThreshold<number, string>()
       .domain([85, 90, 95, 98])
       .range([
-        '#e9d5ff', // 80-85% (soft light purple)
-        '#c084fc', // 85-90% (medium light purple)
-        '#a855f7', // 90-95% (vibrant purple)
-        '#7e22ce', // 95-98% (deep rich purple)
-        '#581c87', // 98-100% (highest intensity purple)
+        '#dbeafe', // 80-85% (soft light blue)
+        '#93c5fd', // 85-90% (medium light blue)
+        '#3b82f6', // 90-95% (vibrant Ileys blue)
+        '#1d4ed8', // 95-98% (deep rich blue)
+        '#122e52', // 98-100% (highest intensity Ileys navy)
       ]);
   }, []);
 
@@ -343,16 +343,16 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
 
     // Cohort Heatmap Levels based on attendance percentage
     if (day.rate >= 98) {
-      return 'bg-purple-700 hover:bg-purple-800 dark:bg-purple-600 dark:hover:bg-purple-500 text-white shadow-2xs cursor-pointer';
+      return 'bg-[#0B1B32] hover:bg-[#0B1B32] dark:bg-[#122E52] dark:hover:bg-[#F7A914] text-white shadow-2xs cursor-pointer';
     }
     if (day.rate >= 94) {
-      return 'bg-purple-500 hover:bg-purple-600 dark:bg-purple-500 dark:hover:bg-purple-400 text-white shadow-2xs cursor-pointer';
+      return 'bg-[#F7A914] hover:bg-[#122E52] dark:bg-[#F7A914] dark:hover:bg-[#F7A914] text-white shadow-2xs cursor-pointer';
     }
     if (day.rate >= 90) {
-      return 'bg-purple-400 hover:bg-purple-500 dark:bg-purple-400 dark:hover:bg-purple-300 text-purple-950 shadow-2xs cursor-pointer';
+      return 'bg-[#F7A914] hover:bg-[#F7A914] dark:bg-[#F7A914] dark:hover:bg-[#0B1B32] text-[#12233F] shadow-2xs cursor-pointer';
     }
     if (day.rate >= 85) {
-      return 'bg-purple-200 hover:bg-purple-300 dark:bg-purple-800 dark:hover:bg-purple-700 text-purple-900 dark:text-purple-100 cursor-pointer';
+      return 'bg-[#FEF3C7] hover:bg-[#0B1B32] dark:bg-[#1E3A63] dark:hover:bg-[#0B1B32] text-[#12233F] dark:text-slate-200 cursor-pointer';
     }
     return 'bg-rose-200 hover:bg-rose-300 dark:bg-rose-950 dark:hover:bg-rose-900 text-rose-800 dark:text-rose-200 border border-rose-300 dark:border-rose-800 cursor-pointer';
   };
@@ -390,13 +390,13 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2">
-            <span className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-800">
+            <span className="p-2 rounded-xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] border border-[#1E3A63] dark:border-[#1E3A63]">
               <CalendarCheck className="w-5 h-5" />
             </span>
             <div>
               <h3 className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                 Yearly Academic Attendance Heatmap
-                <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300">
+                <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA]">
                   {academicYear} Term
                 </span>
               </h3>
@@ -422,7 +422,7 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
                   onClick={() => setActiveFilterClass(cls)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     activeFilterClass === cls
-                      ? 'bg-purple-600 text-white shadow-xs'
+                      ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                   }`}
                 >
@@ -438,7 +438,7 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
               onClick={() => setSelectedMonth('all')}
               className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                 selectedMonth === 'all'
-                  ? 'bg-purple-600 text-white shadow-xs'
+                  ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
@@ -466,7 +466,7 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
       {/* Analytics KPI Metric Highlights Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
         <div className="bg-slate-50/80 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300">
+          <div className="p-2.5 rounded-xl bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA]">
             <TrendingUp className="w-4 h-4" />
           </div>
           <div>
@@ -533,8 +533,8 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
                 onClick={() => setSelectedMonth(selectedMonth === m.index ? 'all' : m.index)}
                 className={`py-1 rounded-lg cursor-pointer transition-colors ${
                   selectedMonth === m.index
-                    ? 'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 font-extrabold'
-                    : 'hover:text-purple-600 dark:hover:text-purple-400'
+                    ? 'bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] font-extrabold'
+                    : 'hover:text-[#3B82F6] dark:hover:text-[#F7A914]'
                 }`}
               >
                 {m.name.slice(0, 3)}
@@ -555,7 +555,7 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
                   key={m.index}
                   className={`p-2 rounded-2xl border transition-all ${
                     selectedMonth === m.index
-                      ? 'border-purple-500 bg-purple-50/30 dark:bg-purple-950/20 shadow-xs'
+                      ? 'border-[#1E3A63] bg-[#EFF6FF]/30 dark:bg-[#1E3A63] shadow-xs'
                       : 'border-slate-100 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-800/30'
                   }`}
                 >
@@ -648,19 +648,19 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
                 title="< 85%"
               />
               <span
-                className="w-3.5 h-3.5 rounded-xs bg-purple-200 dark:bg-purple-800"
+                className="w-3.5 h-3.5 rounded-xs bg-[#FEF3C7] dark:bg-[#1E3A63]"
                 title="85% - 90%"
               />
               <span
-                className="w-3.5 h-3.5 rounded-xs bg-purple-400 dark:bg-purple-400"
+                className="w-3.5 h-3.5 rounded-xs bg-[#F7A914] dark:bg-[#F7A914]"
                 title="90% - 94%"
               />
               <span
-                className="w-3.5 h-3.5 rounded-xs bg-purple-500 dark:bg-purple-500"
+                className="w-3.5 h-3.5 rounded-xs bg-[#F7A914] dark:bg-[#F7A914]"
                 title="94% - 98%"
               />
               <span
-                className="w-3.5 h-3.5 rounded-xs bg-purple-700 dark:bg-purple-600"
+                className="w-3.5 h-3.5 rounded-xs bg-[#0B1B32] dark:bg-[#122E52]"
                 title="98% - 100%"
               />
               <span>More (100%)</span>
@@ -673,7 +673,7 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
         </div>
 
         <div className="text-[11px] font-medium text-slate-400 dark:text-slate-500 flex items-center gap-1">
-          <Info className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+          <Info className="w-3.5 h-3.5 text-[#3B82F6] dark:text-[#60A5FA]" />
           Click any date tile to inspect or update day records
         </div>
       </div>
@@ -685,7 +685,7 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
           style={{ left: `${tooltipPos.x}px`, top: `${tooltipPos.y}px` }}
         >
           <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
-            <span className="font-bold text-purple-300">
+            <span className="font-bold text-[#F7A914]">
               {d3.timeFormat('%A, %b %d, %Y')(hoveredDay.date)}
             </span>
             {hoveredDay.isHoliday && (
@@ -732,9 +732,9 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
 
       {/* Selected Day Detail Drawer / Banner */}
       {selectedDayDetail && (
-        <div className="p-4 rounded-2xl bg-purple-50/80 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-slide-up">
+        <div className="p-4 rounded-2xl bg-[#EFF6FF]/80 dark:bg-[#1E3A63] border border-[#1E3A63] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-slide-up">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-purple-600 text-white shadow-xs">
+            <div className="p-2.5 rounded-xl bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-xs">
               <CalendarIcon className="w-5 h-5" />
             </div>
             <div>
@@ -756,7 +756,7 @@ export const AttendanceHeatmap: React.FC<AttendanceHeatmapProps> = ({
               <button
                 type="button"
                 onClick={() => onSelectDate(selectedDayDetail.dateString)}
-                className="px-3.5 py-1.5 rounded-xl bg-purple-600 text-white hover:bg-purple-700 text-xs font-bold shadow-xs cursor-pointer"
+                className="px-3.5 py-1.5 rounded-xl bg-[#122E52] text-white hover:bg-[#0B1B32] text-xs font-bold shadow-xs cursor-pointer"
               >
                 Load Attendance Sheet
               </button>

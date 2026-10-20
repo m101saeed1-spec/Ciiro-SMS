@@ -349,7 +349,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
               name={student.name}
               avatarUrl={student.avatar}
               size="2xl"
-              className="border-2 border-indigo-200 dark:border-indigo-900"
+              className="border-2 border-[#3B82F6]/30 dark:border-[#1E3A63]"
             />
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2.5">
@@ -368,7 +368,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
                 <span>•</span>
                 <span>Roll No: #{student.rollNo}</span>
                 <span>•</span>
-                <span className="font-semibold text-purple-700 dark:text-purple-400">
+                <span className="font-semibold text-[#122E52] dark:text-[#F7A914]">
                   {student.class} (Sec {student.section})
                 </span>
                 <span>•</span>
@@ -399,9 +399,9 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
             </button>
             <button
               onClick={handleExportPDF}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/80 dark:text-indigo-300 transition-colors border border-indigo-200 dark:border-indigo-800"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 text-[#3B82F6] dark:text-[#60A5FA] transition-colors border border-[#3B82F6]/30"
             >
-              <Download className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <Download className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
               <span>Download PDF Report</span>
             </button>
             {onClose && (
@@ -425,7 +425,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Overall Rate
             </span>
-            <span className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
+            <span className="p-2 rounded-xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914]">
               <Award className="w-5 h-5" />
             </span>
           </div>
@@ -443,7 +443,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
                 metrics.attendanceRate >= 95
                   ? 'bg-emerald-500'
                   : metrics.attendanceRate >= 85
-                  ? 'bg-purple-600'
+                  ? 'bg-[#122E52]'
                   : 'bg-rose-500'
               }`}
               style={{ width: `${Math.min(100, metrics.attendanceRate)}%` }}
@@ -525,7 +525,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                <Calendar className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA]" />
                 <span>Attendance Calendar Matrix</span>
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -585,8 +585,8 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
               if (cell.isWeekend) {
                 bgClass = 'bg-slate-50/50 dark:bg-slate-900/50 text-slate-400 dark:text-slate-600 border-dashed border-slate-200 dark:border-slate-800';
               } else if (cell.isHoliday) {
-                bgClass = 'bg-purple-50/70 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-900';
-                badgeColor = 'bg-purple-500';
+                bgClass = 'bg-[#EFF6FF]/70 dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] border-[#1E3A63] dark:border-[#1E3A63]';
+                badgeColor = 'bg-[#F7A914]';
               } else if (cell.status === 'Present') {
                 bgClass = 'bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border-emerald-200/80 dark:border-emerald-800/80';
                 badgeColor = 'bg-emerald-500';
@@ -610,8 +610,8 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
                       holidayName: cell.holidayName,
                     })
                   }
-                  className={`h-11 rounded-xl border flex flex-col items-center justify-center relative p-1 transition-all text-xs font-semibold hover:ring-2 hover:ring-indigo-400/60 ${bgClass} ${
-                    isSelected ? 'ring-2 ring-indigo-600 shadow-sm' : ''
+                  className={`h-11 rounded-xl border flex flex-col items-center justify-center relative p-1 transition-all text-xs font-semibold hover:ring-2 hover:ring-[#3B82F6]/60 ${bgClass} ${
+                    isSelected ? 'ring-2 ring-[#3B82F6] shadow-sm' : ''
                   }`}
                 >
                   <span>{cell.day}</span>
@@ -619,7 +619,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
                     <span className={`w-1.5 h-1.5 rounded-full mt-0.5 ${badgeColor}`} />
                   )}
                   {cell.isHoliday && (
-                    <span className="text-[8px] font-bold text-purple-600 dark:text-purple-400 truncate max-w-full leading-none mt-0.5">
+                    <span className="text-[8px] font-bold text-[#3B82F6] dark:text-[#60A5FA] truncate max-w-full leading-none mt-0.5">
                       Holiday
                     </span>
                   )}
@@ -643,7 +643,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
               <span>Permission</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#F7A914]" />
               <span>Holiday</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -671,7 +671,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
                 {selectedDayRecord.isWeekend ? (
                   <span className="font-semibold text-slate-500">Weekend Recess</span>
                 ) : selectedDayRecord.isHoliday ? (
-                  <span className="font-semibold text-purple-600 dark:text-purple-400">
+                  <span className="font-semibold text-[#3B82F6] dark:text-[#60A5FA]">
                     Official Holiday: {selectedDayRecord.holidayName}
                   </span>
                 ) : selectedDayRecord.record ? (
@@ -703,7 +703,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
             <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
               <div>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <TrendingUp className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA]" />
                   <span>Academic Term Breakdown</span>
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -744,17 +744,17 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
               </span>
               <p className="text-base font-black text-emerald-900 dark:text-emerald-200 mt-0.5">97.4%</p>
             </div>
-            <div className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/50">
-              <span className="text-[10px] font-bold text-indigo-700 dark:text-indigo-400 uppercase">
+            <div className="p-2.5 rounded-xl bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 border border-[#3B82F6]/20 dark:border-[#3B82F6]/40">
+              <span className="text-[10px] font-bold text-[#3B82F6] dark:text-[#60A5FA] uppercase">
                 Term 2 Rate
               </span>
-              <p className="text-base font-black text-indigo-900 dark:text-indigo-200 mt-0.5">96.8%</p>
+              <p className="text-base font-black text-[#122E52] dark:text-[#F8FAFC] mt-0.5">96.8%</p>
             </div>
-            <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50">
-              <span className="text-[10px] font-bold text-purple-700 dark:text-purple-400 uppercase">
+            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#122E52]/20 border border-[#1E3A63]/50">
+              <span className="text-[10px] font-bold text-[#122E52] dark:text-[#F7A914] uppercase">
                 Overall Rank
               </span>
-              <p className="text-base font-black text-purple-900 dark:text-purple-200 mt-0.5">#2 Class</p>
+              <p className="text-base font-black text-[#12233F] dark:text-white mt-0.5">#2 Class</p>
             </div>
           </div>
         </div>
@@ -765,7 +765,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Clock className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <Clock className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA]" />
               <span>Attendance History & Audit Log</span>
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -779,7 +779,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-purple-500"
+              className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-[#3B82F6]"
             >
               <option value="All">All Statuses</option>
               <option value="Present">Present Only</option>
@@ -791,7 +791,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-purple-500"
+              className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-[#3B82F6]"
             >
               <option value="All">All Months</option>
               <option value="August">August</option>
@@ -812,7 +812,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
                 placeholder="Search date or remarks..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 pr-3 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-purple-500"
+                className="pl-8 pr-3 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-[#3B82F6]"
               />
             </div>
           </div>

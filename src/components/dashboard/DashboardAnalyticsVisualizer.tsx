@@ -326,7 +326,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
 
     const gradeChartData = [
       { grade: 'A+ (90-100%)', label: 'Distinction A+', count: gradesCount['A+'] || 42, percentage: 35, color: '#8b5cf6' }, // Purple
-      { grade: 'A (80-89%)', label: 'Excellent A', count: gradesCount['A'] || 36, percentage: 30, color: '#6366f1' }, // Indigo
+      { grade: 'A (80-89%)', label: 'Excellent A', count: gradesCount['A'] || 36, percentage: 30, color: '#3B82F6' }, // Indigo
       { grade: 'B (70-79%)', label: 'Good B', count: gradesCount['B'] || 24, percentage: 20, color: '#3b82f6' }, // Blue
       { grade: 'C (60-69%)', label: 'Pass C', count: gradesCount['C'] || 12, percentage: 10, color: '#10b981' }, // Emerald
       { grade: 'D (50-59%)', label: 'Marginal D', count: gradesCount['D'] || 5, percentage: 4, color: '#f59e0b' }, // Amber
@@ -412,7 +412,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-black tracking-wider uppercase text-purple-600 dark:text-purple-400 flex items-center gap-1.5">
+            <span className="text-xs font-black tracking-wider uppercase text-[#3B82F6] dark:text-[#60A5FA] flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" /> Institutional Analytics Engine
             </span>
             <span className="text-slate-300 dark:text-slate-700" aria-hidden="true">
@@ -433,15 +433,15 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
         {/* Interactive View Selector, Class Filter, and Export Controls */}
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Segmented View Switcher */}
-          <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
+          <div className="flex items-center p-1 bg-[#F7F9FC] dark:bg-[#0B1B32] rounded-2xl border border-[#E2E8F0] dark:border-[#1E3A63]">
             <button
               type="button"
               id="analytics-tab-overview"
               onClick={() => setActiveTab('overview')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'overview'
-                  ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-[#122E52] text-white shadow-xs'
+                  : 'text-[#64748B] dark:text-slate-400 hover:text-[#122E52] dark:hover:text-white'
               }`}
             >
               Executive Overview
@@ -452,11 +452,11 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
               onClick={() => setActiveTab('attendance')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 activeTab === 'attendance'
-                  ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-[#122E52] text-white shadow-xs'
+                  : 'text-[#64748B] dark:text-slate-400 hover:text-[#122E52] dark:hover:text-white'
               }`}
             >
-              <CalendarCheck className="w-3.5 h-3.5" />
+              <CalendarCheck className="w-3.5 h-3.5 text-[#F7A914]" />
               <span>Daily Attendance</span>
             </button>
             <button
@@ -465,11 +465,11 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
               onClick={() => setActiveTab('academic')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 activeTab === 'academic'
-                  ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-[#122E52] text-white shadow-xs'
+                  : 'text-[#64748B] dark:text-slate-400 hover:text-[#122E52] dark:hover:text-white'
               }`}
             >
-              <GraduationCap className="w-3.5 h-3.5" />
+              <GraduationCap className="w-3.5 h-3.5 text-[#3B82F6]" />
               <span>Performance Growth</span>
             </button>
           </div>
@@ -479,7 +479,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
             <select
               value={selectedClassFilter}
               onChange={(e) => setSelectedClassFilter(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-purple-500/20 cursor-pointer"
+              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-[#3B82F6]/20 cursor-pointer"
               title="Filter by Class Scope"
             >
               {classOptions.map((cls) => (
@@ -497,7 +497,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
             className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-colors shadow-2xs cursor-pointer flex items-center gap-1.5 text-xs font-semibold"
             title="Download Chart Dataset CSV"
           >
-            <Download className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+            <Download className="w-3.5 h-3.5 text-[#3B82F6] dark:text-[#60A5FA]" />
             <span className="hidden sm:inline">Export CSV</span>
           </button>
         </div>
@@ -506,9 +506,9 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
       {/* 2. Executive KPI Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Attendance Rate Card with Benchmark Delta */}
-        <div className="p-4 rounded-2xl bg-purple-50/60 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-900/60 flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#122E52]/20 border border-slate-200 dark:border-[#1E3A63] flex items-center justify-between">
           <div>
-            <span className="text-[11px] font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-[#3B82F6] dark:text-[#60A5FA] uppercase tracking-wider block">
               Daily Attendance Rate
             </span>
             <div className="flex items-baseline gap-2 mt-0.5">
@@ -523,22 +523,22 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
               <CheckCircle2 className="w-3 h-3 text-emerald-500" /> Target {targetAttendancePercentage}% benchmark met
             </p>
           </div>
-          <div className="w-11 h-11 rounded-2xl bg-purple-100 dark:bg-purple-900/60 text-purple-600 dark:text-purple-300 flex items-center justify-center shrink-0 shadow-2xs">
+          <div className="w-11 h-11 rounded-2xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] flex items-center justify-center shrink-0 shadow-2xs">
             <CalendarCheck className="w-5 h-5" />
           </div>
         </div>
 
         {/* Academic Growth Card */}
-        <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/60 flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 border border-[#3B82F6]/20 dark:border-[#3B82F6]/30 flex items-center justify-between">
           <div>
-            <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-[#3B82F6] dark:text-[#60A5FA] uppercase tracking-wider block">
               Performance Growth
             </span>
             <div className="flex items-baseline gap-2 mt-0.5">
               <p className="text-2xl font-black text-slate-900 dark:text-white">
                 {academicStats.averageScore}%
               </p>
-              <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-0.5">
+              <span className="text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA] flex items-center gap-0.5">
                 <TrendingUp className="w-3 h-3" /> {academicStats.growthDelta}
               </span>
             </div>
@@ -546,7 +546,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
               Cumulative GPA: <span className="font-bold text-slate-800 dark:text-slate-200">{academicStats.gpa} / 4.0</span>
             </p>
           </div>
-          <div className="w-11 h-11 rounded-2xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 flex items-center justify-center shrink-0 shadow-2xs">
+          <div className="w-11 h-11 rounded-2xl bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center shrink-0 shadow-2xs">
             <GraduationCap className="w-5 h-5" />
           </div>
         </div>
@@ -599,7 +599,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                    <CalendarCheck className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <CalendarCheck className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                     Daily Attendance Progression Trend
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -676,7 +676,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
             <div className="p-5 rounded-3xl bg-slate-50/60 dark:bg-slate-800/40 border border-slate-200/70 dark:border-slate-800 flex flex-col justify-between">
               <div className="mb-2">
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <PieChartIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <PieChartIcon className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                   Status Distribution
                 </h3>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
@@ -734,14 +734,14 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                    <TrendingUp className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    <TrendingUp className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                     Student Assessment Growth Trajectory
                   </h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                     Score growth across sequential term assessment cycles (Diagnostic &rarr; Finals)
                   </p>
                 </div>
-                <span className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 px-2.5 py-1 rounded-xl">
+                <span className="text-[11px] font-bold text-[#3B82F6] dark:text-[#60A5FA] bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 border border-[#3B82F6]/30 dark:border-[#3B82F6]/40 px-2.5 py-1 rounded-xl">
                   {academicStats.growthDelta} Semester Growth
                 </span>
               </div>
@@ -832,7 +832,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
                   onClick={() => setTimeframe('daily7')}
                   className={`px-2.5 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                     timeframe === 'daily7'
-                      ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                      ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                       : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
@@ -843,7 +843,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
                   onClick={() => setTimeframe('weekly')}
                   className={`px-2.5 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                     timeframe === 'weekly'
-                      ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                      ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                       : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
@@ -854,7 +854,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
                   onClick={() => setTimeframe('monthly')}
                   className={`px-2.5 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                     timeframe === 'monthly'
-                      ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                      ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                       : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
@@ -865,7 +865,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
                   onClick={() => setTimeframe('term')}
                   className={`px-2.5 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                     timeframe === 'term'
-                      ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                      ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                       : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
@@ -882,7 +882,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
                   onClick={() => setAttendanceChartStyle('area')}
                   className={`px-2.5 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                     attendanceChartStyle === 'area'
-                      ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                      ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                       : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
@@ -893,7 +893,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
                   onClick={() => setAttendanceChartStyle('stacked-bar')}
                   className={`px-2.5 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                     attendanceChartStyle === 'stacked-bar'
-                      ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                      ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                       : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
@@ -904,7 +904,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
                   onClick={() => setAttendanceChartStyle('comparison')}
                   className={`px-2.5 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                     attendanceChartStyle === 'comparison'
-                      ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                      ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                       : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
@@ -919,7 +919,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <CalendarCheck className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <CalendarCheck className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA]" />
                   {attendanceChartStyle === 'area'
                     ? 'Daily Attendance Rate & Institutional Benchmark Line'
                     : attendanceChartStyle === 'stacked-bar'
@@ -1010,13 +1010,13 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
 
           {/* Attendance Breakdown Grid Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/50">
-              <span className="text-xs font-bold text-purple-700 dark:text-purple-300">Punctuality Score</span>
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#122E52]/20 border border-slate-200 dark:border-[#1E3A63]">
+              <span className="text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA]">Punctuality Score</span>
               <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">{attendanceStats.onTimePunctuality}%</p>
               <p className="text-[11px] text-slate-500 mt-0.5">Students arriving before first bell</p>
             </div>
-            <div className="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/50">
-              <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300">Highest Compliance</span>
+            <div className="p-4 rounded-2xl bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 border border-[#3B82F6]/20 dark:border-[#3B82F6]/30">
+              <span className="text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA]">Highest Compliance</span>
               <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">{attendanceStats.bestClass}</p>
               <p className="text-[11px] text-slate-500 mt-0.5">Lead division across all sections</p>
             </div>
@@ -1044,7 +1044,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
                   onClick={() => setAcademicChartStyle('growth-line')}
                   className={`px-3 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                     academicChartStyle === 'growth-line'
-                      ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                      ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                       : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
@@ -1055,7 +1055,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
                   onClick={() => setAcademicChartStyle('subject-bars')}
                   className={`px-3 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                     academicChartStyle === 'subject-bars'
-                      ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                      ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                       : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
@@ -1066,7 +1066,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
                   onClick={() => setAcademicChartStyle('grade-donut')}
                   className={`px-3 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer ${
                     academicChartStyle === 'grade-donut'
-                      ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                      ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                       : 'text-slate-600 dark:text-slate-400'
                   }`}
                 >
@@ -1079,7 +1079,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
               <button
                 type="button"
                 onClick={() => onNavigate('exam')}
-                className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA] hover:underline flex items-center gap-1 cursor-pointer"
               >
                 Open Academic Gradebook <ArrowUpRight className="w-3.5 h-3.5" />
               </button>
@@ -1091,7 +1091,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <GraduationCap className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA]" />
                   {academicChartStyle === 'growth-line'
                     ? 'Student Score Trajectory Across Sequential Examination Milestones'
                     : academicChartStyle === 'subject-bars'
@@ -1102,7 +1102,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
                   Evaluated Cohort: {selectedClassFilter === 'All' ? 'All Classes' : selectedClassFilter} · {academicStats.totalAssessed} Records Processed
                 </p>
               </div>
-              <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 px-3 py-1 rounded-xl">
+              <span className="text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA] bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 border border-[#3B82F6]/30 dark:border-[#3B82F6]/40 px-3 py-1 rounded-xl">
                 Cumulative GPA: {academicStats.gpa} / 4.0
               </span>
             </div>
@@ -1180,11 +1180,11 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
                 <div key={cls.className} className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 shadow-2xs">
                   <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block">{cls.className}</span>
                   <div className="flex items-baseline justify-between mt-1.5">
-                    <span className="text-lg font-black text-purple-700 dark:text-purple-400">{cls.avgScore}%</span>
+                    <span className="text-lg font-black text-[#122E52] dark:text-[#F7A914]">{cls.avgScore}%</span>
                     <span className="text-xs font-mono font-bold text-slate-500">{cls.gpa} GPA</span>
                   </div>
                   <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-                    <div className="bg-purple-600 h-full rounded-full" style={{ width: `${cls.avgScore}%` }} />
+                    <div className="bg-[#122E52] h-full rounded-full" style={{ width: `${cls.avgScore}%` }} />
                   </div>
                 </div>
               ))}
@@ -1200,7 +1200,7 @@ export const DashboardAnalyticsVisualizer: React.FC<DashboardAnalyticsVisualizer
           <span>Live telemetry connected to institutional attendance register and examination grading engines</span>
         </div>
         {onNavigate && (
-          <div className="flex items-center gap-3 font-semibold text-purple-600 dark:text-purple-400">
+          <div className="flex items-center gap-3 font-semibold text-[#3B82F6] dark:text-[#60A5FA]">
             <button
               type="button"
               onClick={() => onNavigate('attendance')}

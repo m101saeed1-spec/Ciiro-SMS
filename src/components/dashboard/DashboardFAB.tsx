@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { NavModule } from '../common/Sidebar';
 import { Modal } from '../common/Modal';
+import { StudentRegistrationWizard } from '../students/StudentRegistrationWizard';
 import { AttendanceStatus } from '../../types';
 import {
   Plus,
@@ -462,7 +463,7 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
                   setIsOpen(false);
                   onNavigate('gemini');
                 }}
-                className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-lg shadow-purple-500/25 flex items-center justify-center transition-all duration-150 hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-purple-500/10"
+                className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#122E52] to-[#0B1B32] hover:from-[#0B1B32] hover:to-[#122E52] text-white shadow-lg shadow-[#122E52]/25 flex items-center justify-center transition-all duration-150 hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-[#F7A914]/20"
                 title="Chat with Gemini AI Platform Assistant"
               >
                 <Sparkles className="w-5 h-5 animate-pulse" />
@@ -492,7 +493,7 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
               <button
                 type="button"
                 onClick={() => handleActionClick('record-attendance')}
-                className="w-12 h-12 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/25 flex items-center justify-center transition-all duration-150 hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-purple-500/10"
+                className="w-12 h-12 rounded-2xl bg-[#F7A914] hover:bg-[#E59807] text-[#122E52] text-white shadow-lg shadow-[#122E52]/25 flex items-center justify-center transition-all duration-150 hover:scale-110 active:scale-95 cursor-pointer ring-4 ring-[#F7A914]/20"
                 title="Record Class Attendance"
               >
                 <CalendarCheck className="w-5 h-5" />
@@ -524,7 +525,7 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
           className={`relative group flex items-center justify-center w-14 h-14 rounded-2xl text-white shadow-xl transition-all duration-200 cursor-pointer active:scale-95 ${
             isOpen
               ? 'bg-slate-900 dark:bg-slate-800 rotate-90 shadow-slate-900/30'
-              : 'bg-gradient-to-tr from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 shadow-purple-500/30 hover:scale-105 ring-4 ring-purple-500/20'
+              : 'bg-gradient-to-tr from-[#122E52] to-[#0B1B32] hover:from-[#0B1B32] hover:to-[#122E52] shadow-[#F7A914]/30 hover:scale-105 ring-4 ring-[#F7A914]/20'
           }`}
         >
           {isOpen ? (
@@ -536,162 +537,30 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
           {/* Quick Actions tooltip badge on initial view */}
           {!isOpen && (
             <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-purple-500 border-2 border-white dark:border-slate-900" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F7A914] opacity-75" />
+              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#F7A914] border-2 border-white dark:border-slate-900" />
             </span>
           )}
         </button>
       </div>
 
       {/* ========================================================= */}
-      {/* 1. QUICK ADD STUDENT MODAL                               */}
+      {/* 1. QUICK ADD STUDENT MULTI-STEP WIZARD MODAL             */}
       {/* ========================================================= */}
       {activeModal === 'add-student' && (
         <Modal
           isOpen={true}
           onClose={() => setActiveModal(null)}
-          title={`Quick Student Enrollment - ${studentForm.class}`}
-          maxWidth="lg"
+          title={`Student Admission Wizard — ${defaultEnrollClass?.name || 'Class Registration'}`}
+          maxWidth="2xl"
         >
-          <form onSubmit={handleSubmitStudent} className="space-y-4">
-            <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-xs text-purple-900 dark:text-purple-200 flex items-start gap-2.5">
-              <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold">Authorized Class Teacher Enrollment</span>
-                <p className="mt-0.5 text-purple-700 dark:text-purple-300">
-                  You are registering a student directly into your assigned classroom. System automatically derives student IDs and roll sequences.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Maya Lin"
-                  value={studentForm.name}
-                  onChange={(e) => setStudentForm({ ...studentForm, name: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Assigned Class (Locked)
-                </label>
-                <select
-                  value={studentForm.class}
-                  onChange={(e) => setStudentForm({ ...studentForm, class: e.target.value })}
-                  disabled={authorizedEnrollmentClasses.length <= 1}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold"
-                >
-                  {authorizedEnrollmentClasses.map((c) => (
-                    <option key={c.id} value={c.name}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Section
-                </label>
-                <select
-                  value={studentForm.section}
-                  onChange={(e) => setStudentForm({ ...studentForm, section: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
-                >
-                  <option value="A">Section A</option>
-                  <option value="B">Section B</option>
-                  <option value="C">Section C</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Gender
-                </label>
-                <select
-                  value={studentForm.gender}
-                  onChange={(e) => setStudentForm({ ...studentForm, gender: e.target.value as any })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
-                >
-                  <option value="Female">Female</option>
-                  <option value="Male">Male</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Parent / Guardian Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. David Lin"
-                  value={studentForm.parentName}
-                  onChange={(e) => setStudentForm({ ...studentForm, parentName: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Guardian Contact Phone
-                </label>
-                <input
-                  type="text"
-                  placeholder="+1 (555) 019-3321"
-                  value={studentForm.parentPhone}
-                  onChange={(e) => setStudentForm({ ...studentForm, parentPhone: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
-                />
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveModal(null);
-                  onNavigate('students');
-                }}
-                className="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1"
-              >
-                <span>Full Students Directory</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveModal(null)}
-                  className="px-3.5 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmittingStudent}
-                  className="px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm disabled:opacity-50 flex items-center gap-1.5"
-                >
-                  {isSubmittingStudent ? (
-                    <span>Enrolling...</span>
-                  ) : (
-                    <>
-                      <UserPlus className="w-3.5 h-3.5" />
-                      <span>Confirm Enrollment</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </form>
+          <StudentRegistrationWizard
+            targetClass={defaultEnrollClass}
+            onClose={() => setActiveModal(null)}
+            onSuccess={(_student) => {
+              setActiveModal(null);
+            }}
+          />
         </Modal>
       )}
 
@@ -709,7 +578,7 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
             {/* Top controls */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
               <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <Calendar className="w-4 h-4 text-[#F7A914] dark:text-[#F7A914]" />
                 <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Roll Date:</span>
                 <input
                   type="date"
@@ -822,7 +691,7 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
                   setActiveModal(null);
                   onNavigate('attendance');
                 }}
-                className="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1"
+                className="text-xs font-semibold text-[#F7A914] dark:text-[#F7A914] hover:underline flex items-center gap-1"
               >
                 <span>Full Attendance Module</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -840,7 +709,7 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
                   type="button"
                   onClick={handleSaveAttendance}
                   disabled={isSavingAttendance || attClassStudents.length === 0}
-                  className="px-4 py-2 text-xs font-bold rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-sm disabled:opacity-50 flex items-center gap-1.5"
+                  className="px-4 py-2 text-xs font-bold rounded-xl bg-[#F7A914] hover:bg-[#E59807] text-[#122E52] text-white shadow-sm disabled:opacity-50 flex items-center gap-1.5"
                 >
                   {isSavingAttendance ? 'Saving...' : 'Save Attendance'}
                 </button>
@@ -962,7 +831,7 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
                   setActiveModal(null);
                   onNavigate('fees');
                 }}
-                className="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1"
+                className="text-xs font-semibold text-[#F7A914] dark:text-[#F7A914] hover:underline flex items-center gap-1"
               >
                 <span>Open Fee Management</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -1027,7 +896,7 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
                   setGuidanceInfo(null);
                   onNavigate(mod);
                 }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-[#F7A914] hover:bg-[#E59807] text-[#122E52] text-white shadow-xs cursor-pointer"
               >
                 <span>{guidanceInfo.suggestedActionLabel}</span>
                 <ArrowRight className="w-3.5 h-3.5" />

@@ -1,0 +1,163 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -------------------------------------------------------------
+    // Helper Functions
+    // -------------------------------------------------------------
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isUser(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isPlatformOwner() {
+      return isAuthenticated() && (
+        request.auth.token.platformOwner == true ||
+        exists(/databases/$(database)/documents/platformUsers/$(request.auth.uid))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // -------------------------------------------------------------
+    // Users Profile Collection
+    // -------------------------------------------------------------
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isUser(userId);
+      allow update: if isUser(userId) || isPlatformOwner();
+      allow delete: if isPlatformOwner();
+    }
+
+    // -------------------------------------------------------------
+    // Platform Users Collection
+    // -------------------------------------------------------------
+    match /platformUsers/{userId} {
+      allow read: if isUser(userId) || isPlatformOwner();
+      allow write: if isUser(userId) || isPlatformOwner();
+    }
+
+    // -------------------------------------------------------------
+    // Schools Collection
+    // -------------------------------------------------------------
+    match /schools/{schoolId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isPlatformOwner() || isAuthenticated();
+    }
+
+    // -------------------------------------------------------------
+    // School Memberships Collection
+    // -------------------------------------------------------------
+    match /schoolMemberships/{membershipId} {
+      allow read: if isAuthenticated();
+      
+      // Allow creation by authenticated staff or platform owner
+      allow create: if isAuthenticated();
+
+      // Allow claiming Ileys ID linking or updates
+      allow update: if isAuthenticated();
+
+      allow delete: if isPlatformOwner();
+    }
+
+    // -------------------------------------------------------------
+    // Students Collection
+    // -------------------------------------------------------------
+    match /students/{studentId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    // -------------------------------------------------------------
+    // Teachers Collection
+    // -------------------------------------------------------------
+    match /teachers/{teacherId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
+    }
+
+    // -------------------------------------------------------------
+    // Classes & Subjects Collections
+    // -------------------------------------------------------------
+    match /classes/{classId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    match /subjects/{subjectId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // -------------------------------------------------------------
+    // Attendance Collection
+    // -------------------------------------------------------------
+    match /attendance/{attendanceId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // -------------------------------------------------------------
+    // Academic Results Collection
+    // -------------------------------------------------------------
+    match /academicResults/{resultId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // -------------------------------------------------------------
+    // Timetables Collection
+    // -------------------------------------------------------------
+    match /timetables/{timetableId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // -------------------------------------------------------------
+    // Announcements Collection
+    // -------------------------------------------------------------
+    match /announcements/{announcementId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // -------------------------------------------------------------
+    // Fees & Fee Payments Collections
+    // -------------------------------------------------------------
+    match /fees/{feeId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    match /feePayments/{paymentId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // -------------------------------------------------------------
+    // Audit Logs Collection (Append-Only)
+    // -------------------------------------------------------------
+    match /auditLogs/{logId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isPlatformOwner();
+    }
+
+    // -------------------------------------------------------------
+    // Connectivity Test Path
+    // -------------------------------------------------------------
+    match /test/{testId} {
+      allow read: if true;
+    }
+
+    // Default fallback
+    match /{document=**} {
+      allow read, write: if isAuthenticated();
+    }
+  }
+}

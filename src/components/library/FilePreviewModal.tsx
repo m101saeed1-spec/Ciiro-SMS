@@ -56,14 +56,14 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
         {/* Header summary banner */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0 shadow-2xs">
+            <div className="w-12 h-12 rounded-2xl bg-[#EFF6FF] dark:bg-[#1E3A63] border border-[#1E3A63] flex items-center justify-center text-[#3B82F6] dark:text-[#60A5FA] shrink-0 shadow-2xs">
               <FileText className="w-6 h-6" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{title}</h3>
               {subtitle && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{subtitle}</p>}
               <div className="flex flex-wrap items-center gap-2 mt-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-                <span className="uppercase font-bold px-2 py-0.5 rounded-md bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-[10px]">
+                <span className="uppercase font-bold px-2 py-0.5 rounded-md bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] border border-[#1E3A63] text-[10px]">
                   {fileType}
                 </span>
                 <span>•</span>
@@ -86,7 +86,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
 
           <button
             onClick={handleDownload}
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md shadow-purple-600/20 shrink-0 cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md shadow-md shrink-0 cursor-pointer"
           >
             <Download className="w-4 h-4" />
             <span>Download Document</span>
@@ -127,16 +127,16 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
         {topics && topics.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-              <Layers className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+              <Layers className="w-3.5 h-3.5 text-[#3B82F6] dark:text-[#60A5FA]" />
               <span>Curriculum Chapters & Topics</span>
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {topics.map((topic, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-50/40 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/60 text-xs text-slate-700 dark:text-slate-300 font-medium"
+                  className="flex items-center gap-2 p-2.5 rounded-xl bg-[#EFF6FF]/40 dark:bg-[#1E3A63] border border-[#1E3A63]/60 text-xs text-slate-700 dark:text-slate-300 font-medium"
                 >
-                  <CheckCircle className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
+                  <CheckCircle className="w-3.5 h-3.5 text-[#3B82F6] dark:text-[#60A5FA] shrink-0" />
                   <span>{topic}</span>
                 </div>
               ))}
@@ -182,7 +182,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
           </button>
           <button
             onClick={handleDownload}
-            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-colors flex items-center gap-2"
+            className="px-4 py-2 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white text-xs font-bold transition-colors flex items-center gap-2"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Download</span>

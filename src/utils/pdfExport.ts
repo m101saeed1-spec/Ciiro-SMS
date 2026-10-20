@@ -41,20 +41,20 @@ function addHeader(
   const pageWidth = doc.internal.pageSize.getWidth();
 
   // Top header banner background
-  doc.setFillColor(30, 27, 75); // Deep Indigo/Purple
+  doc.setFillColor(18, 46, 82); // Ileys Navy #122E52
   doc.rect(0, 0, pageWidth, 32, 'F');
 
   // Decorative Accent bar
-  doc.setFillColor(147, 51, 234); // Purple 600
+  doc.setFillColor(247, 169, 20); // Ileys Gold #F7A914
   doc.rect(0, 32, pageWidth, 2.5, 'F');
 
   // School Emblem Symbol (Vector drawing)
-  doc.setFillColor(147, 51, 234);
+  doc.setFillColor(247, 169, 20);
   doc.roundedRect(14, 6, 20, 20, 3, 3, 'F');
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
-  doc.text('E', 21, 20);
+  doc.text('I', 21, 20);
 
   // School Name & Subtitles
   doc.setFontSize(13);
@@ -64,7 +64,7 @@ function addHeader(
 
   doc.setFontSize(7.5);
   doc.setFont('helvetica', 'normal');
-  doc.setTextColor(216, 180, 254);
+  doc.setTextColor(247, 169, 20);
   doc.text(`${merged.affiliationNo} | ${merged.address}`, 38, 19);
   doc.text(merged.contact || '', 38, 25);
 
@@ -198,7 +198,7 @@ export function exportStudentReportPDF(
     body: tableBody,
     theme: 'striped',
     headStyles: {
-      fillColor: [109, 40, 217], // Violet 700
+      fillColor: [18, 46, 82], // Ileys Navy #122E52
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 8.5,
@@ -221,11 +221,11 @@ export function exportStudentReportPDF(
   const finalY = (doc as any).lastAutoTable.finalY + 8;
 
   // Summary box
-  doc.setFillColor(243, 232, 255); // Purple 100
+  doc.setFillColor(254, 243, 199); // Gold 100
   doc.roundedRect(14, finalY, 182, 18, 2, 2, 'FD');
   doc.setFontSize(9);
   doc.setFont('helvetica', 'bold');
-  doc.setTextColor(88, 28, 135);
+  doc.setTextColor(18, 46, 82);
   doc.text(`Total Score: ${totalObtained} / ${totalMax}   |   Overall Percentage: ${percentage}%   |   Final Grade: ${Number(percentage) >= 90 ? 'A+' : Number(percentage) >= 80 ? 'A' : 'B'}`, 20, finalY + 11);
 
   // Signatures Section
@@ -333,7 +333,7 @@ export function exportFeeReceiptPDF(
     ],
     theme: 'grid',
     headStyles: {
-      fillColor: [109, 40, 217],
+      fillColor: [18, 46, 82],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 9,
@@ -415,7 +415,7 @@ export function exportExamRankingPDF(
     body: tableBody,
     theme: 'striped',
     headStyles: {
-      fillColor: [109, 40, 217],
+      fillColor: [18, 46, 82],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 8.5,
@@ -520,7 +520,7 @@ export function exportAttendanceReportPDF(
     body: tableBody,
     theme: 'striped',
     headStyles: {
-      fillColor: [109, 40, 217],
+      fillColor: [18, 46, 82],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 8,
@@ -612,7 +612,7 @@ export function exportStudentListPDF(
     body: tableBody,
     theme: 'striped',
     headStyles: {
-      fillColor: [109, 40, 217],
+      fillColor: [18, 46, 82],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 8.5,
@@ -652,7 +652,7 @@ export function exportTeacherListPDF(
     body: tableBody,
     theme: 'striped',
     headStyles: {
-      fillColor: [109, 40, 217],
+      fillColor: [18, 46, 82],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 8.5,
@@ -693,7 +693,7 @@ export function exportTimetablePDF(
     body: tableBody,
     theme: 'striped',
     headStyles: {
-      fillColor: [109, 40, 217],
+      fillColor: [18, 46, 82],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 8.5,
@@ -733,7 +733,7 @@ export function exportLibraryReportPDF(
     body: tableBody,
     theme: 'striped',
     headStyles: {
-      fillColor: [109, 40, 217],
+      fillColor: [18, 46, 82],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 8.5,
@@ -773,7 +773,7 @@ export function exportActivityLogsPDF(
     body: tableBody,
     theme: 'striped',
     headStyles: {
-      fillColor: [30, 27, 75],
+      fillColor: [18, 46, 82],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       fontSize: 8,
@@ -881,7 +881,7 @@ export function exportDocumentManifestPDF(
     body: rows,
     theme: 'striped',
     headStyles: {
-      fillColor: [109, 40, 217],
+      fillColor: [18, 46, 82],
       textColor: 255,
       fontStyle: 'bold',
       fontSize: 8,
@@ -909,4 +909,269 @@ export function exportDocumentManifestPDF(
   addFooter(doc);
   doc.save(`Academic_Documents_Manifest_${new Date().toISOString().slice(0, 10)}.pdf`);
 }
+
+// 12. EXPORT: Comprehensive Student Performance Analytics & Academic Report
+export interface PerformanceAnalyticsExportData {
+  term: string;
+  academicYear: string;
+  selectedClass: string;
+  totalStudents: number;
+  averageScore: number;
+  passRate: number;
+  topPerformingSubject: string;
+  subjectPerformance: {
+    subject: string;
+    averageMarks: number;
+    highestMarks: number;
+    lowestMarks: number;
+    passRate: number;
+    totalAssessments: number;
+  }[];
+  gradeDistribution: {
+    grade: string;
+    count: number;
+    percentage: number;
+    description: string;
+  }[];
+  topRankedStudents: {
+    rank: number;
+    id: string;
+    name: string;
+    class: string;
+    marksObtained: number;
+    totalMarks: number;
+    percentage: number;
+    grade: string;
+    status: string;
+  }[];
+  classComparison?: {
+    className: string;
+    studentCount: number;
+    averageScore: number;
+    passRate: number;
+  }[];
+}
+
+export function exportPerformanceAnalyticsReportPDF(
+  data: PerformanceAnalyticsExportData,
+  options: PDFExportOptions = {}
+) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+
+  addHeader(
+    doc,
+    'INSTITUTIONAL STUDENT PERFORMANCE ANALYTICS REPORT',
+    `Evaluation Cycle: ${data.term} | Academic Year: ${data.academicYear} | Cohort: ${data.selectedClass}`,
+    options
+  );
+
+  // 1. Executive Analytics KPI Summary Box
+  const startY = 56;
+  doc.setFillColor(248, 250, 252);
+  doc.roundedRect(14, startY, 182, 30, 2, 2, 'FD');
+  doc.setDrawColor(203, 213, 225);
+
+  // 4 KPI Columns
+  const kpis = [
+    { label: 'COHORT ENROLLMENT', val: `${data.totalStudents} Students`, sub: `Scope: ${data.selectedClass}` },
+    { label: 'INSTITUTIONAL AVERAGE', val: `${data.averageScore.toFixed(1)}%`, sub: 'Benchmark: 75.0%' },
+    { label: 'OVERALL PASS RATE', val: `${data.passRate.toFixed(1)}%`, sub: 'Passing Grade: >= 50%' },
+    { label: 'TOP SUBJECT', val: data.topPerformingSubject || 'Mathematics', sub: 'Highest Mastery' },
+  ];
+
+  kpis.forEach((kpi, idx) => {
+    const colX = 18 + idx * 45;
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(100, 116, 139);
+    doc.text(kpi.label, colX, startY + 7);
+
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42);
+    doc.text(kpi.val, colX, startY + 16);
+
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(247, 169, 20);
+    doc.text(kpi.sub, colX, startY + 23);
+  });
+
+  // Section Heading 1: Subject Course Mastery Breakdown
+  doc.setFontSize(9.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text('1. Subject-Wise Academic Performance & Mastery Breakdown', 14, startY + 38);
+
+  const subjectRows = data.subjectPerformance.map((s, i) => [
+    `#0${i + 1}`,
+    s.subject,
+    `${s.averageMarks.toFixed(1)}%`,
+    `${s.highestMarks}%`,
+    `${s.lowestMarks}%`,
+    `${s.passRate.toFixed(1)}%`,
+    s.passRate >= 80 ? 'EXEMPLARY' : s.passRate >= 65 ? 'COMPETENT' : 'ATTENTION',
+  ]);
+
+  autoTable(doc, {
+    startY: startY + 42,
+    head: [['Ref', 'Subject Discipline', 'Mean Score', 'High Mark', 'Low Mark', 'Pass Rate', 'Benchmark Status']],
+    body: subjectRows,
+    theme: 'striped',
+    headStyles: {
+      fillColor: [18, 46, 82],
+      textColor: 255,
+      fontStyle: 'bold',
+      fontSize: 8,
+    },
+    bodyStyles: {
+      fontSize: 7.5,
+      cellPadding: 2.5,
+    },
+    columnStyles: {
+      0: { cellWidth: 12, halign: 'center' },
+      1: { cellWidth: 50, fontStyle: 'bold' },
+      2: { cellWidth: 24, halign: 'center' },
+      3: { cellWidth: 20, halign: 'center' },
+      4: { cellWidth: 20, halign: 'center' },
+      5: { cellWidth: 24, halign: 'center' },
+      6: { cellWidth: 32, halign: 'center', fontStyle: 'bold' },
+    },
+    didParseCell: (hookData) => {
+      if (hookData.column.index === 6 && hookData.section === 'body') {
+        const val = hookData.cell.raw;
+        if (val === 'EXEMPLARY') hookData.cell.styles.textColor = [16, 185, 129];
+        else if (val === 'ATTENTION') hookData.cell.styles.textColor = [239, 68, 68];
+        else hookData.cell.styles.textColor = [59, 130, 246];
+      }
+    },
+  });
+
+  let currentY = (doc as any).lastAutoTable.finalY + 8;
+
+  // Section Heading 2: Grade Scale Distribution
+  if (currentY > 210) {
+    doc.addPage();
+    addHeader(doc, 'INSTITUTIONAL STUDENT PERFORMANCE ANALYTICS REPORT (CONT.)', 'Grade Distribution & Top Rank Honor Roll', options);
+    currentY = 56;
+  }
+
+  doc.setFontSize(9.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text('2. Academic Grading Distribution & Performance Bands', 14, currentY);
+
+  const gradeRows = data.gradeDistribution.map((g) => [
+    g.grade,
+    g.description,
+    `${g.count} Students`,
+    `${g.percentage.toFixed(1)}%`,
+    '■'.repeat(Math.min(15, Math.round(g.percentage / 5))),
+  ]);
+
+  autoTable(doc, {
+    startY: currentY + 4,
+    head: [['Grade Band', 'Academic Classification', 'Student Count', 'Cohort Share (%)', 'Visual Density']],
+    body: gradeRows,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [18, 46, 82],
+      textColor: 255,
+      fontStyle: 'bold',
+      fontSize: 8,
+    },
+    bodyStyles: {
+      fontSize: 7.5,
+      cellPadding: 2.5,
+    },
+    columnStyles: {
+      0: { cellWidth: 22, halign: 'center', fontStyle: 'bold' },
+      1: { cellWidth: 60 },
+      2: { cellWidth: 30, halign: 'center' },
+      3: { cellWidth: 32, halign: 'center', fontStyle: 'bold' },
+      4: { cellWidth: 38, fontStyle: 'bold', textColor: [147, 51, 234] },
+    },
+  });
+
+  currentY = (doc as any).lastAutoTable.finalY + 8;
+
+  // Section Heading 3: Honor Roll / Top Ranked Scholars
+  if (currentY > 200) {
+    doc.addPage();
+    addHeader(doc, 'INSTITUTIONAL STUDENT PERFORMANCE ANALYTICS REPORT (CONT.)', 'Honor Roll & Class Merit Rankings', options);
+    currentY = 56;
+  }
+
+  doc.setFontSize(9.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(15, 23, 42);
+  doc.text('3. Scholar Honor Roll & Merit Rankings (Top Performers)', 14, currentY);
+
+  const topRows = data.topRankedStudents.slice(0, 10).map((s) => [
+    `Rank #${s.rank}`,
+    s.id,
+    s.name,
+    s.class,
+    `${s.marksObtained} / ${s.totalMarks}`,
+    `${s.percentage.toFixed(1)}%`,
+    s.grade,
+    s.status || 'MERIT PASS',
+  ]);
+
+  autoTable(doc, {
+    startY: currentY + 4,
+    head: [['Rank', 'Student ID', 'Scholar Name', 'Class Cohort', 'Marks Total', 'Aggregate %', 'Grade', 'Honors Status']],
+    body: topRows,
+    theme: 'striped',
+    headStyles: {
+      fillColor: [18, 46, 82],
+      textColor: 255,
+      fontStyle: 'bold',
+      fontSize: 8,
+    },
+    bodyStyles: {
+      fontSize: 7.5,
+      cellPadding: 2.5,
+    },
+    columnStyles: {
+      0: { cellWidth: 16, halign: 'center', fontStyle: 'bold' },
+      1: { cellWidth: 25, halign: 'center', fontStyle: 'bold' },
+      2: { cellWidth: 42, fontStyle: 'bold' },
+      3: { cellWidth: 24, halign: 'center' },
+      4: { cellWidth: 24, halign: 'center' },
+      5: { cellWidth: 20, halign: 'center', fontStyle: 'bold' },
+      6: { cellWidth: 14, halign: 'center', fontStyle: 'bold' },
+      7: { cellWidth: 17, halign: 'center' },
+    },
+    didParseCell: (hookData) => {
+      if (hookData.column.index === 0 && hookData.section === 'body') {
+        hookData.cell.styles.textColor = [109, 40, 217];
+      }
+    },
+  });
+
+  const finalY = (doc as any).lastAutoTable.finalY + 12;
+
+  // Verification & Signatures section
+  const sigBoxY = Math.min(finalY, 245);
+  doc.setDrawColor(203, 213, 225);
+  doc.line(18, sigBoxY + 18, 68, sigBoxY + 18);
+  doc.line(78, sigBoxY + 18, 128, sigBoxY + 18);
+  doc.line(138, sigBoxY + 18, 188, sigBoxY + 18);
+
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 116, 139);
+  doc.text('Head of Academic Assessment', 43, sigBoxY + 23, { align: 'center' });
+  doc.text('Examinations Controller', 103, sigBoxY + 23, { align: 'center' });
+  doc.text('Principal & Institutional Seal', 163, sigBoxY + 23, { align: 'center' });
+
+  addFooter(doc);
+
+  const cleanCohort = data.selectedClass.replace(/\s+/g, '_');
+  const filename = `Student_Performance_Analytics_${cleanCohort}_${new Date().toISOString().slice(0, 10)}.pdf`;
+  doc.save(filename);
+}
+
 

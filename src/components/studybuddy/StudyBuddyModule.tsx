@@ -265,7 +265,7 @@ export const StudyBuddyModule: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in pb-12">
       {/* Top Banner & Mode Navigation */}
-      <div className="bg-gradient-to-r from-purple-700 via-purple-800 to-indigo-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-purple-950/10 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-[#122E52] via-[#0B1B32] to-indigo-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-md relative overflow-hidden">
         <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-15 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -277,7 +277,7 @@ export const StudyBuddyModule: React.FC = () => {
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
               Study Buddy & Active Recall Studio
             </h1>
-            <p className="text-purple-200 text-xs sm:text-sm max-w-2xl leading-relaxed">
+            <p className="text-[#F7A914] text-xs sm:text-sm max-w-2xl leading-relaxed">
               Input your lecture notes or subject topics to generate high-yield summaries, key formulas, mnemonic memory aids, and interactive multiple-choice practice quizzes.
             </p>
           </div>
@@ -285,9 +285,9 @@ export const StudyBuddyModule: React.FC = () => {
           {/* Ask Tutor Quick Trigger */}
           <button
             onClick={() => openTutorWithConcept('', notes)}
-            className="px-4 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-purple-950 font-extrabold text-xs transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2.5 shrink-0 transform hover:-translate-y-0.5"
+            className="px-4 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-[#12233F] font-extrabold text-xs transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2.5 shrink-0 transform hover:-translate-y-0.5"
           >
-            <Brain className="w-4 h-4 text-purple-900" />
+            <Brain className="w-4 h-4 text-[#12233F]" />
             <span>Open AI Concept Tutor</span>
           </button>
         </div>
@@ -298,7 +298,7 @@ export const StudyBuddyModule: React.FC = () => {
             onClick={() => setActiveTab('studio')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeTab === 'studio'
-                ? 'bg-white text-purple-900 shadow-md font-extrabold'
+                ? 'bg-white text-[#12233F] shadow-md font-extrabold'
                 : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
@@ -311,7 +311,7 @@ export const StudyBuddyModule: React.FC = () => {
               onClick={() => setActiveTab('summary')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
                 activeTab === 'summary'
-                  ? 'bg-white text-purple-900 shadow-md font-extrabold'
+                  ? 'bg-white text-[#12233F] shadow-md font-extrabold'
                   : 'bg-white/10 text-white hover:bg-white/20'
               }`}
             >
@@ -325,7 +325,7 @@ export const StudyBuddyModule: React.FC = () => {
               onClick={() => setActiveTab('quiz')}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
                 activeTab === 'quiz'
-                  ? 'bg-white text-purple-900 shadow-md font-extrabold'
+                  ? 'bg-white text-[#12233F] shadow-md font-extrabold'
                   : 'bg-white/10 text-white hover:bg-white/20'
               }`}
             >
@@ -338,7 +338,7 @@ export const StudyBuddyModule: React.FC = () => {
             onClick={() => setActiveTab('hub')}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
               activeTab === 'hub'
-                ? 'bg-white text-purple-900 shadow-md font-extrabold'
+                ? 'bg-white text-[#12233F] shadow-md font-extrabold'
                 : 'bg-white/10 text-white hover:bg-white/20'
             }`}
           >
@@ -358,7 +358,7 @@ export const StudyBuddyModule: React.FC = () => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div>
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <BookOpen className="w-5 h-5 text-purple-600" />
+                    <BookOpen className="w-5 h-5 text-[#3B82F6]" />
                     Input Subject Notes
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -375,7 +375,7 @@ export const StudyBuddyModule: React.FC = () => {
                     <button
                       key={preset.id}
                       onClick={() => handleLoadSample(preset)}
-                      className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-purple-100 dark:hover:bg-purple-900/50 text-slate-700 dark:text-slate-300 text-2xs font-semibold transition-colors border border-slate-200 dark:border-slate-700"
+                      className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-[#EFF6FF] dark:hover:bg-[#0B1B32] text-slate-700 dark:text-slate-300 text-2xs font-semibold transition-colors border border-slate-200 dark:border-slate-700"
                     >
                       {preset.subject}
                     </button>
@@ -392,7 +392,7 @@ export const StudyBuddyModule: React.FC = () => {
                   <select
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-xs font-semibold outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-xs font-semibold outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   >
                     <option value="Biology">Biology</option>
                     <option value="Physics">Physics</option>
@@ -416,7 +416,7 @@ export const StudyBuddyModule: React.FC = () => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g., Photosynthesis & Respiration"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-xs outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-xs outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   />
                 </div>
 
@@ -427,7 +427,7 @@ export const StudyBuddyModule: React.FC = () => {
                   <select
                     value={gradeLevel}
                     onChange={(e) => setGradeLevel(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-xs font-semibold outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-xs font-semibold outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   >
                     <option value="Middle School">Middle School (Grades 6-8)</option>
                     <option value="Grade 9">Grade 9 (Freshman)</option>
@@ -454,7 +454,7 @@ export const StudyBuddyModule: React.FC = () => {
                   onChange={(e) => setNotes(e.target.value)}
                   rows={9}
                   placeholder="Paste your study notes, teacher explanations, textbook paragraphs, or list of concepts here..."
-                  className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-white text-xs sm:text-sm leading-relaxed outline-none focus:ring-2 focus:ring-purple-500 transition-all resize-y font-sans"
+                  className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-white text-xs sm:text-sm leading-relaxed outline-none focus:ring-2 focus:ring-[#3B82F6] transition-all resize-y font-sans"
                 />
               </div>
 
@@ -468,12 +468,12 @@ export const StudyBuddyModule: React.FC = () => {
                     <button
                       key={preset.id}
                       onClick={() => handleLoadSample(preset)}
-                      className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-700 bg-slate-50/50 dark:bg-slate-800/40 hover:bg-purple-50/40 dark:hover:bg-purple-950/30 text-left transition-all group"
+                      className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-[#1E3A63] dark:hover:border-[#1E3A63] bg-slate-50/50 dark:bg-slate-800/40 hover:bg-[#EFF6FF]/40 dark:hover:bg-[#0B1B32] text-left transition-all group"
                     >
-                      <span className="text-2xs font-bold text-purple-700 dark:text-purple-400 block">
+                      <span className="text-2xs font-bold text-[#122E52] dark:text-[#F7A914] block">
                         {preset.subject} • {preset.gradeLevel}
                       </span>
-                      <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-purple-600 dark:group-hover:text-purple-300 line-clamp-1">
+                      <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-[#3B82F6] dark:group-hover:text-[#F7A914] line-clamp-1">
                         {preset.topic}
                       </span>
                     </button>
@@ -487,7 +487,7 @@ export const StudyBuddyModule: React.FC = () => {
           <div className="space-y-6">
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm space-y-5">
               <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                <Sliders className="w-4 h-4 text-purple-600" />
+                <Sliders className="w-4 h-4 text-[#3B82F6]" />
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                   Generation Configuration
                 </h3>
@@ -510,7 +510,7 @@ export const StudyBuddyModule: React.FC = () => {
                       onClick={() => setSummaryFormat(f.id as any)}
                       className={`p-2 rounded-xl text-xs font-semibold text-center border transition-all ${
                         summaryFormat === f.id
-                          ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-bold'
+                          ? 'border-[#1E3A63] bg-slate-50 dark:bg-[#122E52]/20 text-[#3B82F6] dark:text-[#60A5FA] font-bold'
                           : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400'
                       }`}
                     >
@@ -534,7 +534,7 @@ export const StudyBuddyModule: React.FC = () => {
                       onClick={() => setQuizDifficulty(diff)}
                       className={`py-1.5 px-2 rounded-lg text-2xs font-bold border transition-all ${
                         quizDifficulty === diff
-                          ? 'border-purple-600 bg-purple-600 text-white shadow-xs'
+                          ? 'border-[#122E52] bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-xs'
                           : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                       }`}
                     >
@@ -553,7 +553,7 @@ export const StudyBuddyModule: React.FC = () => {
                         onClick={() => setQuestionCount(num)}
                         className={`w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all ${
                           questionCount === num
-                            ? 'bg-purple-600 text-white'
+                            ? 'bg-[#122E52] text-white'
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
                         }`}
                       >
@@ -569,7 +569,7 @@ export const StudyBuddyModule: React.FC = () => {
                 <button
                   onClick={handleGenerateSummary}
                   disabled={isGeneratingSummary || isGeneratingQuiz}
-                  className="w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white text-xs font-extrabold transition-all shadow-md shadow-purple-600/20 flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3 px-4 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] disabled:opacity-50 text-white text-xs font-extrabold transition-all shadow-md shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isGeneratingSummary ? (
                     <>
@@ -605,17 +605,17 @@ export const StudyBuddyModule: React.FC = () => {
                 <button
                   onClick={handleGenerateBoth}
                   disabled={isGeneratingSummary || isGeneratingQuiz}
-                  className="w-full py-2.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 disabled:opacity-50 text-purple-950 text-xs font-black transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2.5 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 disabled:opacity-50 text-[#12233F] text-xs font-black transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Zap className="w-4 h-4 fill-purple-900 text-purple-900" />
+                  <Zap className="w-4 h-4 fill-[#F7A914] text-[#122E52]" />
                   <span>Generate Summary + Quiz (Both)</span>
                 </button>
               </div>
             </div>
 
             {/* Quick Benefits Card */}
-            <div className="p-5 rounded-2xl bg-purple-50 dark:bg-purple-950/20 border border-purple-100 dark:border-purple-900/30 text-xs space-y-2">
-              <span className="font-bold text-purple-900 dark:text-purple-200 block">
+            <div className="p-5 rounded-2xl bg-[#EFF6FF] dark:bg-[#1E3A63] border border-[#1E3A63]/30 text-xs space-y-2">
+              <span className="font-bold text-[#12233F] dark:text-white block">
                 🧠 How Study Buddy Boosts Retention:
               </span>
               <p className="text-slate-600 dark:text-slate-400 leading-relaxed">

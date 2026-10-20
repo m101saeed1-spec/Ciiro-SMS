@@ -5,6 +5,9 @@ import { Student, SchoolClass } from '../../types';
 import { Modal } from '../common/Modal';
 import { Pagination } from '../common/Pagination';
 import { UserAvatar } from '../common/UserAvatar';
+import { StudentRegistrationWizard } from './StudentRegistrationWizard';
+import { RegistrationSuccessModal } from '../common/RegistrationSuccessModal';
+import { QuickExportMenu } from '../common/QuickExportMenu';
 import { exportStudentListPDF } from '../../utils/pdfExport';
 import { exportStudentsCSV } from '../../utils/csvExport';
 import {
@@ -45,7 +48,7 @@ import {
 } from 'lucide-react';
 
 export const StudentsModule: React.FC = () => {
-  const { activeRole, currentUser, canPerformClassOperations, isPrincipal, isOwnerAdmin, isAdmin } = useAuth();
+  const { activeRole, currentUser, canPerformClassOperations, isPrincipal, isOwnerAdmin, isAdmin, activeSchool } = useAuth();
   const { students, classes, addStudent, updateStudent, deleteStudent, addStudentsBulk, addToast, globalSearch } = useSchoolData();
 
   // Role permissions
@@ -81,6 +84,7 @@ export const StudentsModule: React.FC = () => {
   const [selectedStudentForView, setSelectedStudentForView] = useState<Student | null>(null);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [deletingStudent, setDeletingStudent] = useState<Student | null>(null);
+  const [createdStudentSuccess, setCreatedStudentSuccess] = useState<Student | null>(null);
 
   // Bulk Import Modal State
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
@@ -369,6 +373,14 @@ export const StudentsModule: React.FC = () => {
     exportStudentListPDF(filteredClassStudents, `Class Enrollment Roster: ${selectedClass.name}`);
   };
 
+  const handleExportAllStudentsCSV = () => {
+    exportStudentsCSV(students, activeSchool?.name || 'All-Students');
+  };
+
+  const handleExportAllStudentsPDF = () => {
+    exportStudentListPDF(students, `${activeSchool?.name || 'School'} - Complete Student Directory`);
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* ==================================================== */}
@@ -380,7 +392,7 @@ export const StudentsModule: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
+                <span className="p-2 rounded-xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914]">
                   <GraduationCap className="w-6 h-6" />
                 </span>
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -394,13 +406,36 @@ export const StudentsModule: React.FC = () => {
 
             {/* Overview Actions & Search */}
             <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
+              <QuickExportMenu
+                label="Quick Export"
+                items={[
+                  {
+                    id: 'all-students-csv',
+                    label: `All Students (${students.length})`,
+                    description: 'Download complete student database as CSV',
+                    format: 'csv',
+                    count: students.length,
+                    isPopular: true,
+                    onClick: handleExportAllStudentsCSV,
+                  },
+                  {
+                    id: 'all-students-pdf',
+                    label: 'Official Student Directory (PDF)',
+                    description: 'Printable registry of all enrolled students',
+                    format: 'pdf',
+                    count: students.length,
+                    onClick: handleExportAllStudentsPDF,
+                  },
+                ]}
+              />
+
               <button
                 type="button"
                 onClick={downloadStudentImportTemplate}
-                className="px-3 py-2 text-xs font-semibold rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-2xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="btn-outline-navy text-xs py-2 px-3 flex items-center gap-1.5 cursor-pointer"
                 title="Download CSV template for bulk student registration"
               >
-                <Download className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <Download className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                 <span className="hidden sm:inline">CSV Template</span>
               </button>
 
@@ -409,10 +444,10 @@ export const StudentsModule: React.FC = () => {
                   type="button"
                   id="bulk-import-students-btn"
                   onClick={handleOpenBulkModal}
-                  className="px-3.5 py-2 text-xs font-bold rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-900/60 shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
+                  className="px-3.5 py-2 text-xs font-bold rounded-xl bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] border border-[#1E3A63] dark:border-[#1E3A63] hover:bg-[#122E52]/20 dark:hover:bg-[#0B1B32] shadow-2xs transition-all flex items-center gap-1.5 cursor-pointer"
                   title="Import students in bulk via CSV file"
                 >
-                  <Upload className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  <Upload className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                   <span>Bulk Import CSV</span>
                 </button>
               )}
@@ -424,7 +459,7 @@ export const StudentsModule: React.FC = () => {
                   placeholder="Search classes or teachers..."
                   value={overviewSearch}
                   onChange={(e) => setOverviewSearch(e.target.value)}
-                  className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-2xs focus:ring-2 focus:ring-purple-500"
+                  className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-2xs focus:ring-2 focus:ring-[#3B82F6]"
                 />
               </div>
             </div>
@@ -437,7 +472,7 @@ export const StudentsModule: React.FC = () => {
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Total Students
                 </span>
-                <span className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
+                <span className="p-2 rounded-xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914]">
                   <Users className="w-5 h-5" />
                 </span>
               </div>
@@ -454,7 +489,7 @@ export const StudentsModule: React.FC = () => {
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Total Classes
                 </span>
-                <span className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+                <span className="p-2 rounded-xl bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 text-[#3B82F6] dark:text-[#60A5FA]">
                   <Layers className="w-5 h-5" />
                 </span>
               </div>
@@ -509,7 +544,7 @@ export const StudentsModule: React.FC = () => {
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <span>Select Class to Manage Students</span>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#EFF6FF] text-[#122E52] dark:bg-[#1E3A63] dark:text-[#F7A914]">
                   {filteredOverviewClasses.length} Classes
                 </span>
               </h2>
@@ -525,12 +560,12 @@ export const StudentsModule: React.FC = () => {
                 return (
                   <div
                     key={cls.id}
-                    className="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-purple-500/60 dark:hover:border-purple-500/60 p-5 shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col justify-between"
+                    className="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-[#1E3A63] dark:hover:border-[#1E3A63] p-5 shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col justify-between"
                   >
                     <div>
                       {/* Top Badges */}
                       <div className="flex items-center justify-between gap-2">
-                        <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-purple-50 text-purple-700 dark:bg-purple-950/70 dark:text-purple-300 border border-purple-100 dark:border-purple-900">
+                        <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#EFF6FF] text-[#122E52] dark:bg-[#1E3A63] dark:text-[#F7A914] border border-[#1E3A63] dark:border-[#1E3A63]">
                           {cls.code || 'CLS'}
                         </span>
                         <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -540,7 +575,7 @@ export const StudentsModule: React.FC = () => {
 
                       {/* Class Title */}
                       <div className="mt-3 cursor-pointer" onClick={() => handleSelectClass(cls)}>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] dark:group-hover:text-[#F7A914] transition-colors">
                           {cls.name}
                         </h3>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -567,7 +602,7 @@ export const StudentsModule: React.FC = () => {
                             className={`h-full rounded-full transition-all duration-300 ${
                               percentFull >= 90
                                 ? 'bg-amber-500'
-                                : 'bg-purple-600'
+                                : 'bg-[#122E52]'
                             }`}
                             style={{ width: `${percentFull}%` }}
                           />
@@ -580,7 +615,7 @@ export const StudentsModule: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleSelectClass(cls)}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#3B82F6] hover:text-[#122E52] dark:text-[#F7A914] dark:hover:text-[#F7A914]"
                       >
                         <span>View Students</span>
                         <ArrowLeft className="w-3.5 h-3.5 rotate-180" />
@@ -593,7 +628,7 @@ export const StudentsModule: React.FC = () => {
                             setSelectedClass(cls);
                             openAddModal(cls);
                           }}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:hover:bg-purple-900/80 dark:text-purple-300 border border-purple-200 dark:border-purple-800 transition-colors"
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-xl bg-[#EFF6FF] hover:bg-[#122E52]/20 text-[#122E52] dark:bg-[#1E3A63] dark:hover:bg-[#0B1B32] dark:text-[#F7A914] border border-[#1E3A63] dark:border-[#1E3A63] transition-colors"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           <span>Add Student</span>
@@ -626,14 +661,14 @@ export const StudentsModule: React.FC = () => {
 
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-[#3B82F6] dark:text-[#60A5FA] uppercase tracking-wider">
                     Students
                   </span>
                   <span className="text-slate-400">&gt;</span>
                   <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
                     {selectedClass.name}
                   </h1>
-                  <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                  <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-[#EFF6FF] text-[#122E52] dark:bg-[#1E3A63] dark:text-[#F7A914] border border-[#1E3A63] dark:border-[#1E3A63]">
                     {selectedClass.code || 'CLS'} • {selectedClass.roomNumber || 'Room 101'}
                   </span>
                 </div>
@@ -648,40 +683,58 @@ export const StudentsModule: React.FC = () => {
               <button
                 type="button"
                 onClick={downloadStudentImportTemplate}
-                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-2xs transition-colors cursor-pointer"
+                className="btn-outline-navy text-xs py-2 px-3"
                 title="Download CSV template for bulk student registration"
               >
-                <Download className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <Download className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                 <span className="hidden sm:inline">Template</span>
               </button>
 
-              <button
-                type="button"
-                onClick={handleExportClassCSV}
-                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-2xs transition-colors cursor-pointer"
-              >
-                <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-                <span>Export CSV</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleExportClassPDF}
-                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-2xs transition-colors cursor-pointer"
-              >
-                <Download className="w-4 h-4 text-indigo-600" />
-                <span>Download PDF Roster</span>
-              </button>
+              <QuickExportMenu
+                label="Quick Export"
+                items={[
+                  {
+                    id: 'class-csv',
+                    label: `Filtered Roster (${filteredClassStudents.length})`,
+                    description: `Download ${selectedClass.name} filtered records as CSV`,
+                    format: 'csv',
+                    count: filteredClassStudents.length,
+                    isPopular: true,
+                    onClick: handleExportClassCSV,
+                  },
+                  {
+                    id: 'class-pdf',
+                    label: `Official PDF Roster`,
+                    description: `Printable classroom roster with school letterhead`,
+                    format: 'pdf',
+                    count: filteredClassStudents.length,
+                    onClick: handleExportClassPDF,
+                  },
+                  {
+                    id: 'active-only-csv',
+                    label: `Active Students Only`,
+                    description: `Filtered list excluding inactive or transferred`,
+                    format: 'csv',
+                    count: filteredClassStudents.filter((s) => s.status === 'Active').length,
+                    onClick: () => {
+                      exportStudentsCSV(
+                        filteredClassStudents.filter((s) => s.status === 'Active'),
+                        `${selectedClass.name}-Active`
+                      );
+                    },
+                  },
+                ]}
+              />
 
               {canManageStudents && (
                 <button
                   type="button"
                   id="roster-bulk-import-btn"
                   onClick={handleOpenBulkModal}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-900/60 shadow-2xs transition-all cursor-pointer"
+                  className="btn-outline-navy text-xs py-2 px-3.5"
                   title="Import students into class via CSV"
                 >
-                  <Upload className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  <Upload className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                   <span>Bulk Import CSV</span>
                 </button>
               )}
@@ -690,7 +743,7 @@ export const StudentsModule: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => openAddModal(selectedClass)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-sm transition-all cursor-pointer"
+                  className="btn-gold text-xs py-2 px-4"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Student to {selectedClass.name}</span>
@@ -746,7 +799,7 @@ export const StudentsModule: React.FC = () => {
                     setClassSearchQuery(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="w-full pl-9 pr-3.5 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-purple-500"
+                  className="w-full pl-9 pr-3.5 py-1.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-[#3B82F6]"
                 />
               </div>
 
@@ -759,7 +812,7 @@ export const StudentsModule: React.FC = () => {
                     setSelectedSectionFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
+                  className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#3B82F6]"
                 >
                   <option value="All">All Sections</option>
                   {(selectedClass.sections || ['A', 'B']).map((sec) => (
@@ -779,7 +832,7 @@ export const StudentsModule: React.FC = () => {
                     setSelectedStatusFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
+                  className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#3B82F6]"
                 >
                   <option value="All">All Statuses</option>
                   <option value="Active">Active</option>
@@ -795,7 +848,7 @@ export const StudentsModule: React.FC = () => {
                 onClick={() => setDisplayMode('table')}
                 className={`p-1.5 rounded-lg transition-colors ${
                   displayMode === 'table'
-                    ? 'bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-400 shadow-2xs'
+                    ? 'bg-white dark:bg-slate-700 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                     : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                 }`}
                 title="Table View"
@@ -806,7 +859,7 @@ export const StudentsModule: React.FC = () => {
                 onClick={() => setDisplayMode('cards')}
                 className={`p-1.5 rounded-lg transition-colors ${
                   displayMode === 'cards'
-                    ? 'bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-400 shadow-2xs'
+                    ? 'bg-white dark:bg-slate-700 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                     : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                 }`}
                 title="Cards Grid View"
@@ -921,7 +974,7 @@ export const StudentsModule: React.FC = () => {
                             <div className="flex items-center justify-end gap-1.5">
                               <button
                                 onClick={() => setSelectedStudentForView(student)}
-                                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-indigo-600 transition-colors"
+                                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-[#3B82F6] transition-colors"
                                 title="View Profile"
                               >
                                 <Eye className="w-4 h-4" />
@@ -929,7 +982,7 @@ export const StudentsModule: React.FC = () => {
                               {(activeRole === 'Admin' || activeRole === 'Teacher') && (
                                 <button
                                   onClick={() => setEditingStudent(student)}
-                                  className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-purple-600 transition-colors"
+                                  className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-[#3B82F6] transition-colors"
                                   title="Edit Student"
                                 >
                                   <Edit className="w-4 h-4" />
@@ -998,7 +1051,7 @@ export const StudentsModule: React.FC = () => {
                           </p>
                         </div>
                       </div>
-                      <span className="px-2 py-0.5 rounded bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 font-bold text-xs">
+                      <span className="px-2 py-0.5 rounded bg-[#EFF6FF] text-[#122E52] dark:bg-[#1E3A63] dark:text-[#F7A914] font-bold text-xs">
                         Sec {student.section}
                       </span>
                     </div>
@@ -1035,7 +1088,7 @@ export const StudentsModule: React.FC = () => {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => setSelectedStudentForView(student)}
-                        className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-indigo-600"
+                        className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-[#3B82F6]"
                         title="View Profile"
                       >
                         <Eye className="w-4 h-4" />
@@ -1043,7 +1096,7 @@ export const StudentsModule: React.FC = () => {
                       {(activeRole === 'Admin' || activeRole === 'Teacher') && (
                         <button
                           onClick={() => setEditingStudent(student)}
-                          className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-purple-600"
+                          className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-[#3B82F6]"
                           title="Edit Student"
                         >
                           <Edit className="w-4 h-4" />
@@ -1071,237 +1124,36 @@ export const StudentsModule: React.FC = () => {
       {/* MODALS */}
       {/* ==================================================== */}
 
-      {/* 1. ADD STUDENT MODAL (Class-Locked Workflow) */}
+      {/* 1. ADD STUDENT MULTI-STEP WIZARD MODAL */}
       {isAddModalOpen && selectedClass && (
         <Modal
           isOpen={isAddModalOpen}
           onClose={() => setIsAddModalOpen(false)}
-          title={`Enroll New Student to ${selectedClass.name}`}
-          size="lg"
+          title={`Student Admission & Enrollment Wizard — ${selectedClass.name}`}
+          maxWidth="2xl"
         >
-          <form onSubmit={handleCreateStudent} className="space-y-4 text-xs">
-            {/* Auto-Assigned Class Banner */}
-            <div className="p-3.5 rounded-xl bg-purple-50 dark:bg-purple-950/50 border border-purple-200 dark:border-purple-900 text-purple-900 dark:text-purple-200 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                <div>
-                  <span className="font-bold">Target Class: {selectedClass.name}</span>
-                  <span className="block text-[11px] text-purple-700 dark:text-purple-300">
-                    Class code {selectedClass.code || 'CLS'} • Room {selectedClass.roomNumber || 'Room 101'}
-                  </span>
-                </div>
-              </div>
-              <span className="px-2.5 py-1 rounded-lg bg-purple-200/80 dark:bg-purple-900 text-purple-950 dark:text-purple-100 font-bold">
-                Class Locked
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Full Name */}
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Full Name <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Fatima Ali"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-
-              {/* School ID */}
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Student School ID <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. STU-2026-0129"
-                  value={formData.schoolId}
-                  onChange={(e) => {
-                    setFormData({ ...formData, schoolId: e.target.value });
-                    setIdError(null);
-                  }}
-                  className={`w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border ${
-                    idError ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-200 dark:border-slate-700'
-                  } text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500`}
-                />
-                {idError && <p className="text-[11px] text-rose-500 mt-1 font-semibold">{idError}</p>}
-              </div>
-
-              {/* Roll Number */}
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Roll Number
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. 202409"
-                  value={formData.rollNo}
-                  onChange={(e) => setFormData({ ...formData, rollNo: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-
-              {/* Section */}
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Assigned Section <span className="text-rose-500">*</span>
-                </label>
-                <select
-                  value={formData.section}
-                  onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
-                >
-                  {(selectedClass.sections || ['A', 'B']).map((sec) => (
-                    <option key={sec} value={sec}>
-                      Section {sec}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Date of Birth */}
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Date of Birth <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={formData.dob}
-                  onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-
-              {/* Gender */}
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Gender <span className="text-rose-500">*</span>
-                </label>
-                <select
-                  value={formData.gender}
-                  onChange={(e) =>
-                    setFormData({ ...formData, gender: e.target.value as 'Male' | 'Female' | 'Other' })
-                  }
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
-                >
-                  <option value="Female">Female</option>
-                  <option value="Male">Male</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-
-              {/* Blood Group */}
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Blood Group
-                </label>
-                <select
-                  value={formData.bloodGroup}
-                  onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
-                >
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="O+">O+</option>
-                  <option value="O-">O-</option>
-                  <option value="AB+">AB+</option>
-                  <option value="AB-">AB-</option>
-                </select>
-              </div>
-
-              {/* Student Email */}
-              <div>
-                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Student Email
-                </label>
-                <input
-                  type="email"
-                  placeholder="name@eduspike.edu"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-            </div>
-
-            {/* Parent & Contact Information Section */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
-              <h4 className="font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-1.5">
-                <Users className="w-4 h-4 text-purple-600" />
-                <span>Parent & Emergency Contact Information</span>
-              </h4>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Parent/Guardian Full Name <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Mohamed Ali"
-                    value={formData.parentName}
-                    onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Parent Contact Phone <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="+1 (555) 019-2834"
-                    value={formData.parentPhone}
-                    onChange={(e) => setFormData({ ...formData, parentPhone: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Parent Email
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="parent@gmail.com"
-                    value={formData.parentEmail}
-                    onChange={(e) => setFormData({ ...formData, parentEmail: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Buttons */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2.5">
-              <button
-                type="button"
-                onClick={() => setIsAddModalOpen(false)}
-                className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-sm"
-              >
-                Enroll Student
-              </button>
-            </div>
-          </form>
+          <StudentRegistrationWizard
+            targetClass={selectedClass}
+            onClose={() => setIsAddModalOpen(false)}
+            onSuccess={(student) => {
+              setIsAddModalOpen(false);
+              setCreatedStudentSuccess(student);
+            }}
+          />
         </Modal>
+      )}
+
+      {/* Student Created Success Modal (Screen 14 from Blueprint) */}
+      {createdStudentSuccess && (
+        <RegistrationSuccessModal
+          isOpen={!!createdStudentSuccess}
+          onClose={() => setCreatedStudentSuccess(null)}
+          title="Student Registered Successfully!"
+          name={createdStudentSuccess.name}
+          role="Student"
+          ileysId={createdStudentSuccess.schoolId.slice(-4) || '1001'}
+          schoolName="Al-Hikma School"
+        />
       )}
 
       {/* 2. VIEW STUDENT PROFILE MODAL */}
@@ -1318,7 +1170,7 @@ export const StudentsModule: React.FC = () => {
                 name={selectedStudentForView.name}
                 avatarUrl={selectedStudentForView.avatar}
                 size="2xl"
-                className="border-2 border-purple-200 dark:border-purple-900"
+                className="border-2 border-[#1E3A63] dark:border-[#1E3A63]"
               />
               <div className="space-y-1">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -1329,7 +1181,7 @@ export const StudentsModule: React.FC = () => {
                   <span>•</span>
                   <span>Roll #{selectedStudentForView.rollNo}</span>
                   <span>•</span>
-                  <span className="font-semibold text-purple-600 dark:text-purple-400">
+                  <span className="font-semibold text-[#3B82F6] dark:text-[#60A5FA]">
                     {selectedStudentForView.class} (Sec {selectedStudentForView.section})
                   </span>
                 </div>
@@ -1407,7 +1259,7 @@ export const StudentsModule: React.FC = () => {
                   required
                   value={editingStudent.name}
                   onChange={(e) => setEditingStudent({ ...editingStudent, name: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#3B82F6]"
                 />
               </div>
 
@@ -1419,7 +1271,7 @@ export const StudentsModule: React.FC = () => {
                   type="text"
                   value={editingStudent.rollNo}
                   onChange={(e) => setEditingStudent({ ...editingStudent, rollNo: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#3B82F6]"
                 />
               </div>
 
@@ -1431,7 +1283,7 @@ export const StudentsModule: React.FC = () => {
                   type="text"
                   value={editingStudent.parentName}
                   onChange={(e) => setEditingStudent({ ...editingStudent, parentName: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#3B82F6]"
                 />
               </div>
 
@@ -1443,7 +1295,7 @@ export const StudentsModule: React.FC = () => {
                   type="tel"
                   value={editingStudent.parentPhone}
                   onChange={(e) => setEditingStudent({ ...editingStudent, parentPhone: e.target.value })}
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#3B82F6]"
                 />
               </div>
 
@@ -1459,7 +1311,7 @@ export const StudentsModule: React.FC = () => {
                       status: e.target.value as 'Active' | 'Graduated' | 'Suspended',
                     })
                   }
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-[#3B82F6]"
                 >
                   <option value="Active">Active</option>
                   <option value="Graduated">Graduated</option>
@@ -1478,7 +1330,7 @@ export const StudentsModule: React.FC = () => {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold"
+                className="px-5 py-2 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white font-bold"
               >
                 Save Changes
               </button>
@@ -1499,19 +1351,19 @@ export const StudentsModule: React.FC = () => {
         >
           <div className="space-y-4">
             {/* Guide & Template download */}
-            <div className="p-3.5 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="p-3.5 rounded-2xl bg-[#EFF6FF] dark:bg-[#1E3A63] border border-[#1E3A63] dark:border-[#1E3A63] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
               <div className="space-y-1">
-                <p className="font-bold text-purple-950 dark:text-purple-200">
+                <p className="font-bold text-[#12233F] dark:text-[#F7A914]">
                   Bulk Student Enrollment Pipeline
                 </p>
-                <p className="text-[11px] text-purple-700 dark:text-purple-300">
+                <p className="text-[11px] text-[#3B82F6] dark:text-[#60A5FA]">
                   Quickly enroll dozens of students at once. Required headers: <code className="font-mono font-bold">Roll Number, Full Name, Class, Section, Gender, Parent Name, Parent Phone</code>.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={downloadStudentImportTemplate}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shrink-0 shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white font-bold text-xs shrink-0 shadow-xs cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download Template</span>
@@ -1525,7 +1377,7 @@ export const StudentsModule: React.FC = () => {
                 onClick={() => setBulkTab('upload')}
                 className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                   bulkTab === 'upload'
-                    ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                    ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                     : 'text-slate-600 dark:text-slate-400'
                 }`}
               >
@@ -1536,7 +1388,7 @@ export const StudentsModule: React.FC = () => {
                 onClick={() => setBulkTab('paste')}
                 className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                   bulkTab === 'paste'
-                    ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                    ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                     : 'text-slate-600 dark:text-slate-400'
                 }`}
               >
@@ -1547,7 +1399,7 @@ export const StudentsModule: React.FC = () => {
             {bulkTab === 'upload' ? (
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-purple-200 dark:border-purple-800 rounded-2xl p-6 text-center hover:bg-purple-50/50 dark:hover:bg-purple-950/20 transition-all cursor-pointer group"
+                className="border-2 border-dashed border-[#1E3A63] dark:border-[#1E3A63] rounded-2xl p-6 text-center hover:bg-[#122E52]/10 dark:hover:bg-[#0B1B32] transition-all cursor-pointer group"
               >
                 <input
                   ref={fileInputRef}
@@ -1556,7 +1408,7 @@ export const StudentsModule: React.FC = () => {
                   onChange={handleFileUpload}
                   className="hidden"
                 />
-                <div className="w-10 h-10 rounded-2xl bg-purple-100 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-2xl bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
                   <Upload className="w-5 h-5" />
                 </div>
                 <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
@@ -1576,7 +1428,7 @@ export const StudentsModule: React.FC = () => {
                   value={bulkCsvRawText}
                   onChange={(e) => processCsvText(e.target.value)}
                   placeholder={`Roll Number,Full Name,Email,Class,Section,Gender,Date of Birth (YYYY-MM-DD),Blood Group,Parent Name,Parent Phone,Parent Email\n202491,Lucas Bennett,lucas.bennett@eduspike.edu,Class 01,A,Male,2015-05-12,O+,Robert Bennett,+1 (555) 234-5678,robert.bennett@example.com`}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-mono text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-mono text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20"
                 />
               </div>
             )}
@@ -1662,7 +1514,7 @@ export const StudentsModule: React.FC = () => {
                 type="button"
                 disabled={validCount === 0 || isSubmittingBulk}
                 onClick={handleConfirmBulkImport}
-                className="px-5 py-2.5 rounded-xl bg-purple-600 text-white text-xs font-bold hover:bg-purple-700 transition-all shadow-md shadow-purple-500/20 disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-[#122E52] text-white text-xs font-bold hover:bg-[#0B1B32] transition-all shadow-md shadow-md disabled:opacity-50 flex items-center gap-2 cursor-pointer"
               >
                 {isSubmittingBulk ? (
                   <>

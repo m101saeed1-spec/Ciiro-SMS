@@ -68,7 +68,7 @@ export const SubjectModule: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800 flex items-center gap-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] text-xs font-bold border border-[#1E3A63] flex items-center gap-1">
               <BookMarked className="w-3.5 h-3.5" />
               {activeRole === 'Student' ? 'Enrolled Curriculum' : 'Academic Curriculum'}
             </span>
@@ -89,7 +89,7 @@ export const SubjectModule: React.FC = () => {
         {activeRole !== 'Student' && (
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="px-4 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-all shadow-md shadow-purple-200 dark:shadow-none flex items-center justify-center gap-2"
+            className="btn-gold"
           >
             <Plus className="w-4 h-4" />
             <span>Add New Subject</span>
@@ -105,7 +105,7 @@ export const SubjectModule: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search subject title or code..."
-            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 pl-10 pr-4 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 pl-10 pr-4 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20"
           />
         </div>
       </div>
@@ -118,7 +118,7 @@ export const SubjectModule: React.FC = () => {
           >
             <div>
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-extrabold text-purple-600 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/80 border border-purple-200 dark:border-purple-800 px-2.5 py-1 rounded-lg">
+                <span className="text-xs font-extrabold text-[#3B82F6] dark:text-[#60A5FA] bg-[#3B82F6]/10 border border-[#3B82F6]/30 px-2.5 py-1 rounded-lg">
                   {sub.code}
                 </span>
                 <span className="text-[10px] font-bold text-slate-500 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-md">
@@ -153,7 +153,7 @@ export const SubjectModule: React.FC = () => {
               <div className="flex items-center justify-end gap-2 mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <button
                   onClick={() => setEditingSubject(sub)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-[#3B82F6] dark:hover:text-[#60A5FA] hover:bg-[#3B82F6]/10 dark:hover:bg-[#3B82F6]/20"
                   title="Edit Subject"
                 >
                   <Edit className="w-4 h-4" />
@@ -192,7 +192,7 @@ export const SubjectModule: React.FC = () => {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="e.g. Chemistry"
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-purple-600"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#3B82F6]"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -204,7 +204,7 @@ export const SubjectModule: React.FC = () => {
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                   placeholder="CHEM-202"
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-purple-600"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#3B82F6]"
                 />
               </div>
               <div>
@@ -212,7 +212,7 @@ export const SubjectModule: React.FC = () => {
                 <select
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-purple-600"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#3B82F6]"
                 >
                   <option value="Theory" className="dark:bg-slate-800">Theory</option>
                   <option value="Practical" className="dark:bg-slate-800">Practical</option>
@@ -222,7 +222,7 @@ export const SubjectModule: React.FC = () => {
             </div>
             <button
               type="submit"
-              className="w-full py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors shadow-md shadow-purple-200 dark:shadow-none mt-2"
+              className="btn-gold w-full mt-2"
             >
               Create Subject
             </button>
@@ -244,7 +244,7 @@ export const SubjectModule: React.FC = () => {
           <div className="flex items-center justify-end gap-3">
             <button
               onClick={() => setDeletingSubject(null)}
-              className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700"
+              className="btn-outline-navy text-xs py-2 px-4"
             >
               Cancel
             </button>

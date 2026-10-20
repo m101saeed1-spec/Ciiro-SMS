@@ -21,6 +21,7 @@ import {
   UserCheck,
   UserX,
   Plus,
+  Fingerprint,
 } from 'lucide-react';
 
 interface TeacherDashboardProps {
@@ -28,7 +29,14 @@ interface TeacherDashboardProps {
 }
 
 export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }) => {
-  const { currentUser, activeSchool, isClassTeacher, classTeacherOf } = useAuth();
+  const {
+    currentUser,
+    activeSchool,
+    isClassTeacher,
+    classTeacherOf,
+    isBiometricSupported,
+    hasRegisteredBiometrics,
+  } = useAuth();
   const {
     students,
     classes,
@@ -83,7 +91,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
   return (
     <div className="space-y-6 animate-fade-in">
       {/* 1. Teacher Header Banner */}
-      <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-r from-[#122E52] via-[#0B1B32] to-[#12233F] border border-[#1E3A63] rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
         <div className="relative z-10 max-w-3xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold mb-3">
             <GraduationCap className="w-3.5 h-3.5 text-blue-300" />
@@ -115,7 +123,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
             </button>
             <button
               onClick={() => onNavigate('exam')}
-              className="px-4 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-400 text-white font-bold text-xs transition-colors shadow-md flex items-center gap-2 cursor-pointer"
+              className="btn-gold"
             >
               <Award className="w-4 h-4" />
               <span>{isClassTeacher ? 'Enter Official Marks' : 'View Exam Results'}</span>
@@ -140,6 +148,46 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
           </div>
         </div>
       </div>
+
+      {/* Biometric Quick Access Layer Banner */}
+      {isBiometricSupported && (
+        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold ${
+              hasRegisteredBiometrics
+                ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400'
+                : 'bg-blue-50 dark:bg-blue-950/60 text-[#3B82F6]'
+            }`}>
+              <Fingerprint className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-900 dark:text-white">
+                  Biometric Passkey Quick Access
+                </span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  hasRegisteredBiometrics
+                    ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                }`}>
+                  {hasRegisteredBiometrics ? 'Hardware Active' : 'Available on this device'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                {hasRegisteredBiometrics
+                  ? 'Your Touch ID / Windows Hello credential is active for 1-click workspace access.'
+                  : 'Enroll your fingerprint or face recognition sensor for single-touch sign in without typing passwords.'}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => onNavigate('settings')}
+            className="btn-outline-navy text-xs py-1.5 px-3 self-end sm:self-auto cursor-pointer"
+          >
+            {hasRegisteredBiometrics ? 'Manage Passkey' : 'Enable Passkey'}
+          </button>
+        </div>
+      )}
 
       {/* Class Teacher Responsibility Card (When Appointed) */}
       {isClassTeacher && (
@@ -214,10 +262,10 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
           className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md cursor-pointer transition-all"
         >
           <div className="flex items-center justify-between">
-            <div className="w-11 h-11 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
+            <div className="w-11 h-11 rounded-2xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] flex items-center justify-center font-bold">
               <GraduationCap className="w-5 h-5" />
             </div>
-            <span className="text-[11px] font-bold text-purple-600 bg-purple-50 dark:bg-purple-950/50 px-2.5 py-1 rounded-lg">
+            <span className="text-[11px] font-bold text-[#3B82F6] bg-[#3B82F6]/10 px-2.5 py-1 rounded-lg">
               Class Rosters
             </span>
           </div>
@@ -391,7 +439,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
                   className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800"
                 >
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">
+                    <div className="w-8 h-8 rounded-full bg-[#3B82F6]/10 text-[#3B82F6] flex items-center justify-center font-bold text-xs">
                       {student.name[0]}
                     </div>
                     <div>
@@ -413,7 +461,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onNavigate }
             </span>
             <button
               onClick={() => onNavigate('students')}
-              className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 flex items-center gap-1 cursor-pointer"
+              className="text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA] hover:underline flex items-center gap-1 cursor-pointer"
             >
               Full Roster <ArrowUpRight className="w-3.5 h-3.5" />
             </button>

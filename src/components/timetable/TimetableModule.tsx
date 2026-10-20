@@ -188,7 +188,7 @@ export const TimetableModule: React.FC = () => {
   // Color generator for subjects
   const getSubjectColor = (subjectName?: string, type?: string) => {
     if (type === 'Break') return 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/80 text-amber-900 dark:text-amber-200';
-    if (type === 'Assembly') return 'bg-purple-50/90 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800/80 text-purple-900 dark:text-purple-200';
+    if (type === 'Assembly') return 'bg-[#122E52]/10 dark:bg-[#1E3A63]/60 border-[#1E3A63] text-[#122E52] dark:text-[#F7A914]';
     switch (subjectName) {
       case 'Mathematics':
         return 'bg-blue-50/90 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800/70 text-blue-900 dark:text-blue-200';
@@ -198,7 +198,7 @@ export const TimetableModule: React.FC = () => {
       case 'Science':
       case 'Physics':
       case 'Chemistry':
-        return 'bg-purple-50/90 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800/70 text-purple-900 dark:text-purple-200';
+        return 'bg-[#122E52]/10 dark:bg-[#1E3A63]/60 border-[#1E3A63] text-[#122E52] dark:text-[#F7A914]';
       case 'History':
       case 'Geography':
         return 'bg-orange-50/90 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800/70 text-orange-900 dark:text-orange-200';
@@ -222,7 +222,7 @@ export const TimetableModule: React.FC = () => {
       {/* Module Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-purple-600 dark:bg-purple-600 flex items-center justify-center text-white shadow-md shadow-purple-200 dark:shadow-purple-950/50">
+          <div className="w-10 h-10 rounded-xl bg-[#122E52] flex items-center justify-center text-[#F7A914] shadow-md">
             <CalendarDays className="w-5 h-5" />
           </div>
           <div>
@@ -256,7 +256,7 @@ export const TimetableModule: React.FC = () => {
           {canManageTimetable && (
             <button
               onClick={() => handleOpenCreate()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 dark:bg-purple-600 text-white font-semibold text-sm hover:bg-purple-700 dark:hover:bg-purple-500 shadow-md shadow-purple-200 dark:shadow-purple-950/50 transition-all"
+              className="btn-gold"
             >
               <Plus className="w-4 h-4" />
               Add Period Slot
@@ -274,7 +274,7 @@ export const TimetableModule: React.FC = () => {
               onClick={() => setViewMode('class')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 viewMode === 'class'
-                  ? 'bg-white dark:bg-slate-700 text-purple-700 dark:text-purple-300 shadow-xs'
+                  ? 'bg-white dark:bg-slate-700 text-[#3B82F6] dark:text-[#60A5FA] shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -284,7 +284,7 @@ export const TimetableModule: React.FC = () => {
               onClick={() => setViewMode('teacher')}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 viewMode === 'teacher'
-                  ? 'bg-white dark:bg-slate-700 text-purple-700 dark:text-purple-300 shadow-xs'
+                  ? 'bg-white dark:bg-slate-700 text-[#3B82F6] dark:text-[#60A5FA] shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -332,7 +332,7 @@ export const TimetableModule: React.FC = () => {
 
               {/* If Student */}
               {activeRole === 'Student' && currentStudent && (
-                <div className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-300 text-xs font-semibold flex items-center gap-2">
+                <div className="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#122E52]/20 border border-slate-200 dark:border-[#1E3A63] text-[#122E52] dark:text-[#F7A914] text-xs font-semibold flex items-center gap-2">
                   <User className="w-3.5 h-3.5" />
                   Class: {currentStudent.class} • Section {currentStudent.section}
                 </div>
@@ -375,7 +375,7 @@ export const TimetableModule: React.FC = () => {
             </span>
           </div>
 
-          <span className="text-xs text-purple-600 dark:text-purple-400 font-semibold bg-purple-50 dark:bg-purple-950/60 border border-purple-100 dark:border-purple-800/60 px-2.5 py-1 rounded-full">
+          <span className="text-xs text-[#3B82F6] dark:text-[#60A5FA] font-semibold bg-[#122E52]/10 dark:bg-[#1E3A63] border border-[#1E3A63] px-2.5 py-1 rounded-full">
             {currentSlots.length} Scheduled Slot(s)
           </span>
         </div>
@@ -418,7 +418,7 @@ export const TimetableModule: React.FC = () => {
                     {/* Time Column */}
                     <td className="p-3 font-semibold text-slate-700 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/40 border-r border-slate-200 dark:border-slate-800">
                       <div className="font-mono text-slate-800 dark:text-white font-bold">{preset.label}</div>
-                      <div className="text-[10px] text-purple-600 dark:text-purple-400 uppercase font-bold">{preset.name}</div>
+                      <div className="text-[10px] text-[#3B82F6] dark:text-[#60A5FA] uppercase font-bold">{preset.name}</div>
                     </td>
 
                     {/* Days Columns */}
@@ -468,7 +468,7 @@ export const TimetableModule: React.FC = () => {
                                 </div>
 
                                 {viewMode === 'teacher' ? (
-                                  <div className="text-[11px] font-semibold text-purple-700 dark:text-purple-300 mt-1">
+                                  <div className="text-[11px] font-semibold text-[#3B82F6] dark:text-[#60A5FA] mt-1">
                                     {slot.class} (Sec {slot.section})
                                   </div>
                                 ) : (
@@ -495,11 +495,11 @@ export const TimetableModule: React.FC = () => {
                             </div>
                           ) : (
                             /* Empty Slot Cell */
-                            <div className="h-full rounded-xl border border-dashed border-slate-200/80 dark:border-slate-800 flex items-center justify-center text-slate-300 dark:text-slate-600 hover:border-purple-300 dark:hover:border-purple-600 hover:bg-purple-50/20 dark:hover:bg-purple-950/20 transition-colors">
+                            <div className="h-full rounded-xl border border-dashed border-slate-200/80 dark:border-slate-800 flex items-center justify-center text-slate-300 dark:text-slate-600 hover:border-[#F7A914] hover:bg-[#122E52]/10 transition-colors">
                               {canManageTimetable ? (
                                 <button
                                   onClick={() => handleOpenCreate(day, preset)}
-                                  className="w-full h-full opacity-0 group-hover:opacity-100 flex items-center justify-center gap-1 text-purple-600 dark:text-purple-400 font-semibold text-[11px]"
+                                  className="w-full h-full opacity-0 group-hover:opacity-100 flex items-center justify-center gap-1 text-[#3B82F6] dark:text-[#60A5FA] font-semibold text-[11px]"
                                 >
                                   <Plus className="w-3.5 h-3.5" /> Add
                                 </button>
@@ -527,7 +527,7 @@ export const TimetableModule: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center">
                   <CalendarDays className="w-5 h-5" />
                 </div>
                 <h2 className="font-bold text-slate-800 dark:text-white text-lg">
@@ -562,7 +562,7 @@ export const TimetableModule: React.FC = () => {
                   <select
                     value={slotForm.class}
                     onChange={(e) => setSlotForm({ ...slotForm, class: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-purple-500 [&>option]:bg-white [&>option]:dark:bg-slate-800 [&>option]:dark:text-white"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#3B82F6] [&>option]:bg-white [&>option]:dark:bg-slate-800 [&>option]:dark:text-white"
                   >
                     {classes.map((c) => (
                       <option key={c.id} value={c.name}>
@@ -579,7 +579,7 @@ export const TimetableModule: React.FC = () => {
                   <select
                     value={slotForm.section}
                     onChange={(e) => setSlotForm({ ...slotForm, section: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-purple-500 [&>option]:bg-white [&>option]:dark:bg-slate-800 [&>option]:dark:text-white"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#3B82F6] [&>option]:bg-white [&>option]:dark:bg-slate-800 [&>option]:dark:text-white"
                   >
                     <option value="A">Section A</option>
                     <option value="B">Section B</option>
@@ -595,7 +595,7 @@ export const TimetableModule: React.FC = () => {
                   <select
                     value={slotForm.day}
                     onChange={(e) => setSlotForm({ ...slotForm, day: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-purple-500 [&>option]:bg-white [&>option]:dark:bg-slate-800 [&>option]:dark:text-white"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#3B82F6] [&>option]:bg-white [&>option]:dark:bg-slate-800 [&>option]:dark:text-white"
                   >
                     {DAYS_OF_WEEK.map((d) => (
                       <option key={d} value={d}>
@@ -614,7 +614,7 @@ export const TimetableModule: React.FC = () => {
                     required
                     value={slotForm.startTime}
                     onChange={(e) => setSlotForm({ ...slotForm, startTime: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-purple-500 font-mono"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#3B82F6] font-mono"
                   />
                 </div>
 
@@ -627,7 +627,7 @@ export const TimetableModule: React.FC = () => {
                     required
                     value={slotForm.endTime}
                     onChange={(e) => setSlotForm({ ...slotForm, endTime: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-purple-500 font-mono"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#3B82F6] font-mono"
                   />
                 </div>
               </div>
@@ -645,7 +645,7 @@ export const TimetableModule: React.FC = () => {
                         type: e.target.value as TimetableSlot['type'],
                       })
                     }
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-purple-500 [&>option]:bg-white [&>option]:dark:bg-slate-800 [&>option]:dark:text-white"
+                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#3B82F6] [&>option]:bg-white [&>option]:dark:bg-slate-800 [&>option]:dark:text-white"
                   >
                     <option value="Subject">Subject Class</option>
                     <option value="Break">Break / Recess</option>
@@ -662,7 +662,7 @@ export const TimetableModule: React.FC = () => {
                     <select
                       value={slotForm.subject}
                       onChange={(e) => setSlotForm({ ...slotForm, subject: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-purple-500 [&>option]:bg-white [&>option]:dark:bg-slate-800 [&>option]:dark:text-white"
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#3B82F6] [&>option]:bg-white [&>option]:dark:bg-slate-800 [&>option]:dark:text-white"
                     >
                       {subjects.map((s) => (
                         <option key={s.id} value={s.name}>
@@ -675,7 +675,7 @@ export const TimetableModule: React.FC = () => {
                       type="text"
                       value={slotForm.subject}
                       onChange={(e) => setSlotForm({ ...slotForm, subject: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#3B82F6]"
                     />
                   )}
                 </div>
@@ -690,7 +690,7 @@ export const TimetableModule: React.FC = () => {
                     <select
                       value={slotForm.teacherId}
                       onChange={(e) => setSlotForm({ ...slotForm, teacherId: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-purple-500 [&>option]:bg-white [&>option]:dark:bg-slate-800 [&>option]:dark:text-white"
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#3B82F6] [&>option]:bg-white [&>option]:dark:bg-slate-800 [&>option]:dark:text-white"
                     >
                       {teachers.map((t) => (
                         <option key={t.id} value={t.teacherId}>
@@ -709,7 +709,7 @@ export const TimetableModule: React.FC = () => {
                       placeholder="e.g. Room 101, Science Lab A"
                       value={slotForm.roomNumber}
                       onChange={(e) => setSlotForm({ ...slotForm, roomNumber: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#3B82F6]"
                     />
                   </div>
                 </div>
@@ -725,7 +725,7 @@ export const TimetableModule: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-purple-600 dark:bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 dark:hover:bg-purple-500 shadow-md shadow-purple-200 dark:shadow-purple-950/50 transition-all"
+                  className="btn-gold"
                 >
                   {editingSlot ? 'Update Period' : 'Schedule Period'}
                 </button>

@@ -43,7 +43,7 @@ export const Pagination: React.FC<PaginationProps> = ({
               onClick={() => onPageChange(page)}
               className={`min-w-[32px] h-8 px-2.5 rounded-lg text-xs font-semibold transition-all ${
                 currentPage === page
-                  ? 'bg-purple-600 text-white shadow-xs'
+                  ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] font-bold shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
@@ -57,7 +57,7 @@ export const Pagination: React.FC<PaginationProps> = ({
               onClick={() => onPageChange(totalPages)}
               className={`min-w-[32px] h-8 px-2.5 rounded-lg text-xs font-semibold transition-all ${
                 currentPage === totalPages
-                  ? 'bg-purple-600 text-white shadow-xs'
+                  ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] font-bold shadow-xs'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
@@ -80,7 +80,7 @@ export const Pagination: React.FC<PaginationProps> = ({
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg py-1.5 pl-3 pr-8 font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-750 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+              className="appearance-none bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg py-1.5 pl-3 pr-8 font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-750 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] cursor-pointer"
             >
               <option value={5}>5 / page</option>
               <option value={10}>10 / page</option>

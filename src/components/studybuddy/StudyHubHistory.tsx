@@ -58,14 +58,14 @@ export const StudyHubHistory: React.FC<StudyHubHistoryProps> = ({
             <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
               Summaries Created
             </span>
-            <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center">
               <FileText className="w-4 h-4" />
             </div>
           </div>
           <div className="text-2xl font-black text-slate-900 dark:text-white mt-2">
             {totalSummaries}
           </div>
-          <span className="text-2xs text-purple-600 dark:text-purple-400 font-semibold">
+          <span className="text-2xs text-[#3B82F6] dark:text-[#60A5FA] font-semibold">
             High-yield study guides
           </span>
         </div>
@@ -128,12 +128,12 @@ export const StudyHubHistory: React.FC<StudyHubHistoryProps> = ({
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-purple-600" />
+              <BookOpen className="w-4 h-4 text-[#3B82F6]" />
               Saved Study Summaries ({summaries.length})
             </h3>
             <button
               onClick={onNewStudyNote}
-              className="text-xs text-purple-600 dark:text-purple-400 font-semibold hover:underline flex items-center gap-1"
+              className="text-xs text-[#3B82F6] dark:text-[#60A5FA] font-semibold hover:underline flex items-center gap-1"
             >
               <Sparkles className="w-3 h-3" />
               <span>+ New Note</span>
@@ -149,21 +149,21 @@ export const StudyHubHistory: React.FC<StudyHubHistoryProps> = ({
               {summaries.map((summary) => (
                 <div
                   key={summary.id}
-                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-700 bg-slate-50/60 dark:bg-slate-800/40 transition-all flex items-start justify-between gap-3 group"
+                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-[#1E3A63] dark:hover:border-[#1E3A63] bg-slate-50/60 dark:bg-slate-800/40 transition-all flex items-start justify-between gap-3 group"
                 >
                   <div
                     className="flex-1 cursor-pointer"
                     onClick={() => onSelectSummary(summary)}
                   >
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2 py-0.5 rounded text-2xs font-bold bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300">
+                      <span className="px-2 py-0.5 rounded text-2xs font-bold bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA]">
                         {summary.subject}
                       </span>
                       <span className="text-2xs text-slate-400">
                         {summary.createdAt}
                       </span>
                     </div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-purple-600 transition-colors line-clamp-1">
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#3B82F6] transition-colors line-clamp-1">
                       {summary.title}
                     </h4>
                     <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1">
@@ -174,7 +174,7 @@ export const StudyHubHistory: React.FC<StudyHubHistoryProps> = ({
                   <div className="flex items-center gap-1 shrink-0">
                     <button
                       onClick={() => onSelectSummary(summary)}
-                      className="p-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold transition-colors flex items-center gap-1"
+                      className="p-2 rounded-lg bg-[#122E52] hover:bg-[#0B1B32] text-white text-xs font-semibold transition-colors flex items-center gap-1"
                       title="Open Summary"
                     >
                       <ArrowRight className="w-3.5 h-3.5" />

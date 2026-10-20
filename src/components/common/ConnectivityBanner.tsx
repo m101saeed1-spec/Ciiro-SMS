@@ -481,7 +481,7 @@ export const ConnectivityBanner: React.FC = () => {
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 mb-5">
               <div className="flex items-center gap-3">
                 <div className={`w-10 h-10 rounded-2xl flex items-center justify-center text-white ${
-                  isStorageConstrained ? 'bg-amber-600 text-white' : 'bg-purple-600 text-white'
+                  isStorageConstrained ? 'bg-amber-600 text-white' : 'bg-[#122E52] text-white'
                 }`}>
                   <Database className="w-5 h-5" />
                 </div>
@@ -512,7 +512,7 @@ export const ConnectivityBanner: React.FC = () => {
             }`}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <HardDrive className={`w-4 h-4 ${isStorageConstrained ? 'text-amber-600 dark:text-amber-400' : 'text-purple-600 dark:text-purple-400'}`} />
+                  <HardDrive className={`w-4 h-4 ${isStorageConstrained ? 'text-amber-600 dark:text-amber-400' : 'text-[#3B82F6] dark:text-[#F7A914]'}`} />
                   <span className="font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">
                     Local Storage Cache Capacity
                   </span>
@@ -534,7 +534,7 @@ export const ConnectivityBanner: React.FC = () => {
                       ? 'bg-rose-600'
                       : storageStatus.usagePercent >= 75
                       ? 'bg-amber-500'
-                      : 'bg-purple-600'
+                      : 'bg-[#122E52]'
                   }`}
                   style={{ width: `${Math.min(100, Math.max(4, storageStatus.usagePercent))}%` }}
                 />
@@ -562,7 +562,7 @@ export const ConnectivityBanner: React.FC = () => {
                 <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 block mb-1">
                   Queued Changes
                 </span>
-                <span className="font-bold font-mono text-purple-600 dark:text-purple-400 text-sm">
+                <span className="font-bold font-mono text-[#3B82F6] dark:text-[#F7A914] text-sm">
                   {storageStatus.pendingSyncCount} Audit Records
                 </span>
               </div>
@@ -622,7 +622,7 @@ export const ConnectivityBanner: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleOptimizeCache}
-                  className="px-3.5 py-1.5 rounded-xl bg-purple-600 text-white font-semibold text-xs hover:bg-purple-700 transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  className="btn-gold"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   Prune & Optimize
@@ -634,7 +634,7 @@ export const ConnectivityBanner: React.FC = () => {
                 <button
                   type="button"
                   onClick={refreshStorage}
-                  className="text-purple-600 dark:text-purple-400 hover:underline font-medium cursor-pointer"
+                  className="text-[#3B82F6] dark:text-[#F7A914] hover:underline font-medium cursor-pointer"
                 >
                   Recalculate Now
                 </button>

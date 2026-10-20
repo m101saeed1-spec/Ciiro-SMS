@@ -90,7 +90,7 @@ export const DownloadCenterModule: React.FC = () => {
       size: '245 KB',
       date: '14 Oct, 2026',
       icon: FileText,
-      color: 'purple',
+      color: 'blue',
       action: () => {
         const targetStudent = students.find((s) => s.id === currentUser.studentId) || students[0];
         const targetMarks = (studentMarks && studentMarks.length > 0 ? studentMarks : marks).filter(
@@ -234,15 +234,15 @@ export const DownloadCenterModule: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in max-w-6xl mx-auto">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-purple-700 via-indigo-700 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-purple-200/50 dark:shadow-none flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+      <div className="bg-gradient-to-r from-[#122E52] via-[#0B1B32] to-[#122E52] rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-xl dark:shadow-none flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-black uppercase tracking-wider text-purple-100 flex items-center gap-1.5">
-              <Download className="w-3.5 h-3.5 text-purple-200" /> Academic Download Center
+            <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-black uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+              <Download className="w-3.5 h-3.5 text-[#F7A914]" /> Academic Download Center
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight">Authorized Academic Documents</h1>
-          <p className="text-purple-100 text-xs sm:text-sm mt-1">
+          <p className="text-slate-200 text-xs sm:text-sm mt-1">
             Download and print certified institutional records, report cards, receipts, and study schedules.
           </p>
         </div>
@@ -266,7 +266,7 @@ export const DownloadCenterModule: React.FC = () => {
             className="px-3.5 py-2.5 rounded-2xl bg-white/15 hover:bg-white/25 border border-white/25 text-white font-bold text-xs flex items-center gap-2 backdrop-blur-md transition-all cursor-pointer shadow-xs hover:scale-105 active:scale-95"
             title="Export document list as PDF file"
           >
-            <FileDown className="w-4 h-4 text-purple-200" />
+            <FileDown className="w-4 h-4 text-[#F7A914]" />
             <span>Export PDF</span>
           </button>
 
@@ -277,11 +277,11 @@ export const DownloadCenterModule: React.FC = () => {
             className="px-3.5 py-2.5 rounded-2xl bg-white/15 hover:bg-white/25 border border-white/25 text-white font-bold text-xs flex items-center gap-2 backdrop-blur-md transition-all cursor-pointer shadow-xs hover:scale-105 active:scale-95"
             title="Print entire documents overview directly from browser"
           >
-            <Printer className="w-4 h-4 text-purple-200" />
+            <Printer className="w-4 h-4 text-[#F7A914]" />
             <span>Print Overview</span>
           </button>
 
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-2.5 px-3 border border-white/20 text-xs text-purple-100 flex items-center gap-2">
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-2.5 px-3 border border-white/20 text-xs text-slate-200 flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>Digitally signed</span>
           </div>
@@ -300,7 +300,7 @@ export const DownloadCenterModule: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search documents by title, category, format (e.g. 'Report Card', 'Financial', 'Timetable')..."
-              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 rounded-2xl py-2.5 pl-10 pr-9 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
+              className="w-full bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 rounded-2xl py-2.5 pl-10 pr-9 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6] transition-all"
             />
             {searchQuery && (
               <button
@@ -336,7 +336,7 @@ export const DownloadCenterModule: React.FC = () => {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                   isSelected
-                    ? 'bg-purple-600 text-white shadow-xs shadow-purple-500/30'
+                    ? 'bg-[#122E52] text-white shadow-xs shadow-md'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700/80'
                 }`}
               >
@@ -350,7 +350,7 @@ export const DownloadCenterModule: React.FC = () => {
       {/* Document Grid */}
       {filteredDocuments.length === 0 ? (
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-12 text-center border border-slate-200/80 dark:border-slate-800 shadow-2xs">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-3">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] flex items-center justify-center mb-3">
             <Search className="w-7 h-7" />
           </div>
           <h3 className="text-base font-bold text-slate-900 dark:text-white">No Matching Documents Found</h3>
@@ -363,7 +363,7 @@ export const DownloadCenterModule: React.FC = () => {
               setSearchQuery('');
               setSelectedCategory('All');
             }}
-            className="mt-4 px-4 py-2 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors cursor-pointer"
+            className="mt-4 px-4 py-2 rounded-xl bg-[#122E52] text-white font-bold text-xs hover:bg-[#0B1B32] transition-colors cursor-pointer"
           >
             Reset Filters
           </button>
@@ -378,11 +378,11 @@ export const DownloadCenterModule: React.FC = () => {
                 className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs hover:shadow-md transition-shadow flex flex-col justify-between gap-4"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 shadow-inner">
+                  <div className="w-12 h-12 rounded-2xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] flex items-center justify-center shrink-0 shadow-inner">
                     <Icon className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
-                    <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider block">
+                    <span className="text-[10px] font-bold text-[#3B82F6] dark:text-[#60A5FA] uppercase tracking-wider block">
                       {doc.category}
                     </span>
                     <h3 className="font-bold text-slate-900 dark:text-white text-sm mt-0.5">{doc.title}</h3>
@@ -405,7 +405,7 @@ export const DownloadCenterModule: React.FC = () => {
                       className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer border border-slate-200 dark:border-slate-700 shadow-2xs"
                       title={`Print ${doc.title} directly from browser`}
                     >
-                      <Printer className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                      <Printer className="w-3.5 h-3.5 text-[#3B82F6] dark:text-[#60A5FA]" />
                       <span>Print</span>
                     </button>
 
@@ -413,7 +413,7 @@ export const DownloadCenterModule: React.FC = () => {
                     <button
                       type="button"
                       onClick={doc.action}
-                      className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm shadow-purple-200 dark:shadow-none transition-colors cursor-pointer"
+                      className="px-4 py-2 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm shadow-md dark:shadow-none transition-colors cursor-pointer"
                     >
                       <Download className="w-3.5 h-3.5" />
                       <span>Download PDF</span>

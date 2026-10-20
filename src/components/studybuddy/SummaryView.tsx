@@ -76,7 +76,7 @@ ${
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 flex items-center gap-1.5">
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] border border-[#1E3A63] flex items-center gap-1.5">
               <BookOpen className="w-3.5 h-3.5" />
               {summary.subject}
             </span>
@@ -116,7 +116,7 @@ ${
 
           <button
             onClick={() => onGenerateQuizFromSummary(summary)}
-            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-all shadow-md hover:shadow-purple-500/25 flex items-center gap-2"
+            className="px-4 py-2 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white text-xs font-bold transition-all shadow-md hover:shadow-md flex items-center gap-2"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
             <span>Practice Quiz from Notes</span>
@@ -131,7 +131,7 @@ ${
           onClick={() => setActiveTab('all')}
           className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
             activeTab === 'all'
-              ? 'bg-purple-600 text-white shadow-sm'
+              ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-sm'
               : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
           }`}
         >
@@ -141,7 +141,7 @@ ${
           onClick={() => setActiveTab('concepts')}
           className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
             activeTab === 'concepts'
-              ? 'bg-purple-600 text-white shadow-sm'
+              ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-sm'
               : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
           }`}
         >
@@ -152,7 +152,7 @@ ${
           onClick={() => setActiveTab('definitions')}
           className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
             activeTab === 'definitions'
-              ? 'bg-purple-600 text-white shadow-sm'
+              ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-sm'
               : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
           }`}
         >
@@ -164,7 +164,7 @@ ${
             onClick={() => setActiveTab('formulas')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'formulas'
-                ? 'bg-purple-600 text-white shadow-sm'
+                ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-sm'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
             }`}
           >
@@ -177,7 +177,7 @@ ${
             onClick={() => setActiveTab('mnemonics')}
             className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
               activeTab === 'mnemonics'
-                ? 'bg-purple-600 text-white shadow-sm'
+                ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-sm'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
             }`}
           >
@@ -196,7 +196,7 @@ ${
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center font-bold">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">
@@ -208,7 +208,7 @@ ${
                 </span>
               </div>
 
-              <div className="prose dark:prose-invert max-w-none text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line bg-purple-50/40 dark:bg-purple-950/20 p-4 rounded-xl border border-purple-100 dark:border-purple-900/30">
+              <div className="prose dark:prose-invert max-w-none text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line bg-[#EFF6FF]/40 dark:bg-[#1E3A63] p-4 rounded-xl border border-[#1E3A63]/30">
                 {summary.summary}
               </div>
             </div>
@@ -230,10 +230,10 @@ ${
                 {summary.keyConcepts.map((concept, idx) => (
                   <div
                     key={idx}
-                    className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 flex items-start justify-between gap-3 group hover:border-purple-300 dark:hover:border-purple-700 transition-all"
+                    className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 flex items-start justify-between gap-3 group hover:border-[#1E3A63] dark:hover:border-[#1E3A63] transition-all"
                   >
                     <div className="flex items-start gap-3">
-                      <span className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="w-6 h-6 rounded-full bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
                         {idx + 1}
                       </span>
                       <p className="text-sm text-slate-800 dark:text-slate-200 leading-snug">
@@ -242,7 +242,7 @@ ${
                     </div>
                     <button
                       onClick={() => onAskTutor(concept, summary.summary)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-purple-600 dark:text-purple-400 hover:underline shrink-0 flex items-center gap-1 bg-white dark:bg-slate-800 px-2 py-1 rounded border border-purple-200 dark:border-purple-800"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-[#3B82F6] dark:text-[#60A5FA] hover:underline shrink-0 flex items-center gap-1 bg-white dark:bg-slate-800 px-2 py-1 rounded border border-[#1E3A63]"
                       title="Ask AI Tutor to explain this concept"
                     >
                       <Brain className="w-3 h-3" />
@@ -359,7 +359,7 @@ ${
           )}
 
           {/* Quick Practice Quiz Promo Card */}
-          <div className="bg-gradient-to-br from-purple-700 to-indigo-700 text-white rounded-2xl p-5 shadow-md flex flex-col justify-between">
+          <div className="bg-gradient-to-br from-[#122E52] to-indigo-700 text-white rounded-2xl p-5 shadow-md flex flex-col justify-between">
             <div>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 text-2xs font-bold uppercase tracking-wider mb-3">
                 <GraduationCap className="w-3 h-3" />
@@ -368,16 +368,16 @@ ${
               <h4 className="text-base font-extrabold mb-1">
                 Ready to test your retention?
               </h4>
-              <p className="text-xs text-purple-100 leading-relaxed mb-4">
+              <p className="text-xs text-slate-200 leading-relaxed mb-4">
                 Research shows taking a practice test immediately after studying improves 30-day exam retention by over 50%.
               </p>
             </div>
 
             <button
               onClick={() => onGenerateQuizFromSummary(summary)}
-              className="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-purple-950 font-black text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-[#12233F] font-black text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Sparkles className="w-4 h-4 text-purple-900" />
+              <Sparkles className="w-4 h-4 text-[#12233F]" />
               <span>Generate Practice Quiz</span>
             </button>
           </div>

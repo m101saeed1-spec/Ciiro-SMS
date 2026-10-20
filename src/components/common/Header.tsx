@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../context/ThemeContext';
 import { NavModule } from './Sidebar';
 import { getRoleDisplayName } from '../../types';
 import { UserAvatar } from './UserAvatar';
 import { GlobalSearchBar } from './GlobalSearchBar';
-import { ThemeToggle } from './ThemeToggle';
+import { LanguageToggle } from './LanguageToggle';
 import {
   Bell,
   MessageSquare,
@@ -22,18 +24,22 @@ import {
   Sparkles,
   Building2,
   CheckCircle2,
+  Globe,
+  Fingerprint,
 } from 'lucide-react';
 
 interface HeaderProps {
   onOpenMobileSidebar: () => void;
   onNavigate: (module: NavModule) => void;
   onOpenAuthModal: () => void;
+  onViewPublicWebsite?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenMobileSidebar,
   onNavigate,
   onOpenAuthModal,
+  onViewPublicWebsite,
 }) => {
   const {
     currentUser,
@@ -43,8 +49,12 @@ export const Header: React.FC<HeaderProps> = ({
     isSuperAdmin,
     setActiveSchoolId,
     logout,
+    hasRegisteredBiometrics,
+    isBiometricSupported,
   } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const { notices, students, unreadChatCount } = useSchoolData();
+  const { t, tx, tr, isSomali } = useLanguage();
 
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -53,29 +63,29 @@ export const Header: React.FC<HeaderProps> = ({
   const getRoleBadgeStyle = () => {
     switch (activeRole) {
       case 'SuperAdmin':
-        return 'bg-purple-100 dark:bg-purple-900/60 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-800';
+        return 'bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]';
       case 'OwnerAdmin':
-        return 'bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
+        return 'bg-[#122E52]/10 text-[#122E52] dark:text-[#F7A914] border-[#122E52]/20';
       case 'Principal':
-        return 'bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800';
+        return 'bg-[#EFF6FF] text-[#1E40AF] border-[#DBEAFE]';
       case 'Teacher':
-        return 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
+        return 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300';
       case 'Student':
-        return 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800';
+        return 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300';
       case 'AccountAdmin':
-        return 'bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-300 border-teal-200 dark:border-teal-800';
+        return 'bg-teal-50 text-teal-800 border-teal-200 dark:bg-teal-950/40 dark:text-teal-300';
       default:
-        return 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700';
+        return 'bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800 dark:text-slate-200';
     }
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 px-4 lg:px-8 py-3 flex items-center justify-between gap-4 transition-colors duration-200">
+    <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#122E52]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#1E3A63] px-4 lg:px-8 py-3 flex items-center justify-between gap-4 transition-colors duration-200">
       {/* Left section: Hamburger button & Universal Search Bar */}
       <div className="flex items-center gap-3 flex-1 max-w-xl">
         <button
           onClick={onOpenMobileSidebar}
-          className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 lg:hidden transition-colors"
+          className="p-2 rounded-xl border border-slate-200 dark:border-[#1E3A63] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1E3A63] lg:hidden transition-colors"
           title="Open menu"
         >
           <Menu className="w-5 h-5" />
@@ -88,8 +98,8 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => isSuperAdmin && setIsSchoolMenuOpen(!isSchoolMenuOpen)}
               className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-xs font-bold transition-all ${
                 isSuperAdmin
-                  ? 'border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/40 hover:bg-purple-100 cursor-pointer'
-                  : 'border-slate-200/80 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50'
+                  ? 'border-[#3B82F6]/30 dark:border-[#3B82F6]/40 bg-[#EFF6FF] dark:bg-[#1E3A63]/60 hover:bg-[#DBEAFE] cursor-pointer'
+                  : 'border-slate-200/80 dark:border-[#1E3A63] bg-slate-50/50 dark:bg-[#0B1B32]/50'
               }`}
             >
               <img
@@ -100,18 +110,18 @@ export const Header: React.FC<HeaderProps> = ({
                   (e.target as HTMLElement).style.display = 'none';
                 }}
               />
-              <span className="max-w-[140px] truncate text-slate-900 dark:text-white font-extrabold text-[11px]">
+              <span className="max-w-[140px] truncate text-[#122E52] dark:text-white font-extrabold text-[11px]">
                 {activeSchool.name}
               </span>
-              <span className="text-[10px] font-mono text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/60 px-1.5 py-0.2 rounded">
+              <span className="text-[10px] font-mono text-[#3B82F6] dark:text-[#93C5FD] bg-[#EFF6FF] dark:bg-[#0B1B32] px-1.5 py-0.2 rounded border border-[#DBEAFE] dark:border-[#1E3A63]">
                 {activeSchool.code}
               </span>
-              {isSuperAdmin && <ChevronDown className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />}
+              {isSuperAdmin && <ChevronDown className="w-3.5 h-3.5 text-[#3B82F6]" />}
             </button>
 
             {isSuperAdmin && isSchoolMenuOpen && (
-              <div className="absolute left-0 mt-2 w-72 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-2 z-50 animate-scale-up">
-                <div className="p-2 border-b border-slate-100 dark:border-slate-800 mb-1">
+              <div className="absolute left-0 mt-2 w-72 bg-white dark:bg-[#0B1B32] rounded-2xl shadow-xl border border-slate-100 dark:border-[#1E3A63] p-2 z-50 animate-scale-up">
+                <div className="p-2 border-b border-slate-100 dark:border-[#1E3A63] mb-1">
                   <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                     Switch School Tenant
                   </span>
@@ -126,12 +136,12 @@ export const Header: React.FC<HeaderProps> = ({
                       }}
                       className={`w-full p-2 rounded-xl text-left flex items-center justify-between text-xs font-semibold cursor-pointer ${
                         sch.id === activeSchool.id
-                          ? 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold'
-                          : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                          ? 'bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#1E40AF] dark:text-white font-bold'
+                          : 'hover:bg-slate-50 dark:hover:bg-[#122E52] text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       <span className="truncate">{sch.name}</span>
-                      <span className="text-[10px] font-mono text-purple-600 bg-purple-100 dark:bg-purple-900 px-1.5 py-0.5 rounded">
+                      <span className="text-[10px] font-mono text-[#3B82F6] bg-[#EFF6FF] dark:bg-[#0B1B32] px-1.5 py-0.5 rounded border border-[#DBEAFE] dark:border-[#1E3A63]">
                         {sch.code}
                       </span>
                     </button>
@@ -143,31 +153,83 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         {/* Universal Global Search Bar */}
-        <GlobalSearchBar onNavigate={onNavigate} />
+        <div data-tour="global-search" className="flex-1 max-w-md">
+          <GlobalSearchBar onNavigate={onNavigate} />
+        </div>
       </div>
 
       {/* Right section */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div data-tour="header-controls" className="flex items-center gap-2 sm:gap-3">
         {/* Authenticated Locked Role Badge */}
-        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-700 text-xs font-bold transition-all shadow-2xs bg-slate-50/50 dark:bg-slate-800/50">
-          <span className="text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-extrabold">Role:</span>
+        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border border-slate-200/80 dark:border-[#1E3A63] text-xs font-bold transition-all shadow-2xs bg-slate-50/50 dark:bg-[#0B1B32]/50">
+          <span className="text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-extrabold">{t.language === 'so' ? 'Doorka:' : 'Role:'}</span>
           <span className={`px-2 py-0.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 ${getRoleBadgeStyle()}`}>
             <Lock className="w-3 h-3" />
-            {getRoleDisplayName(activeRole)}
+            {tx(getRoleDisplayName(activeRole))}
           </span>
         </div>
 
-        {/* Quick Theme Toggle */}
-        <ThemeToggle compact={true} id="header-theme-toggle" />
+        {/* Public Website Switcher Button */}
+        {onViewPublicWebsite && (
+          <button
+            type="button"
+            onClick={onViewPublicWebsite}
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border border-slate-200/80 dark:border-[#1E3A63] hover:border-[#3B82F6] text-xs font-bold text-[#122E52] dark:text-slate-200 hover:bg-[#EFF6FF] dark:hover:bg-[#1E3A63] transition-all cursor-pointer shadow-2xs"
+            title={tr('View Public Website', 'Eeg Websaydhka Guud')}
+          >
+            <Globe className="w-3.5 h-3.5 text-[#3B82F6]" />
+            <span>{tr('Public Website', 'Websaydhka Guud')}</span>
+          </button>
+        )}
+
+        {/* Bilingual Language Switcher */}
+        <LanguageToggle variant="compact" />
+
+        {/* Global Light / Dark Theme Toggle Button */}
+        <button
+          type="button"
+          id="header-theme-toggle-btn"
+          onClick={toggleTheme}
+          className="relative p-2.5 rounded-full border border-slate-200/80 dark:border-[#1E3A63] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1E3A63] hover:text-[#F7A914] transition-all cursor-pointer shadow-2xs group"
+          title={isDark ? tr('Switch to Light Mode', 'U beddel Qaabka Cad') : tr('Switch to Dark Mode', 'U beddel Qaabka Madow')}
+          aria-label="Toggle light/dark theme"
+        >
+          {isDark ? (
+            <Sun className="w-4 h-4 text-[#F7A914] group-hover:rotate-45 transition-transform" />
+          ) : (
+            <Moon className="w-4 h-4 text-[#122E52] group-hover:-rotate-12 transition-transform" />
+          )}
+        </button>
+
+        {/* Biometric Passkey Quick Indicator (Teachers & Students) */}
+        {isBiometricSupported && (
+          <button
+            type="button"
+            onClick={() => onNavigate('settings')}
+            className={`hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-[11px] font-bold transition-all shadow-2xs cursor-pointer ${
+              hasRegisteredBiometrics
+                ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                : 'border-slate-200/80 dark:border-[#1E3A63] bg-white dark:bg-[#122E52] text-slate-600 dark:text-slate-300 hover:border-[#3B82F6]'
+            }`}
+            title={
+              hasRegisteredBiometrics
+                ? tr('Biometric Passkey Active on this Device', 'Furaha Faraha/Wajiga wuu Shaqaynayaa')
+                : tr('Setup WebAuthn Biometric Passkey in Settings', 'Kici Furaha Faraha/Wajiga Settings-ka')
+            }
+          >
+            <Fingerprint className={`w-3.5 h-3.5 ${hasRegisteredBiometrics ? 'text-emerald-500' : 'text-[#3B82F6]'}`} />
+            <span>{hasRegisteredBiometrics ? tr('Passkey Active', 'Faraha Shaqeynaya') : tr('Passkey', 'Furaha')}</span>
+          </button>
+        )}
 
         {/* Quick Gemini AI Assistant Launcher */}
         <button
           type="button"
           onClick={() => onNavigate('gemini')}
-          className="relative p-2.5 rounded-full border border-purple-200 dark:border-purple-800 bg-purple-50/80 dark:bg-purple-950/60 text-purple-600 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/80 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-2xs"
+          className="relative p-2.5 rounded-full border border-[#F7A914]/40 bg-[#FEF3C7] dark:bg-[#122E52] text-[#92400E] dark:text-[#F7A914] hover:bg-[#FDE68A] dark:hover:bg-[#1E3A63] hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-2xs"
           title="Open Gemini AI Platform Assistant"
         >
-          <Sparkles className="w-4 h-4" />
+          <Sparkles className="w-4 h-4 text-[#F7A914]" />
           <span className="sr-only">Gemini AI</span>
         </button>
 
@@ -175,20 +237,20 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="relative">
           <button
             onClick={() => setIsNotifOpen(!isNotifOpen)}
-            className="relative p-2.5 rounded-full border border-slate-200/80 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+            className="relative p-2.5 rounded-full border border-slate-200/80 dark:border-[#1E3A63] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1E3A63] hover:text-[#3B82F6] transition-colors"
             title="Notifications"
           >
             <Bell className="w-4 h-4" />
             {notices.length > 0 && (
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-purple-600 border-2 border-white dark:border-slate-900 animate-pulse" />
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#F7A914] border-2 border-white dark:border-[#0B1B32] animate-pulse" />
             )}
           </button>
 
           {/* Notifications Dropdown */}
           {isNotifOpen && (
-            <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-4 z-50 animate-scale-up">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100">School Notices</h4>
+            <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-[#0B1B32] rounded-2xl shadow-xl border border-slate-100 dark:border-[#1E3A63] p-4 z-50 animate-scale-up">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#1E3A63]">
+                <h4 className="text-sm font-bold text-[#122E52] dark:text-white">School Notices</h4>
                 <button
                   onClick={() => setIsNotifOpen(false)}
                   className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
@@ -204,15 +266,15 @@ export const Header: React.FC<HeaderProps> = ({
                       onNavigate('notice');
                       setIsNotifOpen(false);
                     }}
-                    className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 hover:bg-purple-50/60 dark:hover:bg-purple-950/40 cursor-pointer transition-colors"
+                    className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#122E52]/70 hover:bg-[#EFF6FF] dark:hover:bg-[#1E3A63] cursor-pointer transition-colors"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300">
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#1E40AF] dark:text-[#93C5FD]">
                         {n.priority}
                       </span>
                       <span className="text-[11px] text-slate-400 dark:text-slate-500">{n.date}</span>
                     </div>
-                    <p className="text-xs font-semibold text-slate-800 dark:text-slate-100 mt-1 line-clamp-1">{n.title}</p>
+                    <p className="text-xs font-semibold text-[#122E52] dark:text-white mt-1 line-clamp-1">{n.title}</p>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">{n.content}</p>
                   </div>
                 ))}
@@ -222,7 +284,7 @@ export const Header: React.FC<HeaderProps> = ({
                   onNavigate('notice');
                   setIsNotifOpen(false);
                 }}
-                className="w-full mt-2 py-2 text-center text-xs font-semibold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 rounded-xl transition-colors"
+                className="w-full mt-2 py-2 text-center text-xs font-bold text-[#3B82F6] hover:bg-[#EFF6FF] dark:hover:bg-[#1E3A63] rounded-xl transition-colors cursor-pointer"
               >
                 View All Notices
               </button>
@@ -234,12 +296,12 @@ export const Header: React.FC<HeaderProps> = ({
         {(activeRole === 'Teacher' || activeRole === 'OwnerAdmin' || activeRole === 'Principal' || activeRole === 'Admin') && (
           <button
             onClick={() => onNavigate('chat')}
-            className="relative p-2.5 rounded-full border border-slate-200/80 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+            className="relative p-2.5 rounded-full border border-slate-200/80 dark:border-[#1E3A63] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1E3A63] hover:text-[#3B82F6] transition-colors"
             title="Faculty Chat"
           >
             <MessageSquare className="w-4 h-4" />
             {unreadChatCount > 0 && (
-              <span className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full bg-purple-600 text-[9px] font-bold text-white shadow-xs">
+              <span className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full bg-[#F7A914] text-[9px] font-bold text-[#12233F] shadow-xs">
                 {unreadChatCount}
               </span>
             )}
@@ -247,10 +309,10 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         {/* Profile User Dropdown Pill */}
-        <div className="relative">
+        <div data-tour="profile-menu" className="relative">
           <button
             onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-            className="flex items-center gap-2.5 pl-1.5 pr-2 py-1.5 rounded-full border border-slate-200/80 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-2.5 pl-1.5 pr-2 py-1.5 rounded-full border border-slate-200/80 dark:border-[#1E3A63] hover:bg-slate-50 dark:hover:bg-[#1E3A63] transition-colors"
           >
             <UserAvatar
               name={currentUser.name}
@@ -260,10 +322,10 @@ export const Header: React.FC<HeaderProps> = ({
               showStatus={true}
             />
             <div className="hidden sm:block text-left">
-              <span className="text-xs font-bold text-slate-800 dark:text-slate-100 block leading-tight">
+              <span className="text-xs font-bold text-[#122E52] dark:text-white block leading-tight">
                 {currentUser.name}
               </span>
-              <span className="text-[10px] text-purple-700 dark:text-purple-400 font-mono font-bold block leading-tight">
+              <span className="text-[10px] text-[#3B82F6] font-mono font-bold block leading-tight">
                 ID: {currentUser.schoolId || currentUser.studentId || currentUser.teacherId || 'ADM-2026-0001'}
               </span>
             </div>
@@ -272,27 +334,19 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Profile Dropdown Menu */}
           {isProfileMenuOpen && (
-            <div className="absolute right-0 mt-3 w-72 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 p-2 z-50 animate-scale-up">
-              <div className="p-3 border-b border-slate-100 dark:border-slate-800 bg-purple-50/50 dark:bg-purple-950/40 rounded-xl mb-2">
-                <p className="text-xs font-bold text-slate-800 dark:text-slate-100">{currentUser.name}</p>
+            <div className="absolute right-0 mt-3 w-72 bg-white dark:bg-[#0B1B32] rounded-2xl shadow-xl border border-slate-100 dark:border-[#1E3A63] p-2 z-50 animate-scale-up">
+              <div className="p-3 border-b border-slate-100 dark:border-[#1E3A63] bg-[#F7F9FC] dark:bg-[#122E52]/60 rounded-xl mb-2">
+                <p className="text-xs font-bold text-[#122E52] dark:text-white">{currentUser.name}</p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">{currentUser.email}</p>
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-purple-100/60 dark:border-purple-900/60">
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 flex items-center gap-1">
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-200/60 dark:border-[#1E3A63]">
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] flex items-center gap-1">
                     <Lock className="w-2.5 h-2.5" />
-                    {getRoleDisplayName(currentUser.role)}
+                    {tx(getRoleDisplayName(currentUser.role))}
                   </span>
-                  <span className="text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
+                  <span className="text-[10px] font-mono font-bold text-[#122E52] dark:text-slate-300 bg-white dark:bg-[#0B1B32] px-2 py-0.5 rounded border border-slate-200 dark:border-[#1E3A63]">
                     {currentUser.schoolId || currentUser.studentId || currentUser.teacherId || 'ADM-2026-0001'}
                   </span>
                 </div>
-              </div>
-
-              {/* Theme Settings Selector */}
-              <div className="px-3 py-2 mb-1 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Appearance</span>
-                </div>
-                <ThemeToggle />
               </div>
 
               <button
@@ -300,10 +354,10 @@ export const Header: React.FC<HeaderProps> = ({
                   onNavigate('account');
                   setIsProfileMenuOpen(false);
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors mt-1"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-[#F7F9FC] dark:hover:bg-[#122E52] rounded-xl transition-colors mt-1 cursor-pointer"
               >
-                <User className="w-4 h-4 text-slate-400 dark:text-slate-500" />
-                <span>Account Profile</span>
+                <User className="w-4 h-4 text-[#3B82F6]" />
+                <span>{tr('Account Profile', 'Xogta Koontada')}</span>
               </button>
 
               {(activeRole === 'SuperAdmin' || activeRole === 'OwnerAdmin' || activeRole === 'Admin') && (
@@ -312,10 +366,10 @@ export const Header: React.FC<HeaderProps> = ({
                     onNavigate('activities' as NavModule);
                     setIsProfileMenuOpen(false);
                   }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-[#F7F9FC] dark:hover:bg-[#122E52] rounded-xl transition-colors cursor-pointer"
                 >
-                  <History className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                  <span>Activity & Audit Trail</span>
+                  <History className="w-4 h-4 text-[#3B82F6]" />
+                  <span>{t.activityAuditLogs}</span>
                 </button>
               )}
 
@@ -324,22 +378,37 @@ export const Header: React.FC<HeaderProps> = ({
                   onOpenAuthModal();
                   setIsProfileMenuOpen(false);
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-[#F7F9FC] dark:hover:bg-[#122E52] rounded-xl transition-colors cursor-pointer"
               >
                 <Shield className="w-4 h-4 text-slate-400 dark:text-slate-500" />
-                <span>Switch Account / Sign In</span>
+                <span>{tr('Switch Account / Sign In', 'Beddel Koontada / Soo Gal')}</span>
               </button>
+
+              {onViewPublicWebsite && (
+                <button
+                  onClick={() => {
+                    onViewPublicWebsite();
+                    setIsProfileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-[#F7F9FC] dark:hover:bg-[#122E52] rounded-xl transition-colors cursor-pointer"
+                >
+                  <Globe className="w-4 h-4 text-[#3B82F6]" />
+                  <span>{tr('Visit Public Website', 'Tag Websaydhka Guud')}</span>
+                </button>
+              )}
 
               <button
                 onClick={() => {
                   logout();
                   setIsProfileMenuOpen(false);
-                  onOpenAuthModal();
+                  if (onViewPublicWebsite) {
+                    onViewPublicWebsite();
+                  }
                 }}
                 className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors mt-1 border-t border-slate-100 dark:border-slate-800"
               >
                 <LogOut className="w-4 h-4" />
-                <span>Sign Out</span>
+                <span>{t.signOut}</span>
               </button>
             </div>
           )}

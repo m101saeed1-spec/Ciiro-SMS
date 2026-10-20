@@ -326,9 +326,9 @@ export const ChatModule: React.FC = () => {
   const getGroupBadgeStyle = (type: ChatGroupType) => {
     switch (type) {
       case 'AllTeachers':
-        return 'bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800/80';
+        return 'bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] border-[#1E3A63]/80';
       case 'Department':
-        return 'bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800/80';
+        return 'bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 text-[#3B82F6] dark:text-[#60A5FA] border-[#3B82F6]/30 dark:border-[#3B82F6]/40';
       case 'Subject':
         return 'bg-cyan-100 dark:bg-cyan-950/60 text-cyan-800 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800/80';
       case 'ClassTeacher':
@@ -341,15 +341,15 @@ export const ChatModule: React.FC = () => {
   const getGroupIcon = (type: ChatGroupType) => {
     switch (type) {
       case 'AllTeachers':
-        return <Megaphone className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
+        return <Megaphone className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />;
       case 'Department':
-        return <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />;
+        return <Layers className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />;
       case 'Subject':
         return <BookOpen className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />;
       case 'ClassTeacher':
         return <GraduationCap className="w-4 h-4 text-amber-600 dark:text-amber-400" />;
       default:
-        return <MessageSquare className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
+        return <MessageSquare className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />;
     }
   };
 
@@ -361,21 +361,21 @@ export const ChatModule: React.FC = () => {
   return (
     <div id="teacher-chat-module" className="flex flex-col h-[calc(100vh-8.5rem)] min-h-[640px] bg-slate-50 dark:bg-slate-950 rounded-2xl overflow-hidden border border-slate-200/80 dark:border-slate-800 shadow-sm">
       {/* Top Banner: Faculty-Only Security Guarantee with Audienta Brand Gradient */}
-      <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white px-4 py-3 flex items-center justify-between shadow-xs border-b border-purple-800/50 shrink-0">
+      <div className="bg-gradient-to-r from-[#122E52] via-[#0B1B32] to-[#122E52] text-white px-4 py-3 flex items-center justify-between shadow-xs border-b border-[#1E3A63] shrink-0">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-white/10 rounded-xl backdrop-blur-md border border-white/10 shadow-inner">
-            <Lock className="w-4 h-4 text-purple-300" />
+            <Lock className="w-4 h-4 text-[#F7A914]" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold tracking-wide uppercase text-white">
                 Faculty Encrypted Workspace
               </span>
-              <span className="bg-purple-500/20 text-purple-200 border border-purple-400/30 text-[10px] px-2 py-0.5 rounded-full font-semibold">
+              <span className="bg-[#F7A914]/20 text-[#F7A914] border border-[#1E3A63] text-[10px] px-2 py-0.5 rounded-full font-semibold">
                 Staff & Admins Only
               </span>
             </div>
-            <p className="text-[11px] text-purple-200/80 leading-tight hidden sm:block mt-0.5">
+            <p className="text-[11px] text-slate-300 leading-tight hidden sm:block mt-0.5">
               Secure internal channels for curriculum planning, student performance discussions, and department announcements.
             </p>
           </div>
@@ -385,7 +385,7 @@ export const ChatModule: React.FC = () => {
           <button
             id="create-group-btn"
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm shadow-purple-900/30 transition-all cursor-pointer border border-purple-400/30"
+            className="flex items-center gap-1.5 btn-navy text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm shadow-md transition-all cursor-pointer border border-[#1E3A63]"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Group</span>
@@ -411,7 +411,7 @@ export const ChatModule: React.FC = () => {
                 value={groupSearchQuery}
                 onChange={(e) => setGroupSearchQuery(e.target.value)}
                 placeholder="Search teacher channels..."
-                className="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-purple-500 focus:bg-white dark:focus:bg-slate-800 outline-none transition-all"
+                className="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-[#3B82F6] focus:bg-white dark:focus:bg-slate-800 outline-none transition-all"
               />
               {groupSearchQuery && (
                 <button
@@ -437,7 +437,7 @@ export const ChatModule: React.FC = () => {
                   onClick={() => setSelectedTypeFilter(filter.id)}
                   className={`px-3 py-1.5 rounded-xl whitespace-nowrap text-xs font-semibold transition-all cursor-pointer ${
                     selectedTypeFilter === filter.id
-                      ? 'bg-purple-600 text-white shadow-sm shadow-purple-600/25'
+                      ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-sm shadow-md'
                       : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                   }`}
                 >
@@ -451,7 +451,7 @@ export const ChatModule: React.FC = () => {
           <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60">
             {filteredGroups.length === 0 ? (
               <div className="p-8 text-center text-slate-400 dark:text-slate-500">
-                <MessageSquare className="w-10 h-10 mx-auto mb-2 opacity-30 text-purple-600" />
+                <MessageSquare className="w-10 h-10 mx-auto mb-2 opacity-30 text-[#3B82F6]" />
                 <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">No channels found</p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Try adjusting your search or create a new group.</p>
               </div>
@@ -465,14 +465,14 @@ export const ChatModule: React.FC = () => {
                     onClick={() => handleSelectGroup(group.id)}
                     className={`w-full text-left p-3.5 transition-all flex items-start gap-3 relative cursor-pointer ${
                       isActive
-                        ? 'bg-purple-50/80 dark:bg-purple-950/40 border-l-4 border-purple-600 dark:border-purple-500'
+                        ? 'bg-[#EFF6FF]/80 dark:bg-[#1E3A63] border-l-4 border-[#122E52] dark:border-[#1E3A63]'
                         : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
                     }`}
                   >
                     {/* Icon / Avatar */}
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-2xs border ${
                       isActive
-                        ? 'bg-purple-100 dark:bg-purple-900/60 border-purple-300 dark:border-purple-700'
+                        ? 'bg-[#EFF6FF] dark:bg-[#1E3A63] border-[#1E3A63]'
                         : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
                     }`}>
                       {getGroupIcon(group.type)}
@@ -482,7 +482,7 @@ export const ChatModule: React.FC = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-1 mb-1">
                         <h4 className={`text-xs font-bold truncate ${
-                          isActive ? 'text-purple-950 dark:text-purple-200' : 'text-slate-900 dark:text-white'
+                          isActive ? 'text-[#12233F] dark:text-[#F7A914]' : 'text-slate-900 dark:text-white'
                         }`}>
                           {group.name}
                         </h4>
@@ -522,7 +522,7 @@ export const ChatModule: React.FC = () => {
                           <BellOff className="w-3 h-3 text-amber-500 dark:text-amber-400 ml-auto" />
                         )}
                         {(group.unreadCount || 0) > 0 && !group.isMutedForCurrentUser && (
-                          <span className="ml-auto bg-purple-600 text-white text-[10px] font-extrabold px-1.5 py-0.2 rounded-full shadow-2xs">
+                          <span className="ml-auto bg-[#122E52] text-white text-[10px] font-extrabold px-1.5 py-0.2 rounded-full shadow-2xs">
                             {group.unreadCount}
                           </span>
                         )}
@@ -554,7 +554,7 @@ export const ChatModule: React.FC = () => {
                   <ChevronLeft className="w-5 h-5" />
                 </button>
 
-                <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/80 flex items-center justify-center shadow-2xs shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-[#122E52]/20 border border-[#1E3A63]/80 flex items-center justify-center shadow-2xs shrink-0">
                   {getGroupIcon(activeGroup.type)}
                 </div>
                 <div className="min-w-0">
@@ -651,7 +651,7 @@ export const ChatModule: React.FC = () => {
                   onClick={() => setShowMemberDrawer(!showMemberDrawer)}
                   className={`p-2 rounded-xl transition-colors cursor-pointer ${
                     showMemberDrawer
-                      ? 'bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 ring-1 ring-purple-300 dark:ring-purple-700'
+                      ? 'bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] ring-1 ring-[#F7A914]/30 dark:ring-[#F7A914]/30'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800'
                   }`}
                   title="Group Members & Details"
@@ -664,12 +664,12 @@ export const ChatModule: React.FC = () => {
             {/* Messages Feed Area */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/60 dark:bg-slate-950/60">
               {/* Security Reminder Card */}
-              <div className="bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200/80 dark:border-purple-800/60 rounded-2xl p-3 text-center max-w-xl mx-auto shadow-2xs">
-                <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-purple-900 dark:text-purple-200">
-                  <ShieldAlert className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+              <div className="bg-[#122E52]/5 dark:bg-[#122E52]/30 border border-[#1E3A63] dark:border-[#1E3A63] rounded-2xl p-3 text-center max-w-xl mx-auto shadow-2xs">
+                <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-[#12233F] dark:text-white">
+                  <ShieldAlert className="w-3.5 h-3.5 text-[#3B82F6] dark:text-[#60A5FA]" />
                   <span>Confidential Faculty Communication</span>
                 </div>
-                <p className="text-[11px] text-purple-700 dark:text-purple-300 mt-0.5">
+                <p className="text-[11px] text-[#3B82F6] dark:text-[#60A5FA] mt-0.5">
                   Created {activeGroup.createdAt} by {activeGroup.createdByName}. Strictly isolated from student & parent views.
                 </p>
               </div>
@@ -720,7 +720,7 @@ export const ChatModule: React.FC = () => {
                       <div className="flex items-center gap-1.5 mb-1 text-[11px]">
                         <span className="font-bold text-slate-800 dark:text-slate-200">{msg.senderName}</span>
                         {msg.senderRole === 'Admin' ? (
-                          <span className="bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-[9px] font-bold px-1.5 py-0.2 rounded border border-purple-200 dark:border-purple-800">
+                          <span className="bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] text-[9px] font-bold px-1.5 py-0.2 rounded border border-[#1E3A63]">
                             Admin
                           </span>
                         ) : (
@@ -736,8 +736,8 @@ export const ChatModule: React.FC = () => {
                         <div
                           className={`mb-1 p-2 rounded-xl text-xs border-l-2 max-w-full truncate ${
                             isCurrentUser
-                              ? 'border-purple-400 bg-purple-900/30 text-purple-100'
-                              : 'border-purple-500 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                              ? 'border-[#1E3A63] bg-[#0B1B32] text-slate-200'
+                              : 'border-[#1E3A63] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                           }`}
                         >
                           <span className="font-bold text-[10px] opacity-85 block">
@@ -753,7 +753,7 @@ export const ChatModule: React.FC = () => {
                           msg.isAnnouncement
                             ? 'bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 text-amber-950 dark:text-amber-100 font-medium'
                             : isCurrentUser
-                            ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-tr-xs shadow-md shadow-purple-600/15'
+                            ? 'bg-gradient-to-r from-[#122E52] to-[#1E3A63] text-white rounded-tr-xs shadow-md shadow-md'
                             : 'bg-white dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700/80 text-slate-900 dark:text-white rounded-tl-xs'
                         }`}
                       >
@@ -771,7 +771,7 @@ export const ChatModule: React.FC = () => {
                           {msg.isEdited && (
                             <span
                               className={`text-[9px] font-semibold italic ${
-                                isCurrentUser ? 'text-purple-200' : 'text-slate-400 dark:text-slate-500'
+                                isCurrentUser ? 'text-[#F7A914]' : 'text-slate-400 dark:text-slate-500'
                               }`}
                             >
                               (edited)
@@ -803,7 +803,7 @@ export const ChatModule: React.FC = () => {
                                   }
                                   className="flex items-center gap-2 truncate text-left hover:underline cursor-pointer flex-1"
                                 >
-                                  <FileText className="w-4 h-4 shrink-0 text-purple-400" />
+                                  <FileText className="w-4 h-4 shrink-0 text-[#F7A914]" />
                                   <span className="truncate font-semibold">{att.name}</span>
                                   <span className="text-[10px] opacity-75">({att.size})</span>
                                 </button>
@@ -851,7 +851,7 @@ export const ChatModule: React.FC = () => {
                                 onClick={() => toggleMessageReaction(activeGroup.id, msg.id, emoji)}
                                 className={`flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full border shadow-2xs transition-all cursor-pointer ${
                                   hasReacted
-                                    ? 'bg-purple-100 dark:bg-purple-950/70 border-purple-300 dark:border-purple-700 text-purple-900 dark:text-purple-200 font-bold'
+                                    ? 'bg-[#EFF6FF] dark:bg-[#1E3A63] border-[#1E3A63] text-[#12233F] dark:text-white font-bold'
                                     : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                                 }`}
                                 title={`Reacted by: ${users.join(', ')}`}
@@ -886,7 +886,7 @@ export const ChatModule: React.FC = () => {
                         {/* Reply in Thread button */}
                         <button
                           onClick={() => setActiveThreadPostId(msg.id)}
-                          className="p-1.5 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-2xs transition-colors cursor-pointer"
+                          className="p-1.5 text-slate-400 hover:text-[#3B82F6] dark:hover:text-[#F7A914] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-2xs transition-colors cursor-pointer"
                           title="Reply in thread"
                         >
                           <MessageSquare className="w-3 h-3" />
@@ -895,7 +895,7 @@ export const ChatModule: React.FC = () => {
                         {/* Quote Reply button */}
                         <button
                           onClick={() => setReplyingTo(msg)}
-                          className="p-1.5 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-2xs transition-colors cursor-pointer"
+                          className="p-1.5 text-slate-400 hover:text-[#3B82F6] dark:hover:text-[#F7A914] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-2xs transition-colors cursor-pointer"
                           title="Quote reply"
                         >
                           <Reply className="w-3 h-3" />
@@ -905,7 +905,7 @@ export const ChatModule: React.FC = () => {
                         {(isCurrentUser || activeRole === 'Admin') && (
                           <button
                             onClick={() => handleStartEditMessage(msg)}
-                            className="p-1.5 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-2xs transition-colors cursor-pointer"
+                            className="p-1.5 text-slate-400 hover:text-[#3B82F6] dark:hover:text-[#F7A914] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-2xs transition-colors cursor-pointer"
                             title="Edit message"
                           >
                             <Edit className="w-3 h-3" />
@@ -928,9 +928,9 @@ export const ChatModule: React.FC = () => {
                       {((msg.replies && msg.replies.length > 0) || (msg.replyCount && msg.replyCount > 0)) && (
                         <button
                           onClick={() => setActiveThreadPostId(msg.id)}
-                          className="flex items-center gap-1.5 text-xs text-purple-700 dark:text-purple-300 font-semibold hover:underline mt-1.5 cursor-pointer bg-purple-50/90 dark:bg-purple-950/60 px-2.5 py-1 rounded-xl border border-purple-200/80 dark:border-purple-800/80 transition-all hover:border-purple-400 shadow-2xs"
+                          className="flex items-center gap-1.5 text-xs text-[#3B82F6] dark:text-[#60A5FA] font-semibold hover:underline mt-1.5 cursor-pointer bg-[#EFF6FF]/90 dark:bg-[#1E3A63] px-2.5 py-1 rounded-xl border border-[#1E3A63] dark:border-[#1E3A63] transition-all hover:border-[#1E3A63] shadow-2xs"
                         >
-                          <MessageSquare className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                          <MessageSquare className="w-3.5 h-3.5 text-[#3B82F6] dark:text-[#60A5FA]" />
                           <span>
                             {msg.replies?.length || msg.replyCount}{' '}
                             {(msg.replies?.length || msg.replyCount) === 1 ? 'reply' : 'replies'}
@@ -947,15 +947,15 @@ export const ChatModule: React.FC = () => {
 
             {/* Replying-To Banner */}
             {replyingTo && (
-              <div className="px-4 py-2 bg-purple-50 dark:bg-purple-950/40 border-t border-purple-200 dark:border-purple-800/80 flex items-center justify-between text-xs text-purple-900 dark:text-purple-200">
+              <div className="px-4 py-2 bg-slate-50 dark:bg-[#122E52]/20 border-t border-[#1E3A63]/80 flex items-center justify-between text-xs text-[#12233F] dark:text-white">
                 <div className="flex items-center gap-2 truncate">
-                  <Reply className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                  <Reply className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA] shrink-0" />
                   <span className="font-bold">{replyingTo.senderName}:</span>
-                  <span className="truncate text-purple-700 dark:text-purple-300">{replyingTo.content}</span>
+                  <span className="truncate text-[#3B82F6] dark:text-[#60A5FA]">{replyingTo.content}</span>
                 </div>
                 <button
                   onClick={() => setReplyingTo(null)}
-                  className="text-purple-700 dark:text-purple-300 hover:text-purple-900 dark:hover:text-white ml-2 p-1 cursor-pointer"
+                  className="text-[#3B82F6] dark:text-[#60A5FA] hover:text-[#12233F] dark:hover:text-white ml-2 p-1 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -984,7 +984,7 @@ export const ChatModule: React.FC = () => {
             {pendingAttachment && (
               <div className="px-4 py-2 bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs text-slate-800 dark:text-slate-200">
                 <div className="flex items-center gap-2 truncate">
-                  <FileText className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                  <FileText className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA] shrink-0" />
                   <span className="font-bold truncate">{pendingAttachment.name}</span>
                   <span className="text-[10px] text-slate-500 dark:text-slate-400 shrink-0">
                     ({pendingAttachment.size})
@@ -1016,17 +1016,17 @@ export const ChatModule: React.FC = () => {
 
             {/* Upload Progress Bar */}
             {isUploadingMain && (
-              <div className="px-4 py-2 bg-purple-50 dark:bg-purple-950/60 border-t border-purple-200 dark:border-purple-800 text-xs">
-                <div className="flex items-center justify-between mb-1 text-purple-900 dark:text-purple-200 font-semibold">
+              <div className="px-4 py-2 bg-slate-50 dark:bg-[#122E52]/20 border-t border-[#1E3A63] text-xs">
+                <div className="flex items-center justify-between mb-1 text-[#12233F] dark:text-white font-semibold">
                   <span className="flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-purple-600 animate-spin" />
+                    <Sparkles className="w-3.5 h-3.5 text-[#3B82F6] animate-spin" />
                     <span>Validating & uploading attachment...</span>
                   </span>
                   <span>{mainUploadProgress}%</span>
                 </div>
-                <div className="w-full bg-purple-200 dark:bg-purple-900 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-[#FEF3C7] dark:bg-[#1E3A63] rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-purple-600 to-indigo-600 h-1.5 rounded-full transition-all duration-150"
+                    className="bg-gradient-to-r from-[#122E52] to-[#1E3A63] h-1.5 rounded-full transition-all duration-150"
                     style={{ width: `${mainUploadProgress}%` }}
                   ></div>
                 </div>
@@ -1059,7 +1059,7 @@ export const ChatModule: React.FC = () => {
                 type="button"
                 id="attach-file-btn"
                 onClick={() => fileInputRef.current?.click()}
-                className="p-2 text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                className="p-2 text-slate-500 dark:text-slate-400 hover:text-[#3B82F6] dark:hover:text-[#F7A914] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                 title="Upload Document / File (PDF, DOC, PPT, XLS, Image)"
               >
                 <Paperclip className="w-4 h-4" />
@@ -1083,7 +1083,7 @@ export const ChatModule: React.FC = () => {
                     ? 'border-amber-400 bg-amber-50/30 dark:bg-amber-950/20 focus:ring-amber-400'
                     : isAnnouncementMode
                     ? 'border-amber-400 bg-amber-50/50 dark:bg-amber-950/20 focus:ring-amber-400 placeholder:text-amber-800/60 dark:placeholder:text-amber-300/60'
-                    : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 focus:bg-white dark:focus:bg-slate-800 focus:ring-purple-500 placeholder:text-slate-400 dark:placeholder:text-slate-500'
+                    : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 focus:bg-white dark:focus:bg-slate-800 focus:ring-[#3B82F6] placeholder:text-slate-400 dark:placeholder:text-slate-500'
                 }`}
               />
 
@@ -1092,7 +1092,7 @@ export const ChatModule: React.FC = () => {
                 type="submit"
                 id="send-chat-message-btn"
                 disabled={!messageInput.trim() && !pendingAttachment}
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-40 text-white p-2.5 rounded-xl shadow-md shadow-purple-600/20 transition-all cursor-pointer"
+                className="btn-navy disabled:opacity-40 text-white p-2.5 rounded-xl shadow-md shadow-md transition-all cursor-pointer"
                 title={editingMessage ? 'Save Changes' : 'Send Message'}
               >
                 {editingMessage ? <CheckCircle2 className="w-4 h-4" /> : <Send className="w-4 h-4" />}
@@ -1101,7 +1101,7 @@ export const ChatModule: React.FC = () => {
           </div>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-50 dark:bg-slate-950 text-slate-400 dark:text-slate-500">
-            <MessageSquare className="w-12 h-12 mb-3 opacity-30 text-purple-600" />
+            <MessageSquare className="w-12 h-12 mb-3 opacity-30 text-[#3B82F6]" />
             <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Select a Teacher Channel</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm text-center">
               Choose a channel on the left to participate in real-time faculty discussions, share announcements, or coordinate curriculum.
@@ -1138,7 +1138,7 @@ export const ChatModule: React.FC = () => {
             {/* Header */}
             <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/90">
               <h4 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Info className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <Info className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                 <span>Group Information</span>
               </h4>
               <button
@@ -1153,7 +1153,7 @@ export const ChatModule: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-4 space-y-5">
               {/* Group Overview Card */}
               <div className="text-center pb-4 border-b border-slate-100 dark:border-slate-800">
-                <div className="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/80 mx-auto flex items-center justify-center shadow-2xs mb-2">
+                <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-[#122E52]/20 border border-[#1E3A63]/80 mx-auto flex items-center justify-center shadow-2xs mb-2">
                   {getGroupIcon(activeGroup.type)}
                 </div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white">{activeGroup.name}</h3>
@@ -1175,13 +1175,13 @@ export const ChatModule: React.FC = () => {
               <div>
                 <div className="flex items-center justify-between mb-2.5">
                   <h5 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                    <Users className="w-3.5 h-3.5 text-[#3B82F6] dark:text-[#60A5FA]" />
                     <span>Faculty Members ({activeGroup.members.length})</span>
                   </h5>
                   {isOwnerOrMod && (
                     <button
                       onClick={() => setShowAddMemberModal(true)}
-                      className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-bold flex items-center gap-1 cursor-pointer"
+                      className="text-xs text-[#3B82F6] dark:text-[#60A5FA] hover:text-[#122E52] dark:hover:text-[#F7A914] font-bold flex items-center gap-1 cursor-pointer"
                     >
                       <UserPlus className="w-3.5 h-3.5" />
                       <span>Add</span>
@@ -1196,7 +1196,7 @@ export const ChatModule: React.FC = () => {
                     placeholder="Search members..."
                     value={memberSearchQuery}
                     onChange={(e) => setMemberSearchQuery(e.target.value)}
-                    className="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:ring-1 focus:ring-purple-500"
+                    className="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder:text-slate-400 outline-none focus:ring-1 focus:ring-[#3B82F6]"
                   />
                 </div>
 
@@ -1230,7 +1230,7 @@ export const ChatModule: React.FC = () => {
                           Creator
                         </span>
                       ) : member.groupRole === 'moderator' ? (
-                        <span className="text-[9px] bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 font-bold px-2 py-0.5 rounded-md border border-indigo-200 dark:border-indigo-800/60 shrink-0">
+                        <span className="text-[9px] bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 text-[#3B82F6] dark:text-[#60A5FA] font-bold px-2 py-0.5 rounded-md border border-[#3B82F6]/30 shrink-0">
                           Moderator
                         </span>
                       ) : (
@@ -1284,7 +1284,7 @@ export const ChatModule: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-150">
             <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/60">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 rounded-xl">
+                <div className="p-2 bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] rounded-xl">
                   <UserPlus className="w-5 h-5" />
                 </div>
                 <div>
@@ -1310,7 +1310,7 @@ export const ChatModule: React.FC = () => {
                 <select
                   value={selectedMemberToAdd}
                   onChange={(e) => setSelectedMemberToAdd(e.target.value)}
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none bg-white dark:bg-slate-800"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-[#3B82F6] outline-none bg-white dark:bg-slate-800"
                 >
                   <option value="">-- Choose a faculty member --</option>
                   {teachers
@@ -1364,7 +1364,7 @@ export const ChatModule: React.FC = () => {
                       setSelectedMemberToAdd('');
                     }
                   }}
-                  className="px-4 py-2 text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:opacity-50 text-white rounded-xl shadow-xs transition-colors cursor-pointer"
+                  className="px-4 py-2 text-xs font-bold btn-navy disabled:opacity-50 text-white rounded-xl shadow-xs transition-colors cursor-pointer"
                 >
                   Add to Group
                 </button>
@@ -1380,7 +1380,7 @@ export const ChatModule: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-150">
             <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/60">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 rounded-xl">
+                <div className="p-2 bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] rounded-xl">
                   <Users className="w-5 h-5" />
                 </div>
                 <div>
@@ -1410,7 +1410,7 @@ export const ChatModule: React.FC = () => {
                   value={newGroupName}
                   onChange={(e) => setNewGroupName(e.target.value)}
                   placeholder="e.g. Science Faculty, Grade 8 Coordinators"
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs focus:ring-2 focus:ring-purple-500 outline-none"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs focus:ring-2 focus:ring-[#3B82F6] outline-none"
                 />
               </div>
 
@@ -1424,7 +1424,7 @@ export const ChatModule: React.FC = () => {
                   value={newGroupDesc}
                   onChange={(e) => setNewGroupDesc(e.target.value)}
                   placeholder="Briefly describe the purpose of this faculty group..."
-                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs focus:ring-2 focus:ring-purple-500 outline-none resize-none"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-xl text-xs focus:ring-2 focus:ring-[#3B82F6] outline-none resize-none"
                 />
               </div>
 
@@ -1437,7 +1437,7 @@ export const ChatModule: React.FC = () => {
                   <select
                     value={newGroupType}
                     onChange={(e) => setNewGroupType(e.target.value as ChatGroupType)}
-                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none bg-white dark:bg-slate-800"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-[#3B82F6] outline-none bg-white dark:bg-slate-800"
                   >
                     <option value="Department">Department Group</option>
                     <option value="Subject">Subject Group</option>
@@ -1454,7 +1454,7 @@ export const ChatModule: React.FC = () => {
                     <select
                       value={newGroupDept}
                       onChange={(e) => setNewGroupDept(e.target.value)}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none bg-white dark:bg-slate-800"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-[#3B82F6] outline-none bg-white dark:bg-slate-800"
                     >
                       <option value="Science">Science</option>
                       <option value="Mathematics">Mathematics</option>
@@ -1474,7 +1474,7 @@ export const ChatModule: React.FC = () => {
                     <select
                       value={newGroupSubject}
                       onChange={(e) => setNewGroupSubject(e.target.value)}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none bg-white dark:bg-slate-800"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-[#3B82F6] outline-none bg-white dark:bg-slate-800"
                     >
                       <option value="Mathematics">Mathematics</option>
                       <option value="Physics">Physics</option>
@@ -1494,7 +1494,7 @@ export const ChatModule: React.FC = () => {
                     <select
                       value={newGroupClass}
                       onChange={(e) => setNewGroupClass(e.target.value)}
-                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none bg-white dark:bg-slate-800"
+                      className="w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-[#3B82F6] outline-none bg-white dark:bg-slate-800"
                     >
                       <option value="Class 8">Class 8</option>
                       <option value="Class 9">Class 9</option>
@@ -1530,7 +1530,7 @@ export const ChatModule: React.FC = () => {
                               setSelectedMemberIds((prev) => prev.filter((id) => id !== idToUse && id !== t.id));
                             }
                           }}
-                          className="rounded text-purple-600 focus:ring-purple-500 cursor-pointer"
+                          className="rounded text-[#3B82F6] focus:ring-[#3B82F6] cursor-pointer"
                         />
                         <UserAvatar name={t.name} avatarUrl={t.avatar} size="xs" />
                         <div className="flex-1 min-w-0">
@@ -1548,13 +1548,13 @@ export const ChatModule: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                  className="btn-outline-navy text-xs py-2 px-4"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl shadow-xs transition-colors cursor-pointer"
+                  className="btn-gold text-xs py-2 px-4"
                 >
                   Create Group
                 </button>

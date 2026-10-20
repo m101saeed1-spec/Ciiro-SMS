@@ -55,17 +55,17 @@ const CATEGORY_COLORS: Record<string, { bg: string; text: string; border: string
   'General Knowledge': { bg: 'bg-blue-50 dark:bg-blue-950/50', text: 'text-blue-700 dark:text-blue-300', border: 'border-blue-200 dark:border-blue-800' },
   'Business & Entrepreneurship': { bg: 'bg-emerald-50 dark:bg-emerald-950/50', text: 'text-emerald-700 dark:text-emerald-300', border: 'border-emerald-200 dark:border-emerald-800' },
   'Technology & Computing': { bg: 'bg-cyan-50 dark:bg-cyan-950/50', text: 'text-cyan-700 dark:text-cyan-300', border: 'border-cyan-200 dark:border-cyan-800' },
-  'Science': { bg: 'bg-indigo-50 dark:bg-indigo-950/50', text: 'text-indigo-700 dark:text-indigo-300', border: 'border-indigo-200 dark:border-indigo-800' },
+  'Science': { bg: 'bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20', text: 'text-[#3B82F6] dark:text-[#60A5FA]', border: 'border-[#3B82F6]/30 dark:border-[#3B82F6]/40' },
   'History': { bg: 'bg-amber-50 dark:bg-amber-950/50', text: 'text-amber-700 dark:text-amber-300', border: 'border-amber-200 dark:border-amber-800' },
   'Geography': { bg: 'bg-teal-50 dark:bg-teal-950/50', text: 'text-teal-700 dark:text-teal-300', border: 'border-teal-200 dark:border-teal-800' },
-  'Literature': { bg: 'bg-purple-50 dark:bg-purple-950/50', text: 'text-purple-700 dark:text-purple-300', border: 'border-purple-200 dark:border-purple-800' },
+  'Literature': { bg: 'bg-[#EFF6FF] dark:bg-[#1E3A63]', text: 'text-[#3B82F6] dark:text-[#60A5FA]', border: 'border-[#1E3A63]' },
   'Personal Development': { bg: 'bg-rose-50 dark:bg-rose-950/50', text: 'text-rose-700 dark:text-rose-300', border: 'border-rose-200 dark:border-rose-800' },
   'Leadership': { bg: 'bg-orange-50 dark:bg-orange-950/50', text: 'text-orange-700 dark:text-orange-300', border: 'border-orange-200 dark:border-orange-800' },
   'Economics': { bg: 'bg-lime-50 dark:bg-lime-950/50', text: 'text-lime-700 dark:text-lime-300', border: 'border-lime-200 dark:border-lime-800' },
   'Health & Wellness': { bg: 'bg-pink-50 dark:bg-pink-950/50', text: 'text-pink-700 dark:text-pink-300', border: 'border-pink-200 dark:border-pink-800' },
-  'Religion & Philosophy': { bg: 'bg-violet-50 dark:bg-violet-950/50', text: 'text-violet-700 dark:text-violet-300', border: 'border-violet-200 dark:border-violet-800' },
+  'Religion & Philosophy': { bg: 'bg-[#122E52]/10 dark:bg-[#1E3A63]/50', text: 'text-[#122E52] dark:text-[#F7A914]', border: 'border-[#1E3A63]' },
   'Languages': { bg: 'bg-sky-50 dark:bg-sky-950/50', text: 'text-sky-700 dark:text-sky-300', border: 'border-sky-200 dark:border-sky-800' },
-  'Arts & Culture': { bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/50', text: 'text-fuchsia-700 dark:text-fuchsia-300', border: 'border-fuchsia-200 dark:border-fuchsia-800' },
+  'Arts & Culture': { bg: 'bg-[#F7A914]/10 dark:bg-[#F7A914]/20', text: 'text-[#F7A914] dark:text-[#F7A914]', border: 'border-[#F7A914]/30' },
   'Reference': { bg: 'bg-slate-100 dark:bg-slate-800', text: 'text-slate-700 dark:text-slate-300', border: 'border-slate-200 dark:border-slate-700' },
   'Other': { bg: 'bg-slate-100 dark:bg-slate-800', text: 'text-slate-700 dark:text-slate-300', border: 'border-slate-200 dark:border-slate-700' },
 };
@@ -345,7 +345,7 @@ export const BooksSection: React.FC = () => {
       <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 p-4 shadow-xs">
         <div className="flex items-center justify-between gap-2 mb-3 px-1">
           <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+            <Layers className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
             <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               General Knowledge Categories
             </span>
@@ -364,7 +364,7 @@ export const BooksSection: React.FC = () => {
             }}
             className={`px-3.5 py-1.5 rounded-xl font-bold text-xs shrink-0 transition-all cursor-pointer flex items-center gap-1.5 ${
               filterCategory === 'All Categories'
-                ? 'bg-purple-600 text-white shadow-sm shadow-purple-600/30'
+                ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-sm shadow-md'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
             }`}
           >
@@ -396,7 +396,7 @@ export const BooksSection: React.FC = () => {
                 }}
                 className={`px-3.5 py-1.5 rounded-xl font-bold text-xs shrink-0 transition-all cursor-pointer flex items-center gap-1.5 ${
                   isSelected
-                    ? 'bg-purple-600 text-white shadow-sm shadow-purple-600/30'
+                    ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-sm shadow-md'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                 }`}
               >
@@ -431,9 +431,9 @@ export const BooksSection: React.FC = () => {
                 setCurrentPage(1);
               }}
               placeholder="Search books by title, author, keyword, category, publisher, or ISBN..."
-              className="w-full bg-slate-50/90 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl py-2.5 pl-4 pr-10 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:bg-white dark:focus:bg-slate-800 font-medium"
+              className="w-full bg-slate-50/90 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl py-2.5 pl-4 pr-10 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:bg-white dark:focus:bg-slate-800 font-medium"
             />
-            <Search className="w-4 h-4 text-purple-600 dark:text-purple-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
 
           {/* Action Bar */}
@@ -470,7 +470,7 @@ export const BooksSection: React.FC = () => {
                 onClick={() => setViewMode('grid')}
                 className={`p-1.5 rounded-xl transition-all ${
                   viewMode === 'grid'
-                    ? 'bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-300 shadow-xs'
+                    ? 'bg-white dark:bg-slate-700 text-[#3B82F6] dark:text-[#60A5FA] shadow-xs'
                     : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'
                 }`}
                 title="Grid Cards View"
@@ -481,7 +481,7 @@ export const BooksSection: React.FC = () => {
                 onClick={() => setViewMode('table')}
                 className={`p-1.5 rounded-xl transition-all ${
                   viewMode === 'table'
-                    ? 'bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-300 shadow-xs'
+                    ? 'bg-white dark:bg-slate-700 text-[#3B82F6] dark:text-[#60A5FA] shadow-xs'
                     : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'
                 }`}
                 title="Table View"
@@ -494,7 +494,7 @@ export const BooksSection: React.FC = () => {
             {isStaffOrAdmin && (
               <button
                 onClick={handleOpenAddModal}
-                className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs transition-all flex items-center justify-center gap-2 shadow-md shadow-purple-600/20 cursor-pointer"
+                className="btn-gold text-xs py-2.5 px-4"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Book to Catalog</span>
@@ -603,7 +603,7 @@ export const BooksSection: React.FC = () => {
               setFilterFormat('All Formats');
               setOnlyFavorites(false);
             }}
-            className="mt-4 px-4 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold text-xs hover:bg-purple-100 transition-all cursor-pointer"
+            className="mt-4 px-4 py-2 rounded-xl bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] font-bold text-xs hover:bg-[#EFF6FF] transition-all cursor-pointer"
           >
             Reset All Filters
           </button>
@@ -630,7 +630,7 @@ export const BooksSection: React.FC = () => {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-purple-900 text-white font-bold text-2xl">
+                      <div className="w-full h-full flex items-center justify-center bg-[#0B1B32] text-white font-bold text-2xl">
                         {book.name.charAt(0)}
                       </div>
                     )}
@@ -670,7 +670,7 @@ export const BooksSection: React.FC = () => {
                     {/* Bottom Info: Digital Attachment format or copies */}
                     <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-white text-[10px] font-semibold">
                       {book.fileName ? (
-                        <span className="px-2 py-0.5 rounded-md bg-purple-600/90 backdrop-blur-xs flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-md bg-[#122E52]/90 backdrop-blur-xs flex items-center gap-1">
                           <FileText className="w-3 h-3" />
                           <span className="uppercase">{book.fileType || 'PDF'}</span>
                           <span>•</span>
@@ -712,7 +712,7 @@ export const BooksSection: React.FC = () => {
                   {/* Title & Writer */}
                   <h3
                     onClick={() => setDetailBook(book)}
-                    className="text-sm font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-purple-600 transition-colors cursor-pointer"
+                    className="text-sm font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-[#3B82F6] transition-colors cursor-pointer"
                     title={book.name}
                   >
                     {book.name}
@@ -743,7 +743,7 @@ export const BooksSection: React.FC = () => {
                     {/* Read / Preview Button */}
                     <button
                       onClick={() => setReadingBook(book)}
-                      className="px-2.5 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/60 font-bold text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
+                      className="px-2.5 py-1.5 rounded-xl bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] hover:bg-[#EFF6FF] dark:hover:bg-[#0B1B32] font-bold text-[11px] transition-colors flex items-center gap-1 cursor-pointer"
                       title="Read Book Synopsis & Content"
                     >
                       <BookOpen className="w-3.5 h-3.5" />
@@ -769,7 +769,7 @@ export const BooksSection: React.FC = () => {
                             book.fileType
                           )
                         }
-                        className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-purple-100 hover:text-purple-700 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-[#EFF6FF] hover:text-[#122E52] transition-colors cursor-pointer"
                         title={`Download ${book.fileName}`}
                       >
                         <Download className="w-3.5 h-3.5" />
@@ -782,7 +782,7 @@ export const BooksSection: React.FC = () => {
                     {book.status === 'Available' ? (
                       <button
                         onClick={() => setBorrowingBook(book)}
-                        className="px-2.5 py-1 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] transition-colors cursor-pointer shadow-xs"
+                        className="px-2.5 py-1 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white font-bold text-[11px] transition-colors cursor-pointer shadow-xs"
                       >
                         Borrow
                       </button>
@@ -799,7 +799,7 @@ export const BooksSection: React.FC = () => {
                       <>
                         <button
                           onClick={() => handleOpenEditModal(book)}
-                          className="p-1.5 text-slate-400 hover:text-purple-600 rounded-lg hover:bg-purple-50 transition-colors cursor-pointer"
+                          className="p-1.5 text-slate-400 hover:text-[#3B82F6] rounded-lg hover:bg-[#EFF6FF] transition-colors cursor-pointer"
                           title="Edit Book Record"
                         >
                           <Edit className="w-3.5 h-3.5" />
@@ -825,7 +825,7 @@ export const BooksSection: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-purple-50/40 dark:bg-purple-950/20 border-b border-purple-100/50 dark:border-purple-900/40 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                <tr className="bg-[#EFF6FF]/40 dark:bg-[#1E3A63] border-b border-[#1E3A63] dark:border-[#1E3A63] text-xs font-semibold text-slate-600 dark:text-slate-400">
                   <th className="py-3 px-4 pl-6 w-10">
                     <input
                       type="checkbox"
@@ -834,7 +834,7 @@ export const BooksSection: React.FC = () => {
                         paginatedBooks.length > 0
                       }
                       onChange={toggleSelectAll}
-                      className="w-4 h-4 rounded border-slate-300 text-purple-600 focus:ring-purple-500/20 cursor-pointer"
+                      className="w-4 h-4 rounded border-slate-300 text-[#3B82F6] focus:ring-[#F7A914]/20 cursor-pointer"
                     />
                   </th>
                   <th className="py-3 px-4">Book Title & Author</th>
@@ -858,7 +858,7 @@ export const BooksSection: React.FC = () => {
                       key={book.id}
                       className={`transition-colors ${
                         isSelected
-                          ? 'bg-purple-50/40 dark:bg-purple-950/30'
+                          ? 'bg-[#122E52]/5 dark:bg-[#122E52]/30'
                           : 'hover:bg-slate-50/70 dark:hover:bg-slate-800/40'
                       }`}
                     >
@@ -867,7 +867,7 @@ export const BooksSection: React.FC = () => {
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => toggleSelectBook(book.id)}
-                          className="w-4 h-4 rounded border-slate-300 text-purple-600 focus:ring-purple-500/20 cursor-pointer"
+                          className="w-4 h-4 rounded border-slate-300 text-[#3B82F6] focus:ring-[#F7A914]/20 cursor-pointer"
                         />
                       </td>
 
@@ -875,7 +875,7 @@ export const BooksSection: React.FC = () => {
                         <div className="flex items-center gap-3">
                           <div
                             onClick={() => setDetailBook(book)}
-                            className="w-10 h-10 rounded-xl overflow-hidden bg-purple-900 shrink-0 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer flex items-center justify-center text-white text-xs font-bold"
+                            className="w-10 h-10 rounded-xl overflow-hidden bg-[#0B1B32] shrink-0 border border-slate-200 dark:border-slate-700 shadow-2xs cursor-pointer flex items-center justify-center text-white text-xs font-bold"
                           >
                             {book.coverImage && book.coverImage.trim() !== '' ? (
                               <img
@@ -890,7 +890,7 @@ export const BooksSection: React.FC = () => {
                           <div>
                             <span
                               onClick={() => setDetailBook(book)}
-                              className="font-bold text-slate-900 dark:text-white block hover:text-purple-600 cursor-pointer"
+                              className="font-bold text-slate-900 dark:text-white block hover:text-[#3B82F6] cursor-pointer"
                             >
                               {book.name}
                             </span>
@@ -934,7 +934,7 @@ export const BooksSection: React.FC = () => {
                                 book.fileType
                               )
                             }
-                            className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 hover:bg-purple-100 font-bold text-[11px] transition-colors cursor-pointer"
+                            className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] hover:bg-[#EFF6FF] font-bold text-[11px] transition-colors cursor-pointer"
                           >
                             <Download className="w-3 h-3" />
                             <span className="uppercase">
@@ -988,7 +988,7 @@ export const BooksSection: React.FC = () => {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => setReadingBook(book)}
-                            className="px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 hover:bg-purple-100 font-bold text-[11px] transition-colors cursor-pointer"
+                            className="px-2.5 py-1 rounded-lg bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] hover:bg-[#EFF6FF] font-bold text-[11px] transition-colors cursor-pointer"
                           >
                             Read
                           </button>
@@ -1004,7 +1004,7 @@ export const BooksSection: React.FC = () => {
                           {book.status === 'Available' ? (
                             <button
                               onClick={() => setBorrowingBook(book)}
-                              className="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold text-[11px] transition-colors cursor-pointer shadow-xs"
+                              className="px-2.5 py-1 rounded-lg bg-[#122E52] hover:bg-[#0B1B32] text-white font-bold text-[11px] transition-colors cursor-pointer shadow-xs"
                             >
                               Borrow
                             </button>
@@ -1021,7 +1021,7 @@ export const BooksSection: React.FC = () => {
                             <>
                               <button
                                 onClick={() => handleOpenEditModal(book)}
-                                className="p-1.5 text-slate-400 hover:text-purple-600 rounded-lg hover:bg-purple-50 transition-colors cursor-pointer"
+                                className="p-1.5 text-slate-400 hover:text-[#3B82F6] rounded-lg hover:bg-[#EFF6FF] transition-colors cursor-pointer"
                                 title="Edit Book"
                               >
                                 <Edit className="w-3.5 h-3.5" />
@@ -1069,7 +1069,7 @@ export const BooksSection: React.FC = () => {
           <div className="space-y-5">
             {/* Header Hero */}
             <div className="flex flex-col sm:flex-row gap-5 p-4 rounded-2xl bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-700">
-              <div className="w-28 h-40 rounded-xl overflow-hidden bg-purple-900 shrink-0 shadow-md">
+              <div className="w-28 h-40 rounded-xl overflow-hidden bg-[#0B1B32] shrink-0 shadow-md">
                 {detailBook.coverImage && detailBook.coverImage.trim() !== '' ? (
                   <img
                     src={detailBook.coverImage}
@@ -1086,7 +1086,7 @@ export const BooksSection: React.FC = () => {
               <div className="flex-1 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                    <span className="px-2.5 py-0.5 rounded-md bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 font-bold text-[11px] border border-purple-200 dark:border-purple-800">
+                    <span className="px-2.5 py-0.5 rounded-md bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] font-bold text-[11px] border border-[#1E3A63]">
                       {detailBook.category}
                     </span>
                     <span className="px-2.5 py-0.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-[11px] flex items-center gap-1">
@@ -1119,7 +1119,7 @@ export const BooksSection: React.FC = () => {
                       setReadingBook(detailBook);
                       setDetailBook(null);
                     }}
-                    className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-md shadow-purple-600/20"
+                    className="px-4 py-2 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-md shadow-md"
                   >
                     <BookOpen className="w-4 h-4" />
                     <span>Open Reader & Synopsis</span>
@@ -1235,9 +1235,9 @@ export const BooksSection: React.FC = () => {
 
             {/* Attached File Banner if available */}
             {detailBook.fileName && (
-              <div className="p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-900/50 flex items-center justify-between gap-4">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#122E52]/20 border border-[#1E3A63]/50 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/60 flex items-center justify-center text-purple-600 dark:text-purple-300 shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] dark:bg-[#1E3A63] flex items-center justify-center text-[#3B82F6] dark:text-[#60A5FA] shrink-0">
                     <FileText className="w-5 h-5" />
                   </div>
                   <div>
@@ -1257,7 +1257,7 @@ export const BooksSection: React.FC = () => {
                       detailBook.fileType
                     )
                   }
-                  className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+                  className="px-3.5 py-1.5 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white font-bold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download</span>
@@ -1280,7 +1280,7 @@ export const BooksSection: React.FC = () => {
             {/* Top Toolbar */}
             <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-md bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 font-bold text-[11px]">
+                <span className="px-2.5 py-0.5 rounded-md bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] font-bold text-[11px]">
                   {readingBook.category}
                 </span>
                 <span className="text-xs text-slate-500 font-medium">
@@ -1369,7 +1369,7 @@ export const BooksSection: React.FC = () => {
                         readingBook.fileType
                       )
                     }
-                    className="p-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white transition-colors cursor-pointer"
+                    className="p-2 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white transition-colors cursor-pointer"
                     title="Download Complete File"
                   >
                     <Download className="w-3.5 h-3.5" />
@@ -1405,11 +1405,11 @@ export const BooksSection: React.FC = () => {
                     {readingBook.description ||
                       'This book is part of the Audienta General Knowledge Library collection. Physical copy is available for borrowing at the campus learning center.'}
                   </p>
-                  <div className="mt-6 p-4 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 text-xs">
-                    <p className="font-bold text-purple-900 dark:text-purple-200">
+                  <div className="mt-6 p-4 rounded-xl bg-slate-50 dark:bg-[#122E52]/20 border border-[#1E3A63] text-xs">
+                    <p className="font-bold text-[#12233F] dark:text-white">
                       Catalog Record Note:
                     </p>
-                    <p className="text-purple-700 dark:text-purple-300 mt-1">
+                    <p className="text-[#3B82F6] dark:text-[#60A5FA] mt-1">
                       Full digital edition is synced with library catalog ID {readingBook.bookId}. ISBN: {readingBook.isbn || 'N/A'}. Published by {readingBook.publisher || 'Academic Press'}.
                     </p>
                   </div>
@@ -1618,7 +1618,7 @@ export const BooksSection: React.FC = () => {
                   }
                   className={`w-12 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
                     formData.coverImage === preset
-                      ? 'border-purple-600 ring-2 ring-purple-500/30 scale-105'
+                      ? 'border-[#122E52] ring-2 ring-[#F7A914]/30 scale-105'
                       : 'border-slate-200 opacity-60 hover:opacity-100'
                   }`}
                 >
@@ -1644,7 +1644,7 @@ export const BooksSection: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs transition-colors shadow-md shadow-purple-600/20 mt-2 cursor-pointer"
+            className="w-full py-2.5 rounded-xl btn-navy text-white font-bold text-xs transition-colors shadow-md shadow-md mt-2 cursor-pointer"
           >
             {editingBook ? 'Save Book Updates' : 'Add Book to Catalog'}
           </button>
@@ -1680,7 +1680,7 @@ export const BooksSection: React.FC = () => {
             </p>
             <button
               type="submit"
-              className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs transition-colors cursor-pointer shadow-md shadow-purple-600/20"
+              className="w-full py-2.5 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white font-bold text-xs transition-colors cursor-pointer shadow-md shadow-md"
             >
               Confirm Borrow
             </button>

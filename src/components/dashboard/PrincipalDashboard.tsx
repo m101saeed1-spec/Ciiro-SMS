@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { NavModule } from '../common/Sidebar';
+import { OnboardingTour } from '../common/OnboardingTour';
+import { ADMIN_ONBOARDING_TOUR_STEPS } from '../../data/tourSteps';
 import {
   GraduationCap,
   Users,
@@ -21,6 +24,7 @@ import {
   CalendarCheck,
   Target,
   Sparkles,
+  Compass,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -42,6 +46,8 @@ interface PrincipalDashboardProps {
 
 export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNavigate }) => {
   const { currentUser, activeSchool } = useAuth();
+  const { tr } = useLanguage();
+  const [isTourOpen, setIsTourOpen] = useState(false);
   const {
     students,
     teachers,
@@ -86,12 +92,28 @@ export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNaviga
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Principal Academic Header */}
-      <div className="bg-gradient-to-r from-indigo-900 to-purple-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+      <div
+        data-tour="admin-banner"
+        className="bg-gradient-to-r from-[#122E52] via-[#0B1B32] to-[#12233F] border border-[#1E3A63] rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden"
+      >
         <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold mb-3">
-            <SchoolIcon className="w-3.5 h-3.5" />
-            <span>Academic Leadership</span>
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold">
+              <SchoolIcon className="w-3.5 h-3.5" />
+              <span>Academic Leadership</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsTourOpen(true)}
+              className="btn-gold"
+              title={tr('Start interactive dashboard walkthrough', 'Bilow socdaalka hagaha')}
+            >
+              <Compass className="w-3.5 h-3.5 animate-spin-slow" />
+              <span>{tr('Take Admin Tour', 'Hagaha Maamulka')}</span>
+            </button>
           </div>
+
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
             Principal Academic Overview
           </h1>
@@ -99,10 +121,10 @@ export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNaviga
             Welcome, Principal {currentUser.name}. Supervising educational curriculum, student attendance roll, faculty performance, and official bulletins for {activeSchool?.name}.
           </p>
 
-          <div className="flex flex-wrap items-center gap-3 mt-6">
+          <div data-tour="admin-quick-actions" className="flex flex-wrap items-center gap-3 mt-6">
             <button
               onClick={() => onNavigate('notice')}
-              className="px-4 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-400 text-white font-bold text-xs transition-colors shadow-md flex items-center gap-2 cursor-pointer"
+              className="btn-gold"
             >
               <Bell className="w-4 h-4" />
               <span>Broadcast Bulletin</span>
@@ -126,17 +148,17 @@ export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNaviga
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div data-tour="admin-kpis" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Classes */}
         <div
           onClick={() => onNavigate('classes')}
           className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md cursor-pointer transition-all"
         >
           <div className="flex items-center justify-between">
-            <div className="w-11 h-11 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center">
               <BookOpen className="w-5 h-5" />
             </div>
-            <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50 px-2.5 py-1 rounded-lg">
+            <span className="text-[11px] font-bold text-[#3B82F6] bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 px-2.5 py-1 rounded-lg">
               Active Sections
             </span>
           </div>
@@ -153,10 +175,10 @@ export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNaviga
           className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md cursor-pointer transition-all"
         >
           <div className="flex items-center justify-between">
-            <div className="w-11 h-11 rounded-2xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-2xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] flex items-center justify-center">
               <Users className="w-5 h-5" />
             </div>
-            <span className="text-[11px] font-bold text-purple-600 bg-purple-50 dark:bg-purple-950/50 px-2.5 py-1 rounded-lg">
+            <span className="text-[11px] font-bold text-[#3B82F6] bg-[#3B82F6]/10 px-2.5 py-1 rounded-lg">
               On Duty
             </span>
           </div>
@@ -212,7 +234,7 @@ export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNaviga
       <div className="bg-white dark:bg-slate-900 p-5 sm:p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
           <div>
-            <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA] uppercase tracking-wider flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" /> High-Level Executive Telemetry
             </span>
             <h3 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
@@ -229,7 +251,7 @@ export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNaviga
                 onClick={() => setInteractiveWidgetTab('attendance')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                   interactiveWidgetTab === 'attendance'
-                    ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                    ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                     : 'text-slate-600 dark:text-slate-400'
                 }`}
               >
@@ -241,7 +263,7 @@ export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNaviga
                 onClick={() => setInteractiveWidgetTab('growth')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                   interactiveWidgetTab === 'growth'
-                    ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs'
+                    ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs'
                     : 'text-slate-600 dark:text-slate-400'
                 }`}
               >
@@ -322,7 +344,7 @@ export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNaviga
             <h3 className="text-base font-bold text-slate-900 dark:text-white">Academic Class Divisions</h3>
             <button
               onClick={() => onNavigate('classes')}
-              className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA] hover:underline flex items-center gap-1 cursor-pointer"
             >
               Manage Classes <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
@@ -343,7 +365,7 @@ export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNaviga
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-extrabold text-purple-700 dark:text-purple-300">
+                  <span className="text-xs font-extrabold text-[#3B82F6] dark:text-[#60A5FA]">
                     {cls.studentCount || 28} Students
                   </span>
                   <span className="block text-[10px] text-slate-400">Capacity: {cls.capacity || 35}</span>
@@ -357,12 +379,12 @@ export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNaviga
         <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <Bell className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
               <h3 className="text-base font-bold text-slate-900 dark:text-white">School Notices & Bulletins</h3>
             </div>
             <button
               onClick={() => onNavigate('notice')}
-              className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 cursor-pointer"
+              className="text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA] hover:underline flex items-center gap-1 cursor-pointer"
             >
               Post Notice <Plus className="w-3.5 h-3.5" />
             </button>
@@ -373,14 +395,14 @@ export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNaviga
               <div
                 key={notice.id}
                 onClick={() => onNavigate('notice')}
-                className="p-3.5 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 hover:bg-purple-50/20 dark:hover:bg-purple-950/20 cursor-pointer transition-colors"
+                className="p-3.5 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 hover:bg-[#122E52]/5 dark:hover:bg-[#122E52]/20 cursor-pointer transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <span
                     className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
                       notice.priority === 'High'
                         ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300'
-                        : 'bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300'
+                        : 'bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA]'
                     }`}
                   >
                     {notice.priority} Priority
@@ -394,6 +416,14 @@ export const PrincipalDashboard: React.FC<PrincipalDashboardProps> = ({ onNaviga
           </div>
         </div>
       </div>
+
+      {/* Interactive Onboarding Tour for School Administrators */}
+      <OnboardingTour
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+        steps={ADMIN_ONBOARDING_TOUR_STEPS}
+        tourKey="ileys_principal_tour_seen"
+      />
     </div>
   );
 };

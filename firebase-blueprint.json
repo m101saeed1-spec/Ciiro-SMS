@@ -1,0 +1,369 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated Firebase user profile identity.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "emailVerified": { "type": "boolean" },
+        "accountStatus": { "type": "string", "enum": ["active", "suspended", "pending"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "PlatformUser": {
+      "title": "PlatformUser",
+      "description": "Global super administrator / platform owner account.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "role": { "type": "string", "enum": ["platformOwner"] },
+        "email": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "role"]
+    },
+    "School": {
+      "title": "School",
+      "description": "Educational institution organization record.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "schoolCode": { "type": "string" },
+        "motto": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "website": { "type": "string" },
+        "logoUrl": { "type": "string" },
+        "principalName": { "type": "string" },
+        "principalEmail": { "type": "string" },
+        "academicYear": { "type": "string" },
+        "currentTerm": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "suspended", "pending"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "schoolCode", "status"]
+    },
+    "SchoolMembership": {
+      "title": "SchoolMembership",
+      "description": "Authoritative link connecting a school, an Ileys ID, a role, and a Firebase Auth UID.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "ileysId": { "type": "string" },
+        "role": {
+          "type": "string",
+          "enum": ["platformOwner", "schoolOwner", "headteacher", "teacher", "accountant", "student"]
+        },
+        "personId": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "authUid": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "active", "deactivated"] },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "linkedAt": { "type": "string" }
+      },
+      "required": ["schoolId", "ileysId", "role", "name", "status"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Enrolled student record inside a school.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "membershipId": { "type": "string" },
+        "ileysId": { "type": "string" },
+        "name": { "type": "string" },
+        "gender": { "type": "string", "enum": ["Male", "Female"] },
+        "dob": { "type": "string" },
+        "classId": { "type": "string" },
+        "grade": { "type": "string" },
+        "section": { "type": "string" },
+        "parentName": { "type": "string" },
+        "parentPhone": { "type": "string" },
+        "parentEmail": { "type": "string" },
+        "address": { "type": "string" },
+        "profileImageUrl": { "type": "string" },
+        "bio": { "type": "string" },
+        "status": { "type": "string", "enum": ["Active", "Graduated", "Transferred", "Suspended"] },
+        "enrolledDate": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["schoolId", "name", "classId"]
+    },
+    "Teacher": {
+      "title": "Teacher",
+      "description": "Faculty instructor profile within a school.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "membershipId": { "type": "string" },
+        "ileysId": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "qualification": { "type": "string" },
+        "specialization": { "type": "string" },
+        "assignedClassIds": { "type": "array" },
+        "subjectIds": { "type": "array" },
+        "profileImageUrl": { "type": "string" },
+        "bio": { "type": "string" },
+        "status": { "type": "string", "enum": ["Active", "OnLeave", "Inactive"] },
+        "joinedDate": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["schoolId", "name"]
+    },
+    "Class": {
+      "title": "Class",
+      "description": "School academic cohort / class section.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "name": { "type": "string" },
+        "grade": { "type": "string" },
+        "section": { "type": "string" },
+        "room": { "type": "string" },
+        "capacity": { "type": "number" },
+        "classTeacherId": { "type": "string" },
+        "academicYear": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "archived"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["schoolId", "name", "grade"]
+    },
+    "Subject": {
+      "title": "Subject",
+      "description": "Curriculum course / academic subject.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "name": { "type": "string" },
+        "code": { "type": "string" },
+        "grade": { "type": "string" },
+        "department": { "type": "string" }
+      },
+      "required": ["schoolId", "name", "code"]
+    },
+    "AttendanceRecord": {
+      "title": "AttendanceRecord",
+      "description": "Daily or period attendance roll.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "classId": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "date": { "type": "string" },
+        "period": { "type": "string" },
+        "status": { "type": "string", "enum": ["submitted", "draft"] },
+        "records": { "type": "object" },
+        "submittedAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["schoolId", "classId", "date", "records"]
+    },
+    "AcademicResult": {
+      "title": "AcademicResult",
+      "description": "Examination scores, grades, and student GPA entries.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "classId": { "type": "string" },
+        "subjectId": { "type": "string" },
+        "academicYear": { "type": "string" },
+        "term": { "type": "string" },
+        "score": { "type": "number" },
+        "grade": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["schoolId", "studentId", "subjectId", "score", "grade"]
+    },
+    "TimetableEntry": {
+      "title": "TimetableEntry",
+      "description": "Classroom schedule matrix slot.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "classId": { "type": "string" },
+        "day": { "type": "string" },
+        "period": { "type": "number" },
+        "subjectId": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "room": { "type": "string" },
+        "startTime": { "type": "string" },
+        "endTime": { "type": "string" }
+      },
+      "required": ["schoolId", "classId", "day", "period", "subjectId"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "Official school bulletins and announcements.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "targetRoles": { "type": "array" },
+        "targetClasses": { "type": "array" },
+        "priority": { "type": "string", "enum": ["low", "normal", "high", "urgent"] },
+        "createdBy": { "type": "string" },
+        "status": { "type": "string", "enum": ["published", "draft", "archived"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["schoolId", "title", "body", "createdBy"]
+    },
+    "FeeRecord": {
+      "title": "FeeRecord",
+      "description": "Single unified fee ledger record per student.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "classId": { "type": "string" },
+        "term": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "paidAmount": { "type": "number" },
+        "remaining": { "type": "number" },
+        "status": { "type": "string", "enum": ["Paid", "Partially Paid", "Unpaid"] },
+        "lastPaymentDate": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["schoolId", "studentId", "totalAmount"]
+    },
+    "FeePaymentRecord": {
+      "title": "FeePaymentRecord",
+      "description": "Individual payment transaction with receipt.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "feeId": { "type": "string" },
+        "studentId": { "type": "string" },
+        "amount": { "type": "number" },
+        "method": { "type": "string", "enum": ["EVC Plus", "Zaad", "Sahal", "Bank", "Cash"] },
+        "reference": { "type": "string" },
+        "recordedBy": { "type": "string" },
+        "date": { "type": "string" },
+        "receiptNumber": { "type": "string" }
+      },
+      "required": ["schoolId", "studentId", "amount", "method", "receiptNumber"]
+    },
+    "AuditLogEntry": {
+      "title": "AuditLogEntry",
+      "description": "Immutable administrative audit trail log.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "schoolId": { "type": "string" },
+        "actorUid": { "type": "string" },
+        "actorRole": { "type": "string" },
+        "action": { "type": "string" },
+        "targetType": { "type": "string" },
+        "targetId": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "metadata": { "type": "object" }
+      },
+      "required": ["actorUid", "action", "timestamp"]
+    },
+    "ConnectionTest": {
+      "title": "ConnectionTest",
+      "description": "Health check connectivity verification ping document.",
+      "type": "object",
+      "properties": {
+        "status": { "type": "string" },
+        "timestamp": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Authenticated user identity profiles."
+    },
+    "/platformUsers/{userId}": {
+      "schema": "PlatformUser",
+      "description": "Platform-wide super administrative accounts."
+    },
+    "/schools/{schoolId}": {
+      "schema": "School",
+      "description": "School institutions metadata and tenant boundaries."
+    },
+    "/schoolMemberships/{membershipId}": {
+      "schema": "SchoolMembership",
+      "description": "Authoritative school memberships linking Auth UID, Ileys ID, and Role."
+    },
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Student roster and dossiers."
+    },
+    "/teachers/{teacherId}": {
+      "schema": "Teacher",
+      "description": "Teacher profiles and faculty assignments."
+    },
+    "/classes/{classId}": {
+      "schema": "Class",
+      "description": "Class sections and room capacity."
+    },
+    "/subjects/{subjectId}": {
+      "schema": "Subject",
+      "description": "Academic subjects and curriculum units."
+    },
+    "/attendance/{attendanceId}": {
+      "schema": "AttendanceRecord",
+      "description": "Attendance rolls."
+    },
+    "/academicResults/{resultId}": {
+      "schema": "AcademicResult",
+      "description": "Term marks and academic GPA results."
+    },
+    "/timetables/{timetableId}": {
+      "schema": "TimetableEntry",
+      "description": "Classroom schedules and period matrices."
+    },
+    "/announcements/{announcementId}": {
+      "schema": "Announcement",
+      "description": "Official school notices."
+    },
+    "/fees/{feeId}": {
+      "schema": "FeeRecord",
+      "description": "Single unified fee ledgers."
+    },
+    "/feePayments/{paymentId}": {
+      "schema": "FeePaymentRecord",
+      "description": "Payment receipts and transaction records."
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLogEntry",
+      "description": "Security audit logs."
+    },
+    "/test/{testId}": {
+      "schema": "ConnectionTest",
+      "description": "Connectivity test ping path."
+    }
+  }
+}

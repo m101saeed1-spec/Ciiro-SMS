@@ -1,1615 +1,1040 @@
 import React, { useState, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
-import { StudentFeeRecord, FeePayment, FeeStructure } from '../../types';
-import { exportFeeReceiptPDF } from '../../utils/pdfExport';
+import { useLanguage } from '../../context/LanguageContext';
+import { StudentFeeRecord, FeePayment, Student } from '../../types';
+import { UserAvatar } from '../common/UserAvatar';
+import { LanguageToggle } from '../common/LanguageToggle';
 import {
   CreditCard,
-  Receipt,
-  Plus,
+  DollarSign,
   Search,
   Filter,
-  DollarSign,
-  TrendingUp,
-  AlertCircle,
   CheckCircle2,
+  XCircle,
   Clock,
-  Download,
+  ArrowLeft,
   Printer,
-  RotateCcw,
-  UserCheck,
-  Building2,
-  Calendar,
-  Layers,
   FileText,
-  Eye,
-  X,
+  User,
+  Phone,
+  Layers,
+  ChevronRight,
+  TrendingUp,
+  Receipt,
+  RotateCcw,
   Sparkles,
-  ShieldAlert,
-  ArrowUpRight,
+  Download,
+  AlertCircle,
+  X,
+  Plus,
+  Building2,
 } from 'lucide-react';
 
 interface FeeModuleProps {
-  initialSubModule?: string;
+  initialClass?: string;
 }
 
-export const FeeModule: React.FC<FeeModuleProps> = ({ initialSubModule }) => {
-  const { currentUser, activeRole, activeChildId } = useAuth();
+export const FeeModule: React.FC<FeeModuleProps> = ({ initialClass }) => {
+  const { currentUser, activeRole, activeSchool } = useAuth();
   const {
     students,
     classes,
-    feeStructures,
     studentFees,
     feePayments,
-    addFeeStructure,
-    deleteFeeStructure,
-    assignFees,
+    feeStructures,
+    toggleStudentPaymentStatus,
     recordFeePayment,
-    reverseFeePayment,
     addToast,
   } = useSchoolData();
+  const { language, t } = useLanguage();
 
-  // Role Permissions:
-  // - School Owner, Headteacher, and Accountant can actively manage fees, create structures, record payments, and manage finance.
-  // - Student can view their invoices/payments and pay their dues.
-  // - Teacher is class-focused and cannot manage school finances.
-  const canManageFees = activeRole === 'AccountAdmin' || activeRole === 'Principal' || activeRole === 'OwnerAdmin' || activeRole === 'Admin';
   const isStudent = activeRole === 'Student';
+  const isAccountant = activeRole === 'AccountAdmin';
 
-  // Active Tab
-  const [activeTab, setActiveTab] = useState<'invoices' | 'payments' | 'structures' | 'reports'>('invoices');
+  // Selected Class View State (null = All Classes Overview, string = specific Class Name)
+  const [selectedClass, setSelectedClass] = useState<string | null>(initialClass || null);
 
-  // Search & Filters
+  // Search and Filter State within class student list
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterClass, setFilterClass] = useState('All');
-  const [filterStatus, setFilterStatus] = useState<string>('All');
-  const [filterCategory, setFilterCategory] = useState<string>('All');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Paid' | 'Unpaid'>('All');
 
-  // Synchronize initial sub-module from navigation
-  React.useEffect(() => {
-    if (!initialSubModule) return;
-    if (initialSubModule === 'fee-structure') {
-      setActiveTab('structures');
-    } else if (initialSubModule === 'fee-payments') {
-      setActiveTab('payments');
-    } else if (initialSubModule === 'fee-receipts') {
-      setActiveTab('payments');
-    } else if (initialSubModule === 'fee-outstanding') {
-      setActiveTab('invoices');
-      setFilterStatus('Unpaid');
-    } else if (initialSubModule === 'fee-invoices' || initialSubModule === 'fees') {
-      setActiveTab('invoices');
-    }
-  }, [initialSubModule]);
+  // Custom Payment Modal State
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [targetStudentForPayment, setTargetStudentForPayment] = useState<{
+    student: Student;
+    feeRecord?: StudentFeeRecord;
+    totalAmount: number;
+    paidAmount: number;
+    remaining: number;
+  } | null>(null);
 
-  // Modals state
-  const [isCreateStructureOpen, setIsCreateStructureOpen] = useState(false);
-  const [isAssignFeeOpen, setIsAssignFeeOpen] = useState(false);
-  const [isRecordPaymentOpen, setIsRecordPaymentOpen] = useState(false);
-  const [selectedFeeRecord, setSelectedFeeRecord] = useState<StudentFeeRecord | null>(null);
-  
+  const [customPayAmount, setCustomPayAmount] = useState('');
+  const [payMethod, setPayMethod] = useState('Cash');
+  const [payRef, setPayRef] = useState('');
+  const [payNotes, setPayNotes] = useState('');
+  const [isSubmittingPayment, setIsSubmittingPayment] = useState(false);
+
+  // Receipt Modal State
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
-  const [selectedReceipt, setSelectedReceipt] = useState<FeePayment | null>(null);
+  const [receiptData, setReceiptData] = useState<{
+    student: Student;
+    feeRecord?: StudentFeeRecord;
+    payment?: FeePayment;
+    totalAmount: number;
+    paidAmount: number;
+    remaining: number;
+    date: string;
+    receiptNo: string;
+  } | null>(null);
 
-  const [isReverseModalOpen, setIsReverseModalOpen] = useState(false);
-  const [reversalPayment, setReversalPayment] = useState<FeePayment | null>(null);
-  const [reversalReason, setReversalReason] = useState('');
+  // -----------------------------------------------------------------
+  // 1. DATA ENRICHMENT: Map every student to their active fee status
+  // -----------------------------------------------------------------
+  // Default standard fee per student if no explicit fee record exists yet
+  const DEFAULT_TUITION_AMOUNT = 1200;
 
-  // Form states
-  const [structureForm, setStructureForm] = useState({
-    name: '',
-    category: 'Tuition' as FeeStructure['category'],
-    class: 'All Classes',
-    academicYear: '2026-2027',
-    term: 'Term 1',
-    amount: '',
-    dueDate: '2026-09-30',
-    description: '',
-  });
+  const enrichedStudentList = useMemo(() => {
+    return students.map((st) => {
+      // Find matching fee record for this student
+      const record = studentFees.find((f) => f.studentId === st.id);
+      
+      const totalAmount = record ? Number(record.totalAmount) : DEFAULT_TUITION_AMOUNT;
+      const paidAmount = record ? Number(record.paidAmount) : 0;
+      const remainingBalance = Math.max(0, totalAmount - paidAmount);
+      
+      // Determine standardized binary status: Paid (when fully settled) or Unpaid
+      const isPaid = record ? (record.status === 'Paid' || remainingBalance === 0) : false;
+      const paymentStatus: 'Paid' | 'Unpaid' = isPaid ? 'Paid' : 'Unpaid';
 
-  const [assignForm, setAssignForm] = useState({
-    targetType: 'class' as 'class' | 'student',
-    feeStructureId: '',
-    class: 'Class 01',
-    section: 'All',
-    studentId: '',
-    customAmount: '',
-    dueDate: '',
-  });
-
-  const [paymentForm, setPaymentForm] = useState({
-    feeRecordId: '',
-    amount: '',
-    paymentMethod: 'Online Gateway',
-    transactionReference: '',
-    notes: '',
-  });
-
-  // Filtered student fees (RLS already handled on server, client filtering for UI)
-  const filteredFees = useMemo(() => {
-    return studentFees.filter((fee) => {
-      // Role scope check
-      if (activeRole === 'Student' && currentUser.studentId && fee.studentId !== currentUser.studentId) {
-        return false;
-      }
-
-      // Search query
-      const matchSearch =
-        fee.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        fee.studentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        fee.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        fee.category.toLowerCase().includes(searchQuery.toLowerCase());
-
-      // Filter dropdowns
-      const matchClass = filterClass === 'All' || fee.class === filterClass;
-      const matchStatus = filterStatus === 'All' || fee.status === filterStatus;
-      const matchCategory = filterCategory === 'All' || fee.category === filterCategory;
-
-      return matchSearch && matchClass && matchStatus && matchCategory;
+      return {
+        student: st,
+        feeRecord: record,
+        totalAmount,
+        paidAmount,
+        remainingBalance,
+        paymentStatus,
+      };
     });
-  }, [studentFees, activeRole, currentUser, activeChildId, searchQuery, filterClass, filterStatus, filterCategory]);
+  }, [students, studentFees]);
 
-  // Filtered Payments (RLS scoped)
-  const filteredPayments = useMemo(() => {
-    return feePayments.filter((payment) => {
-      if (activeRole === 'Student' && currentUser.studentId && payment.studentId !== currentUser.studentId) {
-        return false;
-      }
+  // -----------------------------------------------------------------
+  // 2. TOP 3 AGGREGATE DASHBOARD TOTALS (All Students / Active School)
+  // -----------------------------------------------------------------
+  const dashboardTotals = useMemo(() => {
+    // If logged in as student, scope strictly to their own student record
+    const targetDataset = isStudent && currentUser.studentId
+      ? enrichedStudentList.filter((item) => item.student.id === currentUser.studentId)
+      : enrichedStudentList;
 
-      return (
-        payment.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        payment.studentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        payment.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        payment.category.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    });
-  }, [feePayments, activeRole, currentUser, activeChildId, searchQuery]);
-
-  // Summary Metrics
-  const summary = useMemo(() => {
-    const list = filteredFees || [];
-    const totalBilled = list.reduce((acc, f) => acc + (f.totalAmount || 0), 0);
-    const totalPaid = list.reduce((acc, f) => acc + (f.paidAmount || 0), 0);
-    const totalBalance = list.reduce((acc, f) => acc + (f.remainingBalance || 0), 0);
-    const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 0;
-    const unpaidCount = list.filter((f) => f.status === 'Unpaid').length;
-    const partialCount = list.filter((f) => f.status === 'Partially Paid').length;
-    const paidCount = list.filter((f) => f.status === 'Paid').length;
+    const totalAmount = targetDataset.reduce((acc, item) => acc + item.totalAmount, 0);
+    const totalPaid = targetDataset.reduce((acc, item) => acc + item.paidAmount, 0);
+    const totalRemaining = Math.max(0, totalAmount - totalPaid);
+    const collectionRate = totalAmount > 0 ? Math.round((totalPaid / totalAmount) * 100) : 100;
 
     return {
-      totalBilled,
+      totalAmount,
       totalPaid,
-      totalBalance,
+      totalRemaining,
       collectionRate,
-      unpaidCount,
-      partialCount,
-      paidCount,
+      totalStudentsCount: targetDataset.length,
     };
-  }, [filteredFees]);
+  }, [enrichedStudentList, isStudent, currentUser.studentId]);
 
-  // Handlers
-  const handleCreateStructure = async (e: React.FormEvent) => {
+  // -----------------------------------------------------------------
+  // 3. CLASS-BY-CLASS FINANCIAL BREAKDOWN
+  // -----------------------------------------------------------------
+  const classFinancialSummaries = useMemo(() => {
+    // Collect all class names from registered classes list + any extra from students
+    const registeredNames = classes.map((c) => c.name);
+    const studentClassNames = students.map((s) => s.class);
+    const uniqueClassNames = Array.from(new Set([...registeredNames, ...studentClassNames])).filter(Boolean);
+
+    // Sort classes naturally (e.g. Class 01, Class 02, etc.)
+    uniqueClassNames.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+    return uniqueClassNames.map((className) => {
+      const classStudents = enrichedStudentList.filter((item) => item.student.class === className);
+      const studentCount = classStudents.length;
+      const classTotalBilled = classStudents.reduce((acc, item) => acc + item.totalAmount, 0);
+      const classTotalPaid = classStudents.reduce((acc, item) => acc + item.paidAmount, 0);
+      const classRemaining = Math.max(0, classTotalBilled - classTotalPaid);
+      const classPaidCount = classStudents.filter((item) => item.paymentStatus === 'Paid').length;
+      const classUnpaidCount = studentCount - classPaidCount;
+      const classRate = classTotalBilled > 0 ? Math.round((classTotalPaid / classTotalBilled) * 100) : 100;
+
+      return {
+        className,
+        studentCount,
+        totalBilled: classTotalBilled,
+        totalPaid: classTotalPaid,
+        remaining: classRemaining,
+        paidCount: classPaidCount,
+        unpaidCount: classUnpaidCount,
+        rate: classRate,
+      };
+    });
+  }, [classes, students, enrichedStudentList]);
+
+  // -----------------------------------------------------------------
+  // 4. FILTERED STUDENTS FOR SELECTED CLASS
+  // -----------------------------------------------------------------
+  const selectedClassStudents = useMemo(() => {
+    let list = enrichedStudentList;
+
+    if (isStudent && currentUser.studentId) {
+      list = list.filter((item) => item.student.id === currentUser.studentId);
+    } else if (selectedClass) {
+      list = list.filter((item) => item.student.class === selectedClass);
+    }
+
+    // Search Query Filter
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(
+        (item) =>
+          item.student.name.toLowerCase().includes(q) ||
+          item.student.id.toLowerCase().includes(q) ||
+          (item.student.parentName && item.student.parentName.toLowerCase().includes(q)) ||
+          (item.student.parentPhone && item.student.parentPhone.includes(q))
+      );
+    }
+
+    // Status Filter
+    if (statusFilter !== 'All') {
+      list = list.filter((item) => item.paymentStatus === statusFilter);
+    }
+
+    return list;
+  }, [enrichedStudentList, selectedClass, searchQuery, statusFilter, isStudent, currentUser.studentId]);
+
+  // Active selected class financial summary
+  const currentClassSummary = useMemo(() => {
+    if (!selectedClass) return null;
+    return classFinancialSummaries.find((c) => c.className === selectedClass) || null;
+  }, [classFinancialSummaries, selectedClass]);
+
+  // -----------------------------------------------------------------
+  // 5. ACTIONS: TOGGLE STATUS & RECORD PAYMENTS
+  // -----------------------------------------------------------------
+  const handleToggleStatus = async (item: typeof enrichedStudentList[0]) => {
+    const newStatus: 'Paid' | 'Unpaid' = item.paymentStatus === 'Paid' ? 'Unpaid' : 'Paid';
+    
+    const result = await toggleStudentPaymentStatus({
+      studentId: item.student.id,
+      feeRecordId: item.feeRecord?.id,
+      newStatus,
+      customAmount: item.totalAmount,
+      paymentMethod: 'Cash',
+      notes: `Updated by ${currentUser.name} (${activeRole})`,
+    });
+
+    if (result.success) {
+      addToast(
+        newStatus === 'Paid' ? t.paymentSavedSuccess : t.paymentUnpaidSuccess,
+        'success'
+      );
+    }
+  };
+
+  const handleOpenCustomPayment = (item: typeof enrichedStudentList[0]) => {
+    setTargetStudentForPayment({
+      student: item.student,
+      feeRecord: item.feeRecord,
+      totalAmount: item.totalAmount,
+      paidAmount: item.paidAmount,
+      remaining: item.remainingBalance,
+    });
+    setCustomPayAmount(String(item.remainingBalance > 0 ? item.remainingBalance : item.totalAmount));
+    setPayMethod('Cash');
+    setPayRef(`TXN-${Math.floor(100000 + Math.random() * 900000)}`);
+    setPayNotes('');
+    setIsPaymentModalOpen(true);
+  };
+
+  const handleConfirmCustomPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!structureForm.name || !structureForm.amount) {
-      addToast('Please enter structure name and valid amount.', 'error');
+    if (!targetStudentForPayment) return;
+
+    const amountNum = Number(customPayAmount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      addToast(t.invalidAmount, 'error');
       return;
     }
 
-    await addFeeStructure({
-      name: structureForm.name,
-      category: structureForm.category,
-      class: structureForm.class,
-      academicYear: structureForm.academicYear,
-      term: structureForm.term,
-      amount: Number(structureForm.amount),
-      dueDate: structureForm.dueDate,
-      description: structureForm.description,
+    setIsSubmittingPayment(true);
+
+    if (targetStudentForPayment.feeRecord) {
+      const ok = await recordFeePayment({
+        feeRecordId: targetStudentForPayment.feeRecord.id,
+        amount: amountNum,
+        paymentMethod: payMethod,
+        transactionReference: payRef,
+        notes: payNotes || `Payment recorded by ${currentUser.name}`,
+      });
+      setIsSubmittingPayment(false);
+      if (ok) {
+        setIsPaymentModalOpen(false);
+      }
+    } else {
+      // Toggle / Provision via toggle-status with exact custom amount
+      const res = await toggleStudentPaymentStatus({
+        studentId: targetStudentForPayment.student.id,
+        newStatus: 'Paid',
+        customAmount: amountNum,
+        paymentMethod: payMethod,
+        notes: payNotes || `Payment recorded by ${currentUser.name}`,
+      });
+      setIsSubmittingPayment(false);
+      if (res.success) {
+        setIsPaymentModalOpen(false);
+        addToast(t.paymentSavedSuccess, 'success');
+      }
+    }
+  };
+
+  const handleViewReceipt = (item: typeof enrichedStudentList[0]) => {
+    const payment = feePayments.find((p) => p.studentId === item.student.id);
+    const receiptNo = payment?.id || `REC-2026-${item.student.rollNo?.padStart(4, '0') || '0098'}`;
+    const dateStr = payment?.paymentDate || new Date().toISOString().slice(0, 10);
+
+    setReceiptData({
+      student: item.student,
+      feeRecord: item.feeRecord,
+      payment,
+      totalAmount: item.totalAmount,
+      paidAmount: item.paidAmount,
+      remaining: item.remainingBalance,
+      date: dateStr,
+      receiptNo,
     });
-
-    setIsCreateStructureOpen(false);
-    setStructureForm({
-      name: '',
-      category: 'Tuition',
-      class: 'All Classes',
-      academicYear: '2026-2027',
-      term: 'Term 1',
-      amount: '',
-      dueDate: '2026-09-30',
-      description: '',
-    });
-  };
-
-  const handleAssignFee = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!assignForm.feeStructureId) {
-      addToast('Please select a fee structure package.', 'error');
-      return;
-    }
-
-    if (assignForm.targetType === 'student' && !assignForm.studentId) {
-      addToast('Please choose a student.', 'error');
-      return;
-    }
-
-    await assignFees({
-      feeStructureId: assignForm.feeStructureId,
-      studentId: assignForm.targetType === 'student' ? assignForm.studentId : undefined,
-      class: assignForm.targetType === 'class' ? assignForm.class : undefined,
-      section: assignForm.targetType === 'class' ? assignForm.section : undefined,
-      customAmount: assignForm.customAmount ? Number(assignForm.customAmount) : undefined,
-      dueDate: assignForm.dueDate || undefined,
-    });
-
-    setIsAssignFeeOpen(false);
-  };
-
-  const handleOpenPayModal = (fee: StudentFeeRecord) => {
-    setSelectedFeeRecord(fee);
-    setPaymentForm({
-      feeRecordId: fee.id,
-      amount: String(fee.remainingBalance),
-      paymentMethod: activeRole === 'Student' ? 'Online Gateway' : 'Cash',
-      transactionReference: `TXN-${Math.floor(100000 + Math.random() * 900000)}`,
-      notes: '',
-    });
-    setIsRecordPaymentOpen(true);
-  };
-
-  const handleSubmitPayment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!paymentForm.amount || Number(paymentForm.amount) <= 0) {
-      addToast('Please enter a valid payment amount.', 'error');
-      return;
-    }
-
-    const success = await recordFeePayment({
-      feeRecordId: paymentForm.feeRecordId,
-      amount: Number(paymentForm.amount),
-      paymentMethod: paymentForm.paymentMethod,
-      transactionReference: paymentForm.transactionReference,
-      notes: paymentForm.notes,
-    });
-
-    if (success) {
-      setIsRecordPaymentOpen(false);
-      setSelectedFeeRecord(null);
-    }
-  };
-
-  const handleOpenReverse = (payment: FeePayment) => {
-    setReversalPayment(payment);
-    setReversalReason('');
-    setIsReverseModalOpen(true);
-  };
-
-  const handleConfirmReverse = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!reversalPayment) return;
-    if (!reversalReason.trim()) {
-      addToast('Please provide an authorization audit reason for reversal.', 'error');
-      return;
-    }
-
-    const ok = await reverseFeePayment(reversalPayment.id, reversalReason);
-    if (ok) {
-      setIsReverseModalOpen(false);
-      setReversalPayment(null);
-    }
-  };
-
-  const handlePrintReceipt = (receipt: FeePayment) => {
-    setSelectedReceipt(receipt);
     setIsReceiptModalOpen(true);
   };
 
-  const triggerWindowPrint = () => {
-    window.print();
-  };
-
   return (
-    <div className="space-y-6">
-      {/* Module Title Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white shadow-md shadow-purple-200">
-              <CreditCard className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">
-                {activeRole === 'Student'
-                  ? 'My School Fees & Receipts'
-                  : activeRole === 'AccountAdmin'
-                  ? 'Accountant Financial Management'
-                  : activeRole === 'OwnerAdmin'
-                  ? 'School Financial Oversight'
-                  : 'School Fee Management'}
+    <div className="space-y-6 pb-12 animate-fade-in font-sans">
+      {/* Top Header Banner */}
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20 shrink-0">
+            <CreditCard className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                {t.fees}
               </h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {activeRole === 'AccountAdmin' || activeRole === 'Principal'
-                  ? 'Manage fee structures, class invoicing, track payments, reverse transactions, and export audit receipts'
-                  : activeRole === 'OwnerAdmin' || activeRole === 'Admin'
-                  ? 'Financial overview & revenue monitoring. Daily accounting is managed by the School Accountant'
-                  : 'Track your term tuition, balance statements, and official payment receipts'}
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-[11px] font-extrabold text-emerald-700 dark:text-emerald-300">
+                {activeSchool?.name || 'School Accounts'}
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              {language === 'so'
+                ? 'Maamulka kharashaadka dugsiga, diiwaanka lacag-bixinta ardayda iyo xisaabaadka fasallada.'
+                : 'Manage school billing, student payment verification, and class-by-class financial records.'}
+            </p>
+          </div>
+        </div>
+
+        {/* Language Switcher Toolbar */}
+        <div className="flex items-center gap-3 shrink-0">
+          <LanguageToggle />
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 1. TOP SUMMARY CARDS (EXACTLY 3 CARDS AS SPECIFIED)                       */}
+      {/* ========================================================================= */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Card 1: TOTAL AMOUNT */}
+        <div className="bg-white dark:bg-[#122E52] rounded-3xl p-5 sm:p-6 border border-[#E2E8F0] dark:border-[#1E3A63] shadow-xs relative overflow-hidden flex flex-col justify-between hover:border-[#122E52] transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-black tracking-wider text-[#122E52] dark:text-slate-300 uppercase">
+              {t.totalAmount}
+            </span>
+            <div className="w-10 h-10 rounded-2xl bg-[#EFF6FF] text-[#3B82F6] flex items-center justify-center">
+              <DollarSign className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="text-2xl sm:text-3xl font-black text-[#12233F] dark:text-white tracking-tight">
+              ${dashboardTotals.totalAmount.toLocaleString()}
+            </div>
+            <p className="text-xs text-[#64748B] dark:text-slate-400 mt-1 font-medium">
+              {t.totalAmountDesc}
+            </p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-[#E2E8F0] dark:border-[#1E3A63] flex items-center justify-between text-xs font-bold text-[#64748B] dark:text-slate-400">
+            <span>{t.students}: {dashboardTotals.totalStudentsCount}</span>
+            <span className="text-[#3B82F6] dark:text-[#F7A914]">100% {t.totalBilled}</span>
+          </div>
+        </div>
+
+        {/* Card 2: TOTAL PAID */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden flex flex-col justify-between hover:border-emerald-300 dark:hover:border-emerald-800 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-black tracking-wider text-emerald-600 dark:text-emerald-400 uppercase">
+              {t.totalPaid}
+            </span>
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
+              ${dashboardTotals.totalPaid.toLocaleString()}
+            </div>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 font-medium">
+              {t.totalPaidDesc}
+            </p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <span>{t.collectionRate}</span>
+            <span>{dashboardTotals.collectionRate}%</span>
+          </div>
+        </div>
+
+        {/* Card 3: REMAINING */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 sm:p-6 border border-slate-200/80 dark:border-slate-800 shadow-xs relative overflow-hidden flex flex-col justify-between hover:border-rose-300 dark:hover:border-rose-800 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-black tracking-wider text-rose-600 dark:text-rose-400 uppercase">
+              {t.remaining}
+            </span>
+            <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+              <Clock className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-400 tracking-tight">
+              ${dashboardTotals.totalRemaining.toLocaleString()}
+            </div>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 font-medium">
+              {t.remainingDesc}
+            </p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-rose-600 dark:text-rose-400">
+            <span>{language === 'so' ? 'Haraaga Guud' : 'Outstanding Balance'}</span>
+            <span>
+              {dashboardTotals.totalAmount > 0
+                ? `${Math.round((dashboardTotals.totalRemaining / dashboardTotals.totalAmount) * 100)}%`
+                : '0%'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 2. CLASS LIST VIEW OR SELECTED CLASS STUDENT FINANCIAL LIST               */}
+      {/* ========================================================================= */}
+
+      {!selectedClass && !isStudent ? (
+        /* ------------------------------------------------------------- */
+        /* VIEW A: SELECTABLE CLASS CARDS LIST                           */
+        /* ------------------------------------------------------------- */
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-1">
+            <div>
+              <h2 className="text-lg font-black text-slate-900 dark:text-white">
+                {t.classList}
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {language === 'so'
+                  ? 'Guji fasal kasta si aad u aragto ardayda iyo xaaladdooda lacag-bixineed.'
+                  : 'Click on any class card to view its student financial roster and update payment statuses.'}
               </p>
             </div>
-          </div>
-        </div>
-
-        {/* Action Buttons (School Owner, Accountant & Headteacher) */}
-        {canManageFees && (
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                setAssignForm({
-                  targetType: 'class',
-                  feeStructureId: feeStructures[0]?.id || '',
-                  class: classes[0]?.name || 'Class 01',
-                  section: 'All',
-                  studentId: students[0]?.id || '',
-                  customAmount: '',
-                  dueDate: '',
-                });
-                setIsAssignFeeOpen(true);
-              }}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-50 text-purple-700 font-semibold text-sm hover:bg-purple-100 transition-colors border border-purple-200"
-            >
-              <UserCheck className="w-4 h-4" />
-              Assign Fees
-            </button>
-
-            <button
-              onClick={() => setIsCreateStructureOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-600 text-white font-semibold text-sm hover:bg-purple-700 shadow-md shadow-purple-200 transition-all"
-            >
-              <Plus className="w-4 h-4" />
-              Create Fee Structure
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Summary KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Invoiced */}
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-              {activeRole === 'Student' ? 'Total Billed' : 'Total Invoiced'}
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800">
+              {classFinancialSummaries.length} {t.classes}
             </span>
-            <div className="text-2xl font-bold text-slate-800 dark:text-white mt-1">
-              ${summary.totalBilled.toLocaleString()}
-            </div>
-            <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 block">
-              {filteredFees.length} invoice record(s)
-            </span>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-            <DollarSign className="w-6 h-6" />
-          </div>
-        </div>
-
-        {/* Total Paid */}
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-              Amount Paid
-            </span>
-            <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
-              ${summary.totalPaid.toLocaleString()}
-            </div>
-            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-0.5 block">
-              {summary.paidCount} Fully Settled
-            </span>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-            <CheckCircle2 className="w-6 h-6" />
-          </div>
-        </div>
-
-        {/* Outstanding Balance */}
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-              Remaining Balance
-            </span>
-            <div className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">
-              ${summary.totalBalance.toLocaleString()}
-            </div>
-            <span className="text-xs text-amber-600 dark:text-amber-400 font-medium mt-0.5 block">
-              {summary.unpaidCount + summary.partialCount} Pending Invoice(s)
-            </span>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-            <Clock className="w-6 h-6" />
-          </div>
-        </div>
-
-        {/* Collection Efficiency */}
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-              Settlement Rate
-            </span>
-            <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">
-              {summary.collectionRate}%
-            </div>
-            <div className="w-28 bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-              <div
-                className="bg-indigo-600 dark:bg-indigo-500 h-full rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(100, summary.collectionRate)}%` }}
-              />
-            </div>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-            <TrendingUp className="w-6 h-6" />
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800">
-        <button
-          onClick={() => setActiveTab('invoices')}
-          className={`px-4 py-3 text-sm font-semibold border-b-2 flex items-center gap-2 transition-colors cursor-pointer ${
-            activeTab === 'invoices'
-              ? 'border-purple-600 text-purple-600 dark:text-purple-400'
-              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-          }`}
-        >
-          <FileText className="w-4 h-4" />
-          Fee Invoices & Balances
-        </button>
-
-        <button
-          onClick={() => setActiveTab('payments')}
-          className={`px-4 py-3 text-sm font-semibold border-b-2 flex items-center gap-2 transition-colors cursor-pointer ${
-            activeTab === 'payments'
-              ? 'border-purple-600 text-purple-600 dark:text-purple-400'
-              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-          }`}
-        >
-          <Receipt className="w-4 h-4" />
-          Payment History & Receipts ({filteredPayments.length})
-        </button>
-
-        {canManageFees && (
-          <button
-            onClick={() => setActiveTab('structures')}
-            className={`px-4 py-3 text-sm font-semibold border-b-2 flex items-center gap-2 transition-colors cursor-pointer ${
-              activeTab === 'structures'
-                ? 'border-purple-600 text-purple-600 dark:text-purple-400'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            Fee Packages & Catalog ({feeStructures.length})
-          </button>
-        )}
-
-        {canManageFees && (
-          <button
-            onClick={() => setActiveTab('reports')}
-            className={`px-4 py-3 text-sm font-semibold border-b-2 flex items-center gap-2 transition-colors cursor-pointer ${
-              activeTab === 'reports'
-                ? 'border-purple-600 text-purple-600 dark:text-purple-400'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-            }`}
-          >
-            <TrendingUp className="w-4 h-4" />
-            Financial Audit & Reports
-          </button>
-        )}
-      </div>
-
-      {/* TAB 1: Invoices & Balances Table */}
-      {activeTab === 'invoices' && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs overflow-hidden">
-          {/* Filter Bar */}
-          <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3 flex-1 min-w-[240px] max-w-md">
-              <div className="relative w-full">
-                <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Search by student name, ID, fee title..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-slate-100 focus:outline-hidden focus:ring-2 focus:ring-purple-500 placeholder:text-slate-400"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2.5 flex-wrap">
-              {activeRole === 'Admin' && (
-                <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
-                  <Filter className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Class:</span>
-                  <select
-                    value={filterClass}
-                    onChange={(e) => setFilterClass(e.target.value)}
-                    className="bg-transparent font-semibold text-slate-700 dark:text-slate-200 focus:outline-hidden cursor-pointer"
-                  >
-                    <option value="All" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">All Classes</option>
-                    {classes.map((c) => (
-                      <option key={c.id} value={c.name} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
-                <span className="text-slate-500 dark:text-slate-400 font-medium">Status:</span>
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  className="bg-transparent font-semibold text-slate-700 dark:text-slate-200 focus:outline-hidden cursor-pointer"
-                >
-                  <option value="All" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">All Statuses</option>
-                  <option value="Paid" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Paid</option>
-                  <option value="Partially Paid" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Partially Paid</option>
-                  <option value="Unpaid" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Unpaid</option>
-                </select>
-              </div>
-
-              <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
-                <span className="text-slate-500 dark:text-slate-400 font-medium">Category:</span>
-                <select
-                  value={filterCategory}
-                  onChange={(e) => setFilterCategory(e.target.value)}
-                  className="bg-transparent font-semibold text-slate-700 dark:text-slate-200 focus:outline-hidden cursor-pointer"
-                >
-                  <option value="All" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">All Categories</option>
-                  <option value="Tuition" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Tuition</option>
-                  <option value="Examination" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Examination</option>
-                  <option value="Library" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Library</option>
-                  <option value="Laboratory" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Laboratory</option>
-                  <option value="Sports" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Sports</option>
-                  <option value="Hostel" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Hostel</option>
-                  <option value="Transport" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Transport</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
-              <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-medium border-b border-slate-100 dark:border-slate-800 text-xs uppercase tracking-wider">
-                <tr>
-                  <th className="px-6 py-4">Invoice / Student</th>
-                  <th className="px-6 py-4">Fee Item & Category</th>
-                  <th className="px-6 py-4">Total Billed</th>
-                  <th className="px-6 py-4">Paid</th>
-                  <th className="px-6 py-4">Balance</th>
-                  <th className="px-6 py-4">Due Date</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-normal">
-                {filteredFees.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
-                      <CreditCard className="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-slate-600" />
-                      No fee records match your criteria.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredFees.map((fee) => {
-                    const isOverdue = new Date(fee.dueDate) < new Date() && fee.status !== 'Paid';
-                    return (
-                      <tr key={fee.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="font-semibold text-slate-900 dark:text-white">{fee.studentName}</div>
-                          <div className="text-xs text-purple-600 dark:text-purple-400 font-mono">
-                            {fee.studentId} • {fee.class}-{fee.section}
-                          </div>
-                          <div className="text-[11px] text-slate-400 dark:text-slate-500">Inv: {fee.id}</div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="font-medium text-slate-800 dark:text-slate-200">{fee.title}</div>
-                          <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 mt-0.5">
-                            {fee.category} • {fee.term}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 font-semibold text-slate-800 dark:text-slate-200">
-                          ${fee.totalAmount.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 font-semibold text-emerald-600 dark:text-emerald-400">
-                          ${fee.paidAmount.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
-                          ${fee.remainingBalance.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-slate-700 dark:text-slate-300">{fee.dueDate}</div>
-                          {isOverdue && (
-                            <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 uppercase">
-                              Overdue
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                              fee.status === 'Paid'
-                                ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
-                                : fee.status === 'Partially Paid'
-                                ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
-                                : 'bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
-                            }`}
-                          >
-                            <span
-                              className={`w-1.5 h-1.5 rounded-full ${
-                                fee.status === 'Paid'
-                                  ? 'bg-emerald-600'
-                                  : fee.status === 'Partially Paid'
-                                  ? 'bg-amber-600'
-                                  : 'bg-rose-600'
-                              }`}
-                            />
-                            {fee.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          {fee.remainingBalance > 0 ? (
-                            canManageFees || isStudent ? (
-                              <button
-                                onClick={() => handleOpenPayModal(fee)}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 text-white font-medium text-xs hover:bg-purple-700 shadow-xs transition-all cursor-pointer"
-                              >
-                                <CreditCard className="w-3.5 h-3.5" />
-                                {isStudent ? 'Pay Now' : 'Record Payment'}
-                              </button>
-                            ) : (
-                              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                                ${fee.remainingBalance.toLocaleString()} Due
-                              </span>
-                            )
-                          ) : (
-                            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center justify-end gap-1">
-                              <CheckCircle2 className="w-4 h-4" /> Settled
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 2: Payment History & Official Receipts */}
-      {activeTab === 'payments' && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-xs overflow-hidden">
-          <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <h2 className="font-bold text-slate-800 dark:text-white text-base">Recorded Fee Receipts & Transactions</h2>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              Official timestamped receipts with downloadable PDF format
-            </span>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
-              <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-medium border-b border-slate-100 dark:border-slate-800 text-xs uppercase tracking-wider">
-                <tr>
-                  <th className="px-6 py-4">Receipt Number</th>
-                  <th className="px-6 py-4">Student & Class</th>
-                  <th className="px-6 py-4">Fee Item</th>
-                  <th className="px-6 py-4">Amount Paid</th>
-                  <th className="px-6 py-4">Payment Method</th>
-                  <th className="px-6 py-4">Date & Time</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Receipt / Audit</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-normal">
-                {filteredPayments.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
-                      <Receipt className="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-slate-600" />
-                      No payment receipts recorded yet.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredPayments.map((payment) => (
-                    <tr
-                      key={payment.id}
-                      className={`hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors ${
-                        payment.status === 'Reversed' ? 'bg-rose-50/20 dark:bg-rose-950/20' : ''
-                      }`}
-                    >
-                      <td className="px-6 py-4">
-                        <span className="font-mono font-bold text-purple-700 dark:text-purple-400">{payment.id}</span>
-                        <div className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
-                          Ref: {payment.transactionReference || 'N/A'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="font-semibold text-slate-900 dark:text-white">{payment.studentName}</div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400">
-                          {payment.studentId} • {payment.class}-{payment.section}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-slate-800 dark:text-slate-200">{payment.title}</div>
-                        <div className="text-xs text-slate-400 dark:text-slate-500">{payment.category}</div>
-                      </td>
-                      <td className="px-6 py-4 font-bold text-slate-900 dark:text-white text-base">
-                        ${payment.amountPaid.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="inline-block px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                          {payment.paymentMethod}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-xs text-slate-600 dark:text-slate-300">
-                        {payment.paymentDate}
-                      </td>
-                      <td className="px-6 py-4">
-                        {payment.status === 'Completed' ? (
-                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
-                            <CheckCircle2 className="w-3 h-3" /> Valid
-                          </span>
-                        ) : (
-                          <div>
-                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded-md border border-rose-200 dark:border-rose-800">
-                              <RotateCcw className="w-3 h-3" /> Voided / Reversed
-                            </span>
-                            <div className="text-[10px] text-rose-600 dark:text-rose-400 mt-0.5 italic max-w-xs">
-                              Reason: {payment.reversalReason}
-                            </div>
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right space-x-2">
-                        <button
-                          onClick={() => handlePrintReceipt(payment)}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-semibold text-xs hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200 dark:border-purple-800 transition-colors cursor-pointer"
-                        >
-                          <Printer className="w-3.5 h-3.5" />
-                          View Receipt
-                        </button>
-
-                        {canManageFees && payment.status !== 'Reversed' && (
-                          <button
-                            onClick={() => handleOpenReverse(payment)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-rose-600 dark:text-rose-400 font-semibold text-xs hover:bg-rose-50 dark:hover:bg-rose-950/60 hover:text-rose-700 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
-                            title="Reverse Payment"
-                          >
-                            <RotateCcw className="w-3.5 h-3.5" />
-                            Reverse
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 3: Fee Structures & Packages */}
-      {activeTab === 'structures' && canManageFees && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="font-bold text-slate-800 dark:text-white text-lg">School Approved Fee Structure Catalog</h2>
-            {canManageFees && (
-              <button
-                onClick={() => setIsCreateStructureOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 text-white font-semibold text-sm hover:bg-purple-700 shadow-md shadow-purple-200 dark:shadow-none transition-all cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                New Structure
-              </button>
-            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {feeStructures.map((structure) => (
+            {classFinancialSummaries.map((cls) => (
               <div
-                key={structure.id}
-                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs flex flex-col justify-between"
+                key={cls.className}
+                onClick={() => {
+                  setSelectedClass(cls.className);
+                  setSearchQuery('');
+                  setStatusFilter('All');
+                }}
+                className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md hover:border-[#122E52] dark:hover:border-[#F7A914] transition-all cursor-pointer group flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400">{structure.id}</span>
-                      <h3 className="font-bold text-slate-900 dark:text-white text-lg">{structure.name}</h3>
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-10 h-10 rounded-2xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] flex items-center justify-center font-black text-sm group-hover:scale-105 transition-transform">
+                        <Layers className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-black text-slate-900 dark:text-white group-hover:text-[#3B82F6] dark:group-hover:text-[#F7A914] transition-colors">
+                          {cls.className}
+                        </h3>
+                        <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold">
+                          {cls.studentCount} {t.students}
+                        </span>
+                      </div>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300">
-                      {structure.category}
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                      {cls.rate}%
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-2">
-                    {structure.description || 'Standard approved fee schedule package.'}
-                  </p>
-
-                  <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                      <span className="text-slate-400 dark:text-slate-500 block">Class Level</span>
-                      <span className="font-semibold text-slate-700 dark:text-slate-300">{structure.class}</span>
+                  {/* Financial Stats Grid */}
+                  <div className="grid grid-cols-3 gap-2 py-4 text-center">
+                    <div className="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase block">
+                        {t.totalBilled}
+                      </span>
+                      <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white mt-0.5 block">
+                        ${cls.totalBilled.toLocaleString()}
+                      </span>
                     </div>
-                    <div>
-                      <span className="text-slate-400 dark:text-slate-500 block">Term / Year</span>
-                      <span className="font-semibold text-slate-700 dark:text-slate-300">
-                        {structure.term} ({structure.academicYear})
+
+                    <div className="p-2.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/50">
+                      <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase block">
+                        {t.totalPaid}
+                      </span>
+                      <span className="text-xs sm:text-sm font-black text-emerald-700 dark:text-emerald-400 mt-0.5 block">
+                        ${cls.totalPaid.toLocaleString()}
+                      </span>
+                    </div>
+
+                    <div className="p-2.5 rounded-2xl bg-rose-50/60 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/50">
+                      <span className="text-[10px] font-bold text-rose-700 dark:text-rose-400 uppercase block">
+                        {t.remainingAmount}
+                      </span>
+                      <span className="text-xs sm:text-sm font-black text-rose-700 dark:text-rose-400 mt-0.5 block">
+                        ${cls.remaining.toLocaleString()}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] text-slate-400 dark:text-slate-500 uppercase font-semibold block">Fixed Rate</span>
-                    <span className="text-2xl font-black text-slate-900 dark:text-white">
-                      ${structure.amount.toLocaleString()}
-                    </span>
+                {/* Progress Bar & Open Link */}
+                <div>
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden mb-3">
+                    <div
+                      className="bg-emerald-500 h-full rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(100, cls.rate)}%` }}
+                    />
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    {canManageFees && (
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => {
-                            setAssignForm({
-                              targetType: 'class',
-                              feeStructureId: structure.id,
-                              class: structure.class === 'All Classes' ? 'Class 01' : structure.class,
-                              section: 'All',
-                              studentId: students[0]?.id || '',
-                              customAmount: String(structure.amount),
-                              dueDate: structure.dueDate,
-                            });
-                            setIsAssignFeeOpen(true);
-                          }}
-                          className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-semibold text-xs hover:bg-purple-100 dark:hover:bg-purple-900/60 transition-colors cursor-pointer"
-                        >
-                          Assign
-                        </button>
-                        <button
-                          onClick={() => deleteFeeStructure(structure.id)}
-                          className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-colors cursor-pointer"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )}
+                  <div className="flex items-center justify-between text-xs font-extrabold text-[#3B82F6] dark:text-[#60A5FA] pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <span className="text-slate-500 dark:text-slate-400">
+                      {cls.paidCount} {t.paid} • {cls.unpaidCount} {t.unpaid}
+                    </span>
+                    <span className="flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      {t.selectClass} <ChevronRight className="w-4 h-4" />
+                    </span>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      )}
-
-      {/* TAB 4: Reports & Analytics */}
-      {activeTab === 'reports' && canManageFees && (
-        <div className="space-y-6">
-          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-5">
-              <div>
-                <h3 className="font-bold text-slate-900 dark:text-white text-lg">Financial Collection Breakdown</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Term 1 2026 Academic Year Revenue and Receivables</p>
-              </div>
-
-              <button
-                onClick={triggerWindowPrint}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 text-white font-semibold text-sm hover:bg-purple-700 shadow-xs cursor-pointer"
-              >
-                <Download className="w-4 h-4" />
-                Export Audit Report (PDF)
-              </button>
-            </div>
-
-            {/* Category Analysis */}
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {['Tuition', 'Examination', 'Library', 'Laboratory'].map((cat) => {
-                const catFees = (studentFees || []).filter((f) => f.category === cat);
-                const billed = catFees.reduce((acc, f) => acc + (f.totalAmount || 0), 0);
-                const paid = catFees.reduce((acc, f) => acc + (f.paidAmount || 0), 0);
-                const rate = billed > 0 ? Math.round((paid / billed) * 100) : 0;
-
-                return (
-                  <div key={cat} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                    <span className="text-xs font-bold text-purple-700 dark:text-purple-400 uppercase tracking-wider">{cat}</span>
-                    <div className="text-xl font-bold text-slate-800 dark:text-white mt-1">${paid.toLocaleString()}</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400">of ${billed.toLocaleString()} billed</div>
-                    <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-3 overflow-hidden">
-                      <div className="bg-purple-600 dark:bg-purple-500 h-full rounded-full" style={{ width: `${rate}%` }} />
-                    </div>
-                    <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 mt-1 block">{rate}% Collected</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* MODAL 1: Create Fee Structure (Admin) */}
-      {/* ========================================================================= */}
-      {isCreateStructureOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 dark:border-slate-800">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                  <Plus className="w-5 h-5" />
-                </div>
-                <h2 className="font-bold text-slate-800 dark:text-white text-lg">Create New Fee Structure</h2>
-              </div>
-              <button
-                onClick={() => setIsCreateStructureOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateStructure} className="space-y-4 mt-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                  Structure Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g., Grade 1 Term Tuition 2026"
-                  value={structureForm.name}
-                  onChange={(e) => setStructureForm({ ...structureForm, name: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500 placeholder:text-slate-400"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                    Category *
-                  </label>
-                  <select
-                    value={structureForm.category}
-                    onChange={(e) =>
-                      setStructureForm({
-                        ...structureForm,
-                        category: e.target.value as FeeStructure['category'],
-                      })
-                    }
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-                  >
-                    <option value="Tuition" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Tuition</option>
-                    <option value="Examination" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Examination</option>
-                    <option value="Library" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Library</option>
-                    <option value="Laboratory" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Laboratory</option>
-                    <option value="Sports" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Sports</option>
-                    <option value="Hostel" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Hostel</option>
-                    <option value="Transport" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Transport</option>
-                    <option value="Other" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Other</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                    Target Class *
-                  </label>
-                  <select
-                    value={structureForm.class}
-                    onChange={(e) => setStructureForm({ ...structureForm, class: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-                  >
-                    <option value="All Classes" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">All Classes</option>
-                    {classes.map((c) => (
-                      <option key={c.id} value={c.name} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                    Amount ($) *
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    step="0.01"
-                    required
-                    placeholder="e.g., 450"
-                    value={structureForm.amount}
-                    onChange={(e) => setStructureForm({ ...structureForm, amount: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500 placeholder:text-slate-400"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                    Due Date *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={structureForm.dueDate}
-                    onChange={(e) => setStructureForm({ ...structureForm, dueDate: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                    Academic Year
-                  </label>
-                  <input
-                    type="text"
-                    value={structureForm.academicYear}
-                    onChange={(e) => setStructureForm({ ...structureForm, academicYear: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">Term</label>
-                  <select
-                    value={structureForm.term}
-                    onChange={(e) => setStructureForm({ ...structureForm, term: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-                  >
-                    <option value="Term 1" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Term 1</option>
-                    <option value="Term 2" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Term 2</option>
-                    <option value="Term 3" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Term 3</option>
-                    <option value="Annual" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Annual</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                  Description / Notes
-                </label>
-                <textarea
-                  rows={2}
-                  placeholder="Optional details regarding this fee..."
-                  value={structureForm.description}
-                  onChange={(e) => setStructureForm({ ...structureForm, description: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500 placeholder:text-slate-400"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+      ) : (
+        /* ------------------------------------------------------------- */
+        /* VIEW B: CLASS STUDENT FINANCIAL LIST                          */
+        /* ------------------------------------------------------------- */
+        <div className="space-y-4">
+          {/* Header Navigation for Selected Class */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              {!isStudent && (
                 <button
-                  type="button"
-                  onClick={() => setIsCreateStructureOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  onClick={() => setSelectedClass(null)}
+                  className="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title={t.backToClasses}
                 >
-                  Cancel
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>{t.backToClasses}</span>
                 </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 shadow-md shadow-purple-200 dark:shadow-none transition-all cursor-pointer"
-                >
-                  Save Fee Structure
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* MODAL 2: Assign Fees to Class or Student (Admin) */}
-      {/* ========================================================================= */}
-      {isAssignFeeOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 dark:border-slate-800">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                  <UserCheck className="w-5 h-5" />
-                </div>
-                <h2 className="font-bold text-slate-800 dark:text-white text-lg">Assign Fee Invoice</h2>
-              </div>
-              <button
-                onClick={() => setIsAssignFeeOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleAssignFee} className="space-y-4 mt-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                  Fee Package *
-                </label>
-                <select
-                  required
-                  value={assignForm.feeStructureId}
-                  onChange={(e) => {
-                    const sel = feeStructures.find((f) => f.id === e.target.value);
-                    setAssignForm({
-                      ...assignForm,
-                      feeStructureId: e.target.value,
-                      customAmount: sel ? String(sel.amount) : '',
-                      dueDate: sel ? sel.dueDate : '',
-                    });
-                  }}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-                >
-                  {feeStructures.map((f) => (
-                    <option key={f.id} value={f.id} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                      {f.name} - ${f.amount} ({f.class})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-2">
-                  Assignment Target *
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setAssignForm({ ...assignForm, targetType: 'class' })}
-                    className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${
-                      assignForm.targetType === 'class'
-                        ? 'bg-purple-50 dark:bg-purple-950/60 border-purple-600 text-purple-700 dark:text-purple-300'
-                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
-                    }`}
-                  >
-                    Entire Class
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setAssignForm({ ...assignForm, targetType: 'student' })}
-                    className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${
-                      assignForm.targetType === 'student'
-                        ? 'bg-purple-50 dark:bg-purple-950/60 border-purple-600 text-purple-700 dark:text-purple-300'
-                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
-                    }`}
-                  >
-                    Individual Student
-                  </button>
-                </div>
-              </div>
-
-              {assignForm.targetType === 'class' ? (
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                      Class *
-                    </label>
-                    <select
-                      value={assignForm.class}
-                      onChange={(e) => setAssignForm({ ...assignForm, class: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-                    >
-                      {classes.map((c) => (
-                        <option key={c.id} value={c.name} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                      Section
-                    </label>
-                    <select
-                      value={assignForm.section}
-                      onChange={(e) => setAssignForm({ ...assignForm, section: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-                    >
-                      <option value="All" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">All Sections (A, B)</option>
-                      <option value="A" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Section A</option>
-                      <option value="B" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Section B</option>
-                    </select>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                    Select Student *
-                  </label>
-                  <select
-                    required
-                    value={assignForm.studentId}
-                    onChange={(e) => setAssignForm({ ...assignForm, studentId: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-                  >
-                    <option value="" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Select a registered student...</option>
-                    {students.map((s) => (
-                      <option key={s.id} value={s.id} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">
-                        {s.name} ({s.id} - {s.class})
-                      </option>
-                    ))}
-                  </select>
-                </div>
               )}
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                    Amount ($)
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    placeholder="Defaults to package rate"
-                    value={assignForm.customAmount}
-                    onChange={(e) => setAssignForm({ ...assignForm, customAmount: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500 placeholder:text-slate-400"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                    Custom Due Date
-                  </label>
-                  <input
-                    type="date"
-                    value={assignForm.dueDate}
-                    onChange={(e) => setAssignForm({ ...assignForm, dueDate: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
+              <div>
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <span>{selectedClass || t.allClasses}</span>
+                  {currentClassSummary && (
+                    <span className="text-xs font-extrabold text-[#3B82F6] dark:text-[#60A5FA] px-2.5 py-0.5 rounded-full bg-slate-50 dark:bg-[#122E52]/20 border border-[#1E3A63]">
+                      {currentClassSummary.studentCount} {t.students}
+                    </span>
+                  )}
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {language === 'so'
+                    ? 'Diiwaanka lacag-bixinta ardayda iyo taleefannada waalidiinta.'
+                    : 'Class financial roster, parent contact numbers, fee balances, and payment verification.'}
+                </p>
               </div>
+            </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setIsAssignFeeOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 shadow-md shadow-purple-200 dark:shadow-none transition-all cursor-pointer"
-                >
-                  Generate & Assign Invoices
-                </button>
+            {/* Quick Class Summary Stats */}
+            {currentClassSummary && (
+              <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
+                <span className="px-3 py-1.5 rounded-xl bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA]">
+                  {t.totalBilled}: ${currentClassSummary.totalBilled.toLocaleString()}
+                </span>
+                <span className="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
+                  {t.totalPaid}: ${currentClassSummary.totalPaid.toLocaleString()}
+                </span>
+                <span className="px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300">
+                  {t.remaining}: ${currentClassSummary.remaining.toLocaleString()}
+                </span>
               </div>
-            </form>
+            )}
+          </div>
+
+          {/* Search & Filter Toolbar */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="relative w-full sm:max-w-md">
+              <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder={t.searchPlaceholder}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6] transition-all placeholder:text-slate-400"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Filter Tabs: All, Paid, Unpaid */}
+            <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100 dark:bg-slate-800 self-stretch sm:self-auto justify-center">
+              <button
+                type="button"
+                onClick={() => setStatusFilter('All')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                  statusFilter === 'All'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
+              >
+                {t.all} ({enrichedStudentList.filter((s) => !selectedClass || s.student.class === selectedClass).length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setStatusFilter('Paid')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1 ${
+                  statusFilter === 'Paid'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50/50'
+                }`}
+              >
+                <span>✓ {t.paid}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setStatusFilter('Unpaid')}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1 ${
+                  statusFilter === 'Unpaid'
+                    ? 'bg-rose-600 text-white shadow-xs'
+                    : 'text-rose-700 dark:text-rose-400 hover:bg-rose-50/50'
+                }`}
+              >
+                <span>✕ {t.unpaid}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Student Financial Table */}
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead className="bg-slate-50/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider border-b border-slate-200/80 dark:border-slate-800">
+                  <tr>
+                    <th className="py-3.5 px-4">{t.studentName}</th>
+                    <th className="py-3.5 px-4">{t.studentId}</th>
+                    <th className="py-3.5 px-4">{t.parentGuardian}</th>
+                    <th className="py-3.5 px-4">{t.phoneNumber}</th>
+                    <th className="py-3.5 px-4 text-right">{t.totalFee}</th>
+                    <th className="py-3.5 px-4 text-right">{t.amountPaid}</th>
+                    <th className="py-3.5 px-4 text-right">{t.remainingBalance}</th>
+                    <th className="py-3.5 px-4 text-center">{t.paymentStatus}</th>
+                    <th className="py-3.5 px-4 text-center">{t.paymentAction}</th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                  {selectedClassStudents.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="py-12 text-center text-slate-400 dark:text-slate-500">
+                        <AlertCircle className="w-8 h-8 mx-auto mb-2 text-slate-300 dark:text-slate-600" />
+                        <p className="font-bold">{t.noStudentsFound}</p>
+                      </td>
+                    </tr>
+                  ) : (
+                    selectedClassStudents.map((item) => {
+                      const isPaid = item.paymentStatus === 'Paid';
+                      return (
+                        <tr
+                          key={item.student.id}
+                          className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+                        >
+                          {/* 1. Student Name */}
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-3">
+                              <UserAvatar
+                                name={item.student.name}
+                                avatarUrl={item.student.avatar}
+                                size="sm"
+                              />
+                              <div>
+                                <span className="font-black text-slate-900 dark:text-white block">
+                                  {item.student.name}
+                                </span>
+                                <span className="text-[10px] text-slate-400 font-mono">
+                                  Roll: {item.student.rollNo || '01'} • {item.student.class}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* 2. Student ID */}
+                          <td className="py-3.5 px-4 font-mono font-bold text-[#3B82F6] dark:text-[#60A5FA]">
+                            {item.student.id}
+                          </td>
+
+                          {/* 3. Parent / Guardian Name */}
+                          <td className="py-3.5 px-4 font-semibold text-slate-800 dark:text-slate-200">
+                            {item.student.parentName || 'Hassan Warsame'}
+                          </td>
+
+                          {/* 4. Parent / Guardian Phone Number */}
+                          <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">
+                            <div className="flex items-center gap-1.5">
+                              <Phone className="w-3.5 h-3.5 text-slate-400" />
+                              <span>{item.student.parentPhone || '+252 61 555 1234'}</span>
+                            </div>
+                          </td>
+
+                          {/* 5. Total Fee */}
+                          <td className="py-3.5 px-4 text-right font-black text-slate-900 dark:text-white">
+                            ${item.totalAmount.toLocaleString()}
+                          </td>
+
+                          {/* 6. Amount Paid */}
+                          <td className="py-3.5 px-4 text-right font-black text-emerald-600 dark:text-emerald-400">
+                            ${item.paidAmount.toLocaleString()}
+                          </td>
+
+                          {/* 7. Remaining Balance */}
+                          <td className="py-3.5 px-4 text-right font-black text-rose-600 dark:text-rose-400">
+                            ${item.remainingBalance.toLocaleString()}
+                          </td>
+
+                          {/* 8. Payment Status (✓ PAID or ✕ UNPAID) */}
+                          <td className="py-3.5 px-4 text-center">
+                            {isPaid ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span>{t.paid}</span>
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+                                <XCircle className="w-3.5 h-3.5" />
+                                <span>{t.unpaid}</span>
+                              </span>
+                            )}
+                          </td>
+
+                          {/* 9. Payment Action */}
+                          <td className="py-3.5 px-4 text-center">
+                            <div className="flex items-center justify-center gap-1.5">
+                              {/* Direct 1-Click Toggle Status Button */}
+                              <button
+                                type="button"
+                                onClick={() => handleToggleStatus(item)}
+                                className={`px-2.5 py-1.5 rounded-xl font-black text-[11px] transition-all flex items-center gap-1 cursor-pointer shadow-2xs ${
+                                  isPaid
+                                    ? 'bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
+                                    : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                                }`}
+                                title={isPaid ? t.markAsUnpaid : t.markAsPaid}
+                              >
+                                {isPaid ? (
+                                  <>
+                                    <X className="w-3.5 h-3.5" />
+                                    <span>{t.markAsUnpaid}</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                    <span>{t.markAsPaid}</span>
+                                  </>
+                                )}
+                              </button>
+
+                              {/* Custom / Partial Payment Modal */}
+                              <button
+                                type="button"
+                                onClick={() => handleOpenCustomPayment(item)}
+                                className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-[#EFF6FF] dark:hover:bg-[#0B1B32] text-slate-700 dark:text-slate-300 hover:text-[#122E52] dark:hover:text-[#F7A914] transition-colors cursor-pointer"
+                                title={t.updateStatus}
+                              >
+                                <DollarSign className="w-3.5 h-3.5" />
+                              </button>
+
+                              {/* View Receipt */}
+                              {isPaid && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleViewReceipt(item)}
+                                  className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-emerald-950/60 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors cursor-pointer"
+                                  title={t.viewReceipt}
+                                >
+                                  <Receipt className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL 3: Record Payment / Pay Online Modal */}
+      {/* 6. MODAL: RECORD CUSTOM PAYMENT & GENERATE RECEIPT                        */}
       {/* ========================================================================= */}
-      {isRecordPaymentOpen && selectedFeeRecord && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 dark:border-slate-800">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                  <CreditCard className="w-5 h-5" />
+      {isPaymentModalOpen && targetStudentForPayment && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-5 animate-scale-up">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                  {t.recordNewPayment}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  {targetStudentForPayment.student.name} ({targetStudentForPayment.student.id})
+                </p>
+              </div>
+              <button
+                onClick={() => setIsPaymentModalOpen(false)}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleConfirmCustomPayment} className="space-y-4 text-xs">
+              {/* Summary of Dues */}
+              <div className="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 text-center">
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold">{t.totalFee}</span>
+                  <span className="text-xs font-black text-slate-900 dark:text-white block mt-0.5">
+                    ${targetStudentForPayment.totalAmount}
+                  </span>
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-800 dark:text-white text-lg">
-                    {activeRole === 'Student' ? 'Pay School Fee' : 'Record Fee Payment'}
-                  </h2>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
-                    Invoice: {selectedFeeRecord.id} • {selectedFeeRecord.studentName}
+                  <span className="text-[10px] text-emerald-600 uppercase font-bold">{t.amountPaid}</span>
+                  <span className="text-xs font-black text-emerald-600 block mt-0.5">
+                    ${targetStudentForPayment.paidAmount}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-rose-600 uppercase font-bold">{t.remainingBalance}</span>
+                  <span className="text-xs font-black text-rose-600 block mt-0.5">
+                    ${targetStudentForPayment.remaining}
                   </span>
                 </div>
               </div>
-              <button
-                onClick={() => setIsRecordPaymentOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            <div className="my-4 p-4 rounded-xl bg-purple-50/70 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/60 flex items-center justify-between">
+              {/* Amount Input */}
               <div>
-                <span className="text-xs text-purple-600 dark:text-purple-400 uppercase font-bold block">Fee Item</span>
-                <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">{selectedFeeRecord.title}</span>
-                <span className="text-xs text-slate-500 dark:text-slate-400 block">Category: {selectedFeeRecord.category}</span>
-              </div>
-              <div className="text-right">
-                <span className="text-xs text-purple-600 dark:text-purple-400 uppercase font-bold block">Remaining Due</span>
-                <span className="font-black text-purple-900 dark:text-purple-300 text-xl">
-                  ${selectedFeeRecord.remainingBalance}
-                </span>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmitPayment} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                  Payment Amount ($) *
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  {language === 'so' ? 'Qadarka La Bixinayo ($)' : 'Payment Amount ($)'} *
                 </label>
                 <input
                   type="number"
-                  min="1"
-                  max={selectedFeeRecord.remainingBalance}
-                  step="0.01"
                   required
-                  value={paymentForm.amount}
-                  onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-purple-500"
+                  min="1"
+                  value={customPayAmount}
+                  onChange={(e) => setCustomPayAmount(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-black text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
                 />
-                <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 block">
-                  You may pay the full amount or a partial installment.
-                </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                    Payment Method *
-                  </label>
-                  <select
-                    value={paymentForm.paymentMethod}
-                    onChange={(e) => setPaymentForm({ ...paymentForm, paymentMethod: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500"
-                  >
-                    <option value="Online Gateway" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Online Gateway (Card / Stripe)</option>
-                    <option value="Bank Transfer" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Bank Wire / Transfer</option>
-                    <option value="POS / Terminal" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">POS Debit Card</option>
-                    <option value="Cash" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Cash Deposit</option>
-                    <option value="Cheque" className="bg-white dark:bg-slate-900 text-slate-800 dark:text-white">Bank Cheque</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                    Transaction Ref
-                  </label>
-                  <input
-                    type="text"
-                    value={paymentForm.transactionReference}
-                    onChange={(e) =>
-                      setPaymentForm({ ...paymentForm, transactionReference: e.target.value })
-                    }
-                    className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500 font-mono"
-                  />
-                </div>
-              </div>
-
+              {/* Payment Method */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                  Payment Notes / Remarks
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  {t.paymentMethod}
+                </label>
+                <select
+                  value={payMethod}
+                  onChange={(e) => setPayMethod(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
+                >
+                  <option value="Cash">{t.cash}</option>
+                  <option value="Mobile Money (EVC / Zaad / Sahal)">{t.mobileMoney}</option>
+                  <option value="Bank Transfer">{t.bankTransfer}</option>
+                  <option value="Online Gateway">{t.onlineGateway}</option>
+                </select>
+              </div>
+
+              {/* Reference */}
+              <div>
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  {t.transactionRef}
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Paid online via Student Portal"
-                  value={paymentForm.notes}
-                  onChange={(e) => setPaymentForm({ ...paymentForm, notes: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-500 placeholder:text-slate-400"
+                  value={payRef}
+                  onChange={(e) => setPayRef(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono text-slate-900 dark:text-white"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setIsRecordPaymentOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-purple-600 text-white text-sm font-semibold hover:bg-purple-700 shadow-md shadow-purple-200 dark:shadow-none transition-all flex items-center gap-2 cursor-pointer"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  Confirm & Generate Receipt
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* MODAL 4: Official Printable PDF Receipt */}
-      {/* ========================================================================= */}
-      {isReceiptModalOpen && selectedReceipt && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-8 shadow-2xl border border-slate-200 dark:border-slate-800 relative print:p-0 print:border-none print:shadow-none">
-            {/* Modal Controls (Hidden in Print) */}
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 mb-6 print:hidden">
-              <div className="flex items-center gap-2">
-                <Receipt className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                <span className="font-bold text-slate-800 dark:text-white">Official Payment Receipt</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const feeRec = studentFees.find((f) => f.id === selectedReceipt.feeRecordId);
-                    exportFeeReceiptPDF(selectedReceipt, feeRec);
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 text-white font-semibold text-xs hover:bg-purple-700 shadow-xs cursor-pointer"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Download PDF Receipt
-                </button>
-                <button
-                  type="button"
-                  onClick={triggerWindowPrint}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  Print
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsReceiptModalOpen(false)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Printable Receipt Paper */}
-            <div className="border border-slate-200 dark:border-slate-750 rounded-2xl p-6 bg-gradient-to-b from-slate-50/50 to-white dark:from-slate-850 dark:to-slate-900">
-              {/* Receipt Header */}
-              <div className="flex items-start justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white font-black text-xl">
-                    <Sparkles className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-black text-slate-900 dark:text-white text-xl tracking-tight">
-                      EduSpike High School
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Official Fee Receipt & Bursary Voucher</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs font-mono font-bold text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 px-2.5 py-1 rounded-md border border-purple-200 dark:border-purple-800">
-                    {selectedReceipt.id}
-                  </div>
-                  <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{selectedReceipt.paymentDate}</div>
-                </div>
-              </div>
-
-              {/* Student Details Grid */}
-              <div className="my-5 grid grid-cols-2 gap-4 text-xs bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700">
-                <div>
-                  <span className="text-slate-400 dark:text-slate-500 font-medium block uppercase text-[10px]">Student Name</span>
-                  <span className="font-bold text-slate-800 dark:text-white text-sm">{selectedReceipt.studentName}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 dark:text-slate-500 font-medium block uppercase text-[10px]">Student ID / Roll</span>
-                  <span className="font-bold font-mono text-purple-700 dark:text-purple-400">
-                    {selectedReceipt.studentId} • Roll #{selectedReceipt.rollNo}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-slate-400 dark:text-slate-500 font-medium block uppercase text-[10px]">Class & Section</span>
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">
-                    {selectedReceipt.class} (Section {selectedReceipt.section})
-                  </span>
-                </div>
-                <div>
-                  <span className="text-slate-400 dark:text-slate-500 font-medium block uppercase text-[10px]">Payment Channel</span>
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">{selectedReceipt.paymentMethod}</span>
-                </div>
-              </div>
-
-              {/* Items Table */}
-              <div className="border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden my-4">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold uppercase">
-                    <tr>
-                      <th className="p-3">Fee Description</th>
-                      <th className="p-3">Category</th>
-                      <th className="p-3 text-right">Amount Paid</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                    <tr>
-                      <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">{selectedReceipt.title}</td>
-                      <td className="p-3 text-slate-500 dark:text-slate-400">{selectedReceipt.category}</td>
-                      <td className="p-3 font-bold text-slate-900 dark:text-white text-right">
-                        ${selectedReceipt.amountPaid.toLocaleString()}
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tfoot className="bg-purple-50/50 dark:bg-purple-950/40 border-t border-purple-100 dark:border-purple-900/60">
-                    <tr>
-                      <td colSpan={2} className="p-3 font-bold text-slate-800 dark:text-slate-200 text-right">
-                        Total Amount Received:
-                      </td>
-                      <td className="p-3 font-black text-purple-900 dark:text-purple-300 text-base text-right">
-                        ${selectedReceipt.amountPaid.toLocaleString()}
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-
-              {/* Authorization Stamp */}
-              <div className="mt-6 pt-4 border-t border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                <div>
-                  <span className="block text-[10px] text-slate-400 dark:text-slate-500 uppercase font-semibold">Processed By</span>
-                  <span className="font-medium text-slate-700 dark:text-slate-300">{selectedReceipt.receivedBy}</span>
-                  <div className="text-[10px] text-slate-400 dark:text-slate-500">Ref: {selectedReceipt.transactionReference}</div>
-                </div>
-
-                <div className="text-right">
-                  <div className="inline-block px-3 py-1 border border-emerald-600 dark:border-emerald-500 rounded text-emerald-700 dark:text-emerald-400 font-bold text-[11px] uppercase tracking-wider">
-                    AUTHORIZED PAID STAMP
-                  </div>
-                  <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">Computer Generated Voucher</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* MODAL 5: Reverse / Void Payment (Admin Authorization) */}
-      {/* ========================================================================= */}
-      {isReverseModalOpen && reversalPayment && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-4 text-rose-600 dark:text-rose-400">
-              <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 flex items-center justify-center">
-                <ShieldAlert className="w-5 h-5" />
-              </div>
+              {/* Notes */}
               <div>
-                <h2 className="font-bold text-slate-800 dark:text-white text-lg">Reverse Payment Voucher</h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Receipt ID: {reversalPayment.id}</p>
-              </div>
-            </div>
-
-            <form onSubmit={handleConfirmReverse} className="space-y-4 mt-4">
-              <div className="p-3.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/60 text-xs text-rose-800 dark:text-rose-300 leading-relaxed">
-                Reversing this payment of <strong>${reversalPayment.amountPaid}</strong> for student{' '}
-                <strong>{reversalPayment.studentName}</strong> will restore their unpaid balance and record
-                an immutable audit log entry.
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase mb-1">
-                  Reason for Reversal (Mandatory Audit Requirement) *
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  {t.notes}
                 </label>
                 <textarea
-                  required
-                  rows={3}
-                  placeholder="e.g. Bank chargeback, erroneous check bounce, double-entry adjustment..."
-                  value={reversalReason}
-                  onChange={(e) => setReversalReason(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-hidden focus:ring-2 focus:ring-rose-500 placeholder:text-slate-400"
+                  rows={2}
+                  value={payNotes}
+                  onChange={(e) => setPayNotes(e.target.value)}
+                  placeholder={language === 'so' ? 'Qoraal dheeraad ah...' : 'Optional notes...'}
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white resize-none"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
-                  onClick={() => setIsReverseModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                  onClick={() => setIsPaymentModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 cursor-pointer"
                 >
-                  Cancel
+                  {t.cancel}
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700 shadow-md shadow-rose-200 dark:shadow-none transition-all flex items-center gap-2 cursor-pointer"
+                  disabled={isSubmittingPayment}
+                  className="btn-gold"
                 >
-                  <RotateCcw className="w-4 h-4" />
-                  Authorize Reversal
+                  {isSubmittingPayment ? 'Saving...' : t.save}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 7. MODAL: OFFICIAL PRINTABLE RECEIPT                                      */}
+      {/* ========================================================================= */}
+      {isReceiptModalOpen && receiptData && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-6 animate-scale-up print:p-0 print:border-none print:shadow-none">
+            {/* Header / Institutional Branding */}
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-black">
+                  <Building2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-black text-base text-slate-900 dark:text-white">
+                    {activeSchool?.name || 'Eduspike International Academy'}
+                  </h4>
+                  <p className="text-[11px] text-slate-500">{t.officialReceipt}</p>
+                </div>
+              </div>
+
+              <div className="text-right">
+                <span className="text-[10px] font-mono font-bold text-[#3B82F6] dark:text-[#60A5FA] block">
+                  {receiptData.receiptNo}
+                </span>
+                <span className="text-[11px] text-slate-400 font-medium">{receiptData.date}</span>
+              </div>
+            </div>
+
+            {/* Receipt Summary Grid */}
+            <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 text-xs">
+              <div>
+                <span className="text-slate-400 block font-medium">{t.studentName}</span>
+                <span className="font-bold text-slate-900 dark:text-white block mt-0.5">
+                  {receiptData.student.name}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block font-medium">{t.studentId}</span>
+                <span className="font-mono font-bold text-[#3B82F6] dark:text-[#60A5FA] block mt-0.5">
+                  {receiptData.student.id}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block font-medium">{t.class}</span>
+                <span className="font-bold text-slate-900 dark:text-white block mt-0.5">
+                  {receiptData.student.class}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block font-medium">{t.parentGuardian}</span>
+                <span className="font-bold text-slate-900 dark:text-white block mt-0.5">
+                  {receiptData.student.parentName || 'Hassan Warsame'} ({receiptData.student.parentPhone})
+                </span>
+              </div>
+            </div>
+
+            {/* Financial Ledger Breakdown */}
+            <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden text-xs">
+              <table className="w-full">
+                <thead className="bg-slate-100 dark:bg-slate-800 font-bold text-slate-600 dark:text-slate-300">
+                  <tr>
+                    <th className="py-2.5 px-3 text-left">Description</th>
+                    <th className="py-2.5 px-3 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                  <tr>
+                    <td className="py-2.5 px-3">Tuition & Academic Term Fee</td>
+                    <td className="py-2.5 px-3 text-right font-bold">${receiptData.totalAmount}</td>
+                  </tr>
+                  <tr className="bg-emerald-50/50 dark:bg-emerald-950/30">
+                    <td className="py-2.5 px-3 font-bold text-emerald-700 dark:text-emerald-300">Amount Paid</td>
+                    <td className="py-2.5 px-3 text-right font-black text-emerald-700 dark:text-emerald-300">
+                      ${receiptData.paidAmount}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 px-3 text-slate-500">Remaining Balance</td>
+                    <td className="py-2.5 px-3 text-right font-bold text-rose-600">${receiptData.remaining}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Actions: Print and Close */}
+            <div className="flex items-center justify-between pt-2 print:hidden">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="btn-gold"
+              >
+                <Printer className="w-4 h-4" />
+                <span>{t.printReceipt}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsReceiptModalOpen(false)}
+                className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 cursor-pointer"
+              >
+                {t.close}
+              </button>
+            </div>
           </div>
         </div>
       )}

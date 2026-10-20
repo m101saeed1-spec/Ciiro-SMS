@@ -128,12 +128,12 @@ export const HeadteacherModule: React.FC = () => {
       {/* Header Banner */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-800 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-purple-600 flex items-center justify-center text-white shadow-lg shadow-purple-500/20 shrink-0">
+          <div className="w-14 h-14 rounded-2xl bg-[#122E52] flex items-center justify-center text-[#F7A914] shadow-lg shrink-0">
             <UserCheck className="w-7 h-7" />
           </div>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 px-2.5 py-0.5 rounded-full border border-purple-200 dark:border-purple-800">
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#3B82F6] dark:text-[#60A5FA] bg-[#122E52]/10 dark:bg-[#1E3A63] px-2.5 py-0.5 rounded-full border border-[#1E3A63]">
                 {isPlatformOwner ? 'Platform Administration' : 'School Ownership Oversight'}
               </span>
             </div>
@@ -149,11 +149,11 @@ export const HeadteacherModule: React.FC = () => {
         </div>
 
         {/* Governance Demarcation Indicator */}
-        <div className="flex items-center gap-3 bg-purple-50/70 dark:bg-purple-950/40 p-4 rounded-2xl border border-purple-100 dark:border-purple-900/60 shrink-0">
-          <ShieldCheck className="w-5 h-5 text-purple-600 dark:text-purple-400 shrink-0" />
-          <div className="text-xs text-purple-900 dark:text-purple-200">
+        <div className="flex items-center gap-3 bg-slate-50 dark:bg-[#122E52]/20 p-4 rounded-2xl border border-slate-200 dark:border-[#1E3A63] shrink-0">
+          <ShieldCheck className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA] shrink-0" />
+          <div className="text-xs text-[#12233F] dark:text-slate-200">
             <span className="font-bold block">Day-to-day School Administration</span>
-            <span className="text-[11px] text-purple-700 dark:text-purple-300">
+            <span className="text-[11px] text-[#3B82F6] dark:text-[#60A5FA]">
               Operated exclusively by the appointed Headteacher
             </span>
           </div>
@@ -172,7 +172,7 @@ export const HeadteacherModule: React.FC = () => {
                 placeholder="Search headteacher accounts by name, email, or school..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
               />
             </div>
             <div className="text-xs font-bold text-slate-500 dark:text-slate-400 shrink-0">
@@ -193,7 +193,7 @@ export const HeadteacherModule: React.FC = () => {
                       name={item.principalName}
                       size="md"
                       rounded="2xl"
-                      ring="ring-2 ring-purple-100 dark:ring-purple-900"
+                      ring="ring-2 ring-[#F7A914]/40 dark:ring-[#F7A914]/40"
                       status="Active"
                       showStatus
                     />
@@ -203,7 +203,7 @@ export const HeadteacherModule: React.FC = () => {
                   </div>
 
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">{item.principalName}</h3>
-                  <p className="text-xs text-purple-700 dark:text-purple-300 font-semibold mt-0.5">
+                  <p className="text-xs text-[#3B82F6] dark:text-[#60A5FA] font-semibold mt-0.5">
                     Headteacher / Principal
                   </p>
 
@@ -250,13 +250,13 @@ export const HeadteacherModule: React.FC = () => {
                   name={targetSchool.principalName}
                   size="profile"
                   rounded="3xl"
-                  ring="ring-4 ring-purple-100 dark:ring-purple-900/60"
+                  ring="ring-4 ring-[#F7A914]/40 dark:ring-[#F7A914]/40/60"
                   status="Active"
                   showStatus
                 />
                 <div>
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-                    <span className="px-3 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800">
+                    <span className="px-3 py-0.5 rounded-full bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] text-xs font-bold border border-[#1E3A63]">
                       Chief School Administrator
                     </span>
                     <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 text-xs font-bold flex items-center gap-1 border border-emerald-200 dark:border-emerald-800">
@@ -291,7 +291,7 @@ export const HeadteacherModule: React.FC = () => {
               {isSchoolOwner && (
                 <button
                   onClick={() => setIsReplaceModalOpen(true)}
-                  className="px-4 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-all shadow-md shadow-purple-200 dark:shadow-none flex items-center gap-2 cursor-pointer shrink-0"
+                  className="btn-gold"
                 >
                   <RefreshCw className="w-4 h-4" />
                   <span>Replace / Appoint Headteacher</span>
@@ -303,7 +303,7 @@ export const HeadteacherModule: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
               <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-3">
                 <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                  <UserCheck className="w-4 h-4 text-purple-600" />
+                  <UserCheck className="w-4 h-4 text-[#3B82F6]" />
                   <span>Headteacher Operational Responsibilities</span>
                 </div>
                 <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-2 list-disc list-inside">
@@ -316,12 +316,12 @@ export const HeadteacherModule: React.FC = () => {
                 </ul>
               </div>
 
-              <div className="p-5 rounded-2xl bg-purple-50/50 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-900/40 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-bold text-purple-950 dark:text-purple-200 uppercase tracking-wider">
-                  <Building2 className="w-4 h-4 text-purple-600" />
+              <div className="p-5 rounded-2xl bg-slate-50 dark:bg-[#122E52]/20 border border-slate-200 dark:border-[#1E3A63] space-y-3">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#12233F] dark:text-white uppercase tracking-wider">
+                  <Building2 className="w-4 h-4 text-[#3B82F6]" />
                   <span>School Owner Governance Scope</span>
                 </div>
-                <ul className="text-xs text-purple-900 dark:text-purple-300 space-y-2 list-disc list-inside">
+                <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-2 list-disc list-inside">
                   <li>Institutional ownership, licensing, and accreditation</li>
                   <li>Appointment and performance evaluation of Headteachers</li>
                   <li>Strategic financial oversight, fee policy approvals, and revenue summaries</li>
@@ -336,7 +336,7 @@ export const HeadteacherModule: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 p-6 shadow-2xs space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-2">
-                <History className="w-4 h-4 text-purple-600" />
+                <History className="w-4 h-4 text-[#3B82F6]" />
                 <h3 className="font-bold text-slate-900 dark:text-white text-base">
                   Institutional Leadership History
                 </h3>
@@ -404,7 +404,7 @@ export const HeadteacherModule: React.FC = () => {
               placeholder="e.g., Dr. Marcus Thorne"
               value={newPrincipalName}
               onChange={(e) => setNewPrincipalName(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
             />
           </div>
 
@@ -418,7 +418,7 @@ export const HeadteacherModule: React.FC = () => {
               placeholder="e.g., marcus.thorne@school.edu"
               value={newPrincipalEmail}
               onChange={(e) => setNewPrincipalEmail(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
             />
           </div>
 
@@ -431,7 +431,7 @@ export const HeadteacherModule: React.FC = () => {
               value={replaceReason}
               onChange={(e) => setReplaceReason(e.target.value)}
               placeholder="Provide reason for appointment or governance transition..."
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
             />
           </div>
 
@@ -446,7 +446,7 @@ export const HeadteacherModule: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 cursor-pointer shadow-md shadow-purple-500/20 disabled:opacity-50"
+              className="btn-gold"
             >
               {isSubmitting ? 'Confirming Appointment...' : 'Confirm Headteacher Appointment'}
             </button>

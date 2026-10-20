@@ -76,7 +76,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       case 'Inactive':
         return 'bg-rose-500 ring-white';
       case 'Graduated':
-        return 'bg-purple-500 ring-white';
+        return 'bg-[#3B82F6] ring-white';
       default:
         return 'bg-emerald-500 ring-white';
     }

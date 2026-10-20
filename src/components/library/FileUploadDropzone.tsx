@@ -145,7 +145,7 @@ export const FileUploadDropzone: React.FC<FileUploadDropzoneProps> = ({
       case 'pptx':
         return <Presentation className="w-5 h-5 text-amber-500" />;
       default:
-        return <FileText className="w-5 h-5 text-purple-600 dark:text-purple-400" />;
+        return <FileText className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA]" />;
     }
   };
 
@@ -155,15 +155,15 @@ export const FileUploadDropzone: React.FC<FileUploadDropzoneProps> = ({
 
       {/* Selected File Card */}
       {currentFile && !isUploading ? (
-        <div className="flex items-center justify-between p-3 bg-purple-50/70 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/80 rounded-2xl">
+        <div className="flex items-center justify-between p-3 bg-[#EFF6FF]/70 dark:bg-[#1E3A63] border border-[#1E3A63]/80 rounded-2xl">
           <div className="flex items-center gap-3 truncate">
-            <div className="p-2 bg-white dark:bg-slate-800 rounded-xl border border-purple-100 dark:border-purple-900 shadow-2xs">
+            <div className="p-2 bg-white dark:bg-slate-800 rounded-xl border border-[#1E3A63] shadow-2xs">
               {renderTypeIcon(currentFile.fileType)}
             </div>
             <div className="truncate">
               <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{currentFile.fileName}</p>
               <div className="flex items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400">
-                <span className="font-semibold uppercase tracking-wider text-purple-600 dark:text-purple-400">{currentFile.fileType}</span>
+                <span className="font-semibold uppercase tracking-wider text-[#3B82F6] dark:text-[#60A5FA]">{currentFile.fileType}</span>
                 <span>•</span>
                 <span>{currentFile.fileSize}</span>
                 <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
@@ -186,14 +186,14 @@ export const FileUploadDropzone: React.FC<FileUploadDropzoneProps> = ({
         </div>
       ) : isUploading ? (
         /* Upload Progress State */
-        <div className="p-4 bg-slate-50 dark:bg-slate-850 border border-purple-200 dark:border-purple-800/80 rounded-2xl space-y-2 text-center">
-          <div className="flex items-center justify-between text-xs font-bold text-purple-700 dark:text-purple-300">
+        <div className="p-4 bg-slate-50 dark:bg-slate-850 border border-[#1E3A63]/80 rounded-2xl space-y-2 text-center">
+          <div className="flex items-center justify-between text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA]">
             <span>Uploading document...</span>
             <span>{uploadProgress}%</span>
           </div>
           <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 h-2 rounded-full transition-all duration-150"
+              className="bg-gradient-to-r from-[#122E52] to-[#1E3A63] h-2 rounded-full transition-all duration-150"
               style={{ width: `${uploadProgress}%` }}
             />
           </div>
@@ -208,8 +208,8 @@ export const FileUploadDropzone: React.FC<FileUploadDropzoneProps> = ({
           onClick={() => fileInputRef.current?.click()}
           className={`border-2 border-dashed rounded-2xl p-4 text-center cursor-pointer transition-all ${
             isDragging
-              ? 'border-purple-600 bg-purple-50/50 dark:bg-purple-950/40 scale-[0.99]'
-              : 'border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/50 hover:bg-purple-50/30 dark:hover:bg-purple-950/20 hover:border-purple-300 dark:hover:border-purple-700'
+              ? 'border-[#122E52] bg-[#EFF6FF]/50 dark:bg-[#1E3A63] scale-[0.99]'
+              : 'border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/50 hover:bg-[#EFF6FF]/30 dark:hover:bg-[#0B1B32] hover:border-[#1E3A63] dark:hover:border-[#1E3A63]'
           }`}
         >
           <input
@@ -219,7 +219,7 @@ export const FileUploadDropzone: React.FC<FileUploadDropzoneProps> = ({
             accept={allowedExtensions.join(',')}
             className="hidden"
           />
-          <div className="w-10 h-10 mx-auto rounded-xl bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-2 shadow-2xs">
+          <div className="w-10 h-10 mx-auto rounded-xl bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center mb-2 shadow-2xs">
             <UploadCloud className="w-5 h-5" />
           </div>
           <p className="text-xs font-bold text-slate-800 dark:text-slate-200">

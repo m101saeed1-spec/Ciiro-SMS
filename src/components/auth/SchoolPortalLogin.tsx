@@ -4,7 +4,9 @@ import { useSchoolData } from '../../context/SchoolDataContext';
 import { useTheme } from '../../context/ThemeContext';
 import { UserRole, School } from '../../types';
 import { RegisterSchoolModal } from './RegisterSchoolModal';
+import { LanguageToggle } from '../common/LanguageToggle';
 import {
+  Fingerprint,
   Shield,
   ShieldCheck,
   Building2,
@@ -46,8 +48,8 @@ const SchoolCrest: React.FC<{ school: School; className?: string }> = ({ school,
   const code = (school.code || '').toUpperCase();
 
   // Color schemes for known schools
-  let crestBg = 'from-indigo-900 to-slate-900 border-indigo-700/60 text-indigo-300';
-  let emblemIcon = <GraduationCap className="w-5 h-5 text-indigo-200" />;
+  let crestBg = 'from-blue-900 to-slate-900 border-blue-700/60 text-blue-300';
+  let emblemIcon = <GraduationCap className="w-5 h-5 text-blue-200" />;
 
   if (code.includes('GH') || school.name.toLowerCase().includes('green hill')) {
     crestBg = 'from-amber-700/80 via-slate-900 to-blue-950 border-amber-500/60 text-amber-300';
@@ -82,7 +84,7 @@ const SchoolCrest: React.FC<{ school: School; className?: string }> = ({ school,
       </svg>
     );
   } else if (code.includes('KPS') || school.name.toLowerCase().includes('knowledge')) {
-    crestBg = 'from-rose-900/80 via-slate-900 to-purple-950 border-rose-500/60 text-rose-300';
+    crestBg = 'from-[#122E52] via-[#0B1B32] to-[#12233F] border-[#1E3A63] text-[#F7A914]';
     emblemIcon = (
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="#f43f5e" />
@@ -103,12 +105,12 @@ const SchoolCrest: React.FC<{ school: School; className?: string }> = ({ school,
 // SVG Campus Architectural Illustration
 const CampusIllustration: React.FC = () => {
   return (
-    <div className="relative w-full h-44 sm:h-52 my-3 rounded-2xl overflow-hidden bg-gradient-to-b from-purple-100/50 via-slate-50 to-white dark:from-slate-800/40 dark:via-slate-900/60 dark:to-slate-950 border border-slate-200/70 dark:border-slate-800/80 flex items-end justify-center">
+    <div className="relative w-full h-44 sm:h-52 my-3 rounded-2xl overflow-hidden bg-gradient-to-b from-[#EFF6FF] via-slate-50 to-white dark:from-slate-800/40 dark:via-slate-900/60 dark:to-slate-950 border border-slate-200/70 dark:border-slate-800/80 flex items-end justify-center">
       {/* Soft atmospheric gradient sky */}
-      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-purple-500/5 to-purple-500/10 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-[#3B82F6]/5 to-[#3B82F6]/10 pointer-events-none" />
 
       {/* Sun glow / architectural lighting */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 w-36 h-36 bg-purple-400/15 dark:bg-purple-600/15 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 w-36 h-36 bg-[#3B82F6]/10 dark:bg-[#122E52]/30 rounded-full blur-2xl pointer-events-none" />
 
       <svg
         viewBox="0 0 500 220"
@@ -132,9 +134,9 @@ const CampusIllustration: React.FC = () => {
         <polygon points="165,70 250,25 335,70" className="fill-slate-200 dark:fill-slate-700/90 stroke-slate-400 dark:stroke-slate-600" strokeWidth="2" />
         
         {/* Clock Tower / Round Window */}
-        <circle cx="250" cy="50" r="10" className="fill-white dark:fill-slate-900 stroke-purple-500 dark:stroke-purple-400" strokeWidth="2" />
-        <line x1="250" y1="50" x2="250" y2="44" className="stroke-purple-600 dark:stroke-purple-300" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="250" y1="50" x2="254" y2="50" className="stroke-purple-600 dark:stroke-purple-300" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="250" cy="50" r="10" className="fill-white dark:fill-slate-900 stroke-[#3B82F6] dark:stroke-[#F7A914]" strokeWidth="2" />
+        <line x1="250" y1="50" x2="250" y2="44" className="stroke-[#122E52] dark:stroke-[#F7A914]" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="250" y1="50" x2="254" y2="50" className="stroke-[#122E52] dark:stroke-[#F7A914]" strokeWidth="1.5" strokeLinecap="round" />
 
         {/* Windows Left Wing */}
         <rect x="90" y="112" width="18" height="24" rx="2" className="fill-blue-100/80 dark:fill-blue-950/60 stroke-slate-400 dark:stroke-slate-600" strokeWidth="1" />
@@ -158,8 +160,8 @@ const CampusIllustration: React.FC = () => {
         <rect x="301" y="116" width="7" height="54" className="fill-slate-200 dark:fill-slate-600 stroke-slate-300 dark:stroke-slate-500" strokeWidth="1" />
 
         {/* Central Entrance Double Doors */}
-        <path d="M238 135 H262 V175 H238 Z" className="fill-purple-900/20 dark:fill-purple-950/80 stroke-purple-600 dark:stroke-purple-400" strokeWidth="1.5" />
-        <line x1="250" y1="135" x2="250" y2="175" className="stroke-purple-600 dark:stroke-purple-400" strokeWidth="1" />
+        <path d="M238 135 H262 V175 H238 Z" className="fill-[#122E52]/10 dark:fill-[#122E52]/40 stroke-[#122E52] dark:stroke-[#3B82F6]" strokeWidth="1.5" />
+        <line x1="250" y1="135" x2="250" y2="175" className="stroke-[#122E52] dark:stroke-[#3B82F6]" strokeWidth="1" />
 
         {/* Neoclassical Steps / Ground Walkway */}
         <polygon points="150,175 350,175 365,183 135,183" className="fill-slate-200 dark:fill-slate-700/80" />
@@ -174,7 +176,15 @@ const CampusIllustration: React.FC = () => {
 };
 
 export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess }) => {
-  const { schools, activeSchool, loginWithSchoolId } = useAuth();
+  const {
+    schools,
+    activeSchool,
+    loginWithSchoolId,
+    loginWithBiometrics,
+    isBiometricSupported,
+    hasRegisteredBiometrics,
+    registeredBiometricUser,
+  } = useAuth();
   const { addToast } = useSchoolData();
   const { theme, setTheme } = useTheme();
 
@@ -206,6 +216,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
 
   // States & Modals
   const [loading, setLoading] = useState(false);
+  const [biometricLoading, setBiometricLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
@@ -319,6 +330,31 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
     }
   };
 
+  // Biometric Quick Access handler (WebAuthn / Passkeys)
+  const handleBiometricLogin = async () => {
+    setBiometricLoading(true);
+    setErrorMessage(null);
+    try {
+      const res = await loginWithBiometrics();
+      setBiometricLoading(false);
+      if (res.success && res.user) {
+        addToast(
+          `Biometric Authentication Verified! Welcome back, ${res.user.name}.`,
+          'success'
+        );
+        if (onSuccess) onSuccess();
+      } else {
+        setErrorMessage(
+          res.error ||
+            'Biometric access verification failed. Please ensure your device passkey is registered or sign in with your ID.'
+        );
+      }
+    } catch (err: any) {
+      setBiometricLoading(false);
+      setErrorMessage(err?.message || 'Biometric authentication error occurred.');
+    }
+  };
+
   // Forgot password request handler
   const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -359,8 +395,8 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
       name: 'Principal Admin',
       description: 'Academic Operations',
       icon: <UserCheck className="w-5 h-5" />,
-      colorClass: 'text-purple-600 dark:text-purple-400',
-      bgClass: 'bg-purple-50 dark:bg-purple-950/50',
+      colorClass: 'text-[#3B82F6] dark:text-[#60A5FA]',
+      bgClass: 'bg-[#122E52]/10 dark:bg-[#1E3A63]',
     },
     {
       role: 'Teacher',
@@ -389,10 +425,10 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
   ];
 
   return (
-    <div className="min-h-screen bg-slate-100/60 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col justify-between selection:bg-purple-500 selection:text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-slate-100/60 dark:bg-slate-950 text-slate-800 dark:text-slate-100 flex flex-col justify-between selection:bg-[#F7A914] selection:text-[#122E52] relative overflow-x-hidden">
       {/* Ambient background decoration */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-500/5 dark:bg-purple-900/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[450px] h-[450px] bg-indigo-500/5 dark:bg-indigo-950/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#3B82F6]/5 dark:bg-[#122E52]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[450px] h-[450px] bg-blue-500/5 dark:bg-blue-950/20 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Single-Page Two-Column Container */}
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex-1 flex flex-col justify-center">
@@ -406,7 +442,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
               {/* Brand Top Header */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-700 via-indigo-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-purple-900/20">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#122E52] via-[#0B1B32] to-[#1E3A63] flex items-center justify-center text-white shadow-lg shadow-[#122E52]/20">
                     <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M12 2L3 7v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5z" fill="currentColor" fillOpacity="0.2" />
                       <path d="M12 7v10M8 12h8" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" />
@@ -422,25 +458,28 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                   </div>
                 </div>
 
-                {/* Discreet Super Admin / Platform Admin Toggle */}
-                <button
-                  type="button"
-                  onClick={handleToggleSuperAdmin}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer border ${
-                    isSuperAdminMode
-                      ? 'bg-purple-600 text-white border-purple-500 shadow-sm'
-                      : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-700'
-                  }`}
-                  title="Platform Super Administrator Gateway"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
-                  <span>{isSuperAdminMode ? 'Platform Admin Mode' : 'Platform Admin'}</span>
-                </button>
+                {/* Top Controls: Language Switcher & Platform Admin Toggle */}
+                <div className="flex items-center gap-2">
+                  <LanguageToggle variant="compact" />
+                  <button
+                    type="button"
+                    onClick={handleToggleSuperAdmin}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                      isSuperAdminMode
+                        ? 'bg-[#122E52] text-white border-[#1E3A63] shadow-sm'
+                        : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-[#122E52] dark:hover:border-[#F7A914]'
+                    }`}
+                    title="Platform Super Administrator Gateway"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#F7A914]" />
+                    <span>{isSuperAdminMode ? 'Platform Admin Mode' : 'Platform Admin'}</span>
+                  </button>
+                </div>
               </div>
 
               {/* Main Typography Treatment */}
               <div className="space-y-1 mt-4">
-                <p className="font-script text-3xl sm:text-4xl text-indigo-600 dark:text-indigo-400 font-bold tracking-wide">
+                <p className="font-script text-3xl sm:text-4xl text-blue-600 dark:text-blue-400 font-bold tracking-wide">
                   Welcome to
                 </p>
                 <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-slate-950 dark:text-white">
@@ -459,7 +498,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
               <div className="space-y-3 mt-4">
                 {/* Feature 1: Secure & Reliable */}
                 <div className="flex items-center gap-3.5 p-2.5 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 backdrop-blur-sm shadow-xs">
-                  <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center shrink-0">
                     <Shield className="w-5 h-5" />
                   </div>
                   <div>
@@ -470,7 +509,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
 
                 {/* Feature 2: Role-Based Access */}
                 <div className="flex items-center gap-3.5 p-2.5 rounded-2xl bg-white/60 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 backdrop-blur-sm shadow-xs">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                     <Users className="w-5 h-5" />
                   </div>
                   <div>
@@ -512,7 +551,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                   onClick={() => setTheme('light')}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                     theme === 'light'
-                      ? 'bg-purple-600 text-white shadow-xs'
+                      ? 'bg-[#122E52] text-white shadow-xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
@@ -524,7 +563,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                   onClick={() => setTheme('dark')}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                     theme === 'dark'
-                      ? 'bg-purple-600 text-white shadow-xs'
+                      ? 'bg-[#122E52] text-white shadow-xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
@@ -536,7 +575,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                   onClick={() => setTheme('system')}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                     theme === 'system'
-                      ? 'bg-purple-600 text-white shadow-xs'
+                      ? 'bg-[#122E52] text-white shadow-xs'
                       : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
@@ -565,7 +604,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                 {/* ------------------------------------------------------------- */}
                 <div id="step-role-section" className="space-y-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-extrabold text-sm flex items-center justify-center border border-purple-300 dark:border-purple-700">
+                    <div className="w-7 h-7 rounded-full bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] font-extrabold text-sm flex items-center justify-center border border-[#1E3A63]">
                       1
                     </div>
                     <div>
@@ -580,16 +619,16 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
 
                   {/* Super Admin Notice if active */}
                   {isSuperAdminMode ? (
-                    <div className="p-3.5 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 flex items-center justify-between">
+                    <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#122E52]/20 border border-slate-200 dark:border-[#1E3A63] flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold">
+                        <div className="w-9 h-9 rounded-xl bg-[#122E52] text-[#F7A914] flex items-center justify-center font-bold">
                           <ShieldCheck className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-xs font-bold text-purple-900 dark:text-purple-200">
+                          <p className="text-xs font-bold text-[#12233F] dark:text-white">
                             Platform Super Administrator Gateway
                           </p>
-                          <p className="text-[11px] text-purple-700 dark:text-purple-400">
+                          <p className="text-[11px] text-[#3B82F6] dark:text-[#60A5FA]">
                             Platform-wide access across all tenant schools without restriction.
                           </p>
                         </div>
@@ -597,7 +636,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                       <button
                         type="button"
                         onClick={handleToggleSuperAdmin}
-                        className="text-xs font-semibold text-purple-600 dark:text-purple-300 hover:underline cursor-pointer"
+                        className="text-xs font-semibold text-[#3B82F6] dark:text-[#60A5FA] hover:underline cursor-pointer"
                       >
                         Return to School Portal
                       </button>
@@ -616,13 +655,13 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                               onClick={() => handleSelectRole(r.role)}
                               className={`relative p-3 rounded-2xl border text-center flex flex-col items-center justify-center gap-2 transition-all cursor-pointer group ${
                                 isSelected
-                                  ? 'border-purple-600 dark:border-purple-500 bg-purple-50/70 dark:bg-purple-950/30 ring-2 ring-purple-500/20 shadow-xs'
+                                  ? 'border-[#122E52] dark:border-[#F7A914] bg-[#122E52]/5 dark:bg-[#122E52]/30 ring-2 ring-[#122E52]/20 shadow-xs'
                                   : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-100/60 dark:hover:bg-slate-800/40'
                               }`}
                             >
                               {/* Selected Checkmark Badge */}
                               {isSelected && (
-                                <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-xs">
+                                <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-[#122E52] text-[#F7A914] flex items-center justify-center shadow-xs">
                                   <Check className="w-2.5 h-2.5 stroke-[3]" />
                                 </div>
                               )}
@@ -650,13 +689,13 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                               onClick={() => handleSelectRole(r.role)}
                               className={`relative p-3 rounded-2xl border text-center flex flex-col items-center justify-center gap-2 transition-all cursor-pointer group ${
                                 isSelected
-                                  ? 'border-purple-600 dark:border-purple-500 bg-purple-50/70 dark:bg-purple-950/30 ring-2 ring-purple-500/20 shadow-xs'
+                                  ? 'border-[#122E52] dark:border-[#F7A914] bg-[#122E52]/5 dark:bg-[#122E52]/30 ring-2 ring-[#122E52]/20 shadow-xs'
                                   : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-100/60 dark:hover:bg-slate-800/40'
                               }`}
                             >
                               {/* Selected Checkmark Badge */}
                               {isSelected && (
-                                <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-xs">
+                                <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-[#122E52] text-[#F7A914] flex items-center justify-center shadow-xs">
                                   <Check className="w-2.5 h-2.5 stroke-[3]" />
                                 </div>
                               )}
@@ -683,7 +722,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                   <div id="step-school-section" className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800/70">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-extrabold text-sm flex items-center justify-center border border-purple-300 dark:border-purple-700">
+                        <div className="w-7 h-7 rounded-full bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] font-extrabold text-sm flex items-center justify-center border border-[#1E3A63]">
                           2
                         </div>
                         <div>
@@ -700,7 +739,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                       <button
                         type="button"
                         onClick={() => setIsRegisterModalOpen(true)}
-                        className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 cursor-pointer"
+                        className="text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA] hover:text-[#2563EB] dark:hover:text-[#F7A914] cursor-pointer"
                       >
                         + Register School
                       </button>
@@ -714,7 +753,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                         value={schoolSearchQuery}
                         onChange={(e) => setSchoolSearchQuery(e.target.value)}
                         placeholder="Search school name or school code..."
-                        className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent transition-all"
                       />
                       {schoolSearchQuery && (
                         <button
@@ -738,8 +777,8 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                               onClick={() => handleSelectSchool(school)}
                               className={`p-3 rounded-2xl border flex items-center justify-between gap-3 cursor-pointer transition-all ${
                                 isSelected
-                                  ? 'border-purple-600 dark:border-purple-500 bg-purple-50/50 dark:bg-purple-950/20 ring-2 ring-purple-500/20'
-                                  : 'border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/80 hover:border-purple-300 dark:hover:border-purple-800 hover:bg-slate-50 dark:hover:bg-slate-800/40'
+                                  ? 'border-[#122E52] dark:border-[#F7A914] bg-[#122E52]/5 dark:bg-[#122E52]/30 ring-2 ring-[#122E52]/20'
+                                  : 'border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/80 hover:border-[#122E52] dark:hover:border-[#F7A914] hover:bg-slate-50 dark:hover:bg-slate-800/40'
                               }`}
                             >
                               <div className="flex items-center gap-3 min-w-0">
@@ -759,11 +798,11 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
 
                               <div className="shrink-0 flex items-center">
                                 {isSelected ? (
-                                  <div className="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-xs">
+                                  <div className="w-6 h-6 rounded-full bg-[#122E52] text-[#F7A914] flex items-center justify-center shadow-xs">
                                     <Check className="w-3.5 h-3.5 stroke-[3]" />
                                   </div>
                                 ) : (
-                                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-purple-500" />
+                                  <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#F7A914]" />
                                 )}
                               </div>
                             </div>
@@ -777,7 +816,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                           <button
                             type="button"
                             onClick={() => setIsRegisterModalOpen(true)}
-                            className="mt-2 text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline cursor-pointer"
+                            className="mt-2 text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA] hover:underline cursor-pointer"
                           >
                             Register this school now
                           </button>
@@ -792,7 +831,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                 {/* ------------------------------------------------------------- */}
                 <div id="step-credentials-section" className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800/70">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-extrabold text-sm flex items-center justify-center border border-purple-300 dark:border-purple-700">
+                    <div className="w-7 h-7 rounded-full bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] font-extrabold text-sm flex items-center justify-center border border-[#1E3A63]">
                       3
                     </div>
                     <div>
@@ -811,7 +850,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                       {!isSuperAdminMode ? (
                         <SchoolCrest school={selectedSchool} className="w-8 h-8 rounded-lg" />
                       ) : (
-                        <div className="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center shrink-0">
+                        <div className="w-8 h-8 rounded-lg bg-[#122E52] text-[#F7A914] flex items-center justify-center shrink-0">
                           <ShieldCheck className="w-4 h-4" />
                         </div>
                       )}
@@ -820,7 +859,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                           {isSuperAdminMode ? 'Platform Super Administration' : selectedSchool.name}
                         </p>
                         <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                          Role: <span className="font-semibold text-purple-600 dark:text-purple-400">{selectedRole}</span>
+                          Role: <span className="font-semibold text-[#3B82F6] dark:text-[#60A5FA]">{selectedRole}</span>
                         </p>
                       </div>
                     </div>
@@ -831,7 +870,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                         const target = document.getElementById('step-role-section');
                         if (target) target.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="px-2.5 py-1 rounded-xl text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/50 flex items-center gap-1 cursor-pointer transition-colors shrink-0"
+                      className="px-2.5 py-1 rounded-xl text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA] hover:bg-[#122E52]/10 flex items-center gap-1 cursor-pointer transition-colors shrink-0"
                     >
                       <Edit3 className="w-3 h-3" />
                       <span>Edit</span>
@@ -869,7 +908,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                         onChange={(e) => setIdentifier(e.target.value)}
                         placeholder="e.g. TCHR-1025 or ADM-2026-0001"
                         required
-                        className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 font-mono font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 font-mono font-medium focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent transition-all"
                       />
                     </div>
                   </div>
@@ -887,7 +926,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••••••"
                         required
-                        className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                        className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent transition-all"
                       />
                       <button
                         type="button"
@@ -907,7 +946,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                         type="checkbox"
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
-                        className="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-slate-300 dark:border-slate-700 rounded-sm cursor-pointer accent-purple-600"
+                        className="w-4 h-4 rounded text-[#3B82F6] focus:ring-[#3B82F6] border-slate-300 dark:border-slate-700 rounded-sm cursor-pointer accent-[#3B82F6]"
                       />
                       <span>Remember me</span>
                     </label>
@@ -918,7 +957,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                         setForgotIdentifier(identifier);
                         setIsForgotModalOpen(true);
                       }}
-                      className="font-semibold text-purple-600 dark:text-purple-400 hover:underline cursor-pointer"
+                      className="font-semibold text-[#3B82F6] dark:text-[#60A5FA] hover:underline cursor-pointer"
                     >
                       Forgot Password?
                     </button>
@@ -928,7 +967,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-sm shadow-md shadow-purple-900/20 hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="btn-gold w-full"
                   >
                     {loading ? (
                       <div className="flex items-center gap-2">
@@ -943,13 +982,52 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                     )}
                   </button>
 
+                  {/* Biometric Quick Access with WebAuthn */}
+                  {isBiometricSupported && (
+                    <div className="pt-1">
+                      <div className="relative my-2">
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+                        </div>
+                        <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-wider text-slate-400 bg-white dark:bg-[#0B1B32] px-2">
+                          Or Instant Access
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        id="biometric-login-btn"
+                        onClick={handleBiometricLogin}
+                        disabled={biometricLoading || loading}
+                        className="btn-outline-navy w-full py-2.5 text-xs flex items-center justify-center gap-2 cursor-pointer transition-all"
+                        title="Sign in using Touch ID, Face ID, Windows Hello, or registered device passkey"
+                      >
+                        {biometricLoading ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-[#122E52] dark:border-[#F7A914] border-t-transparent rounded-full animate-spin" />
+                            <span>Verifying Biometric Sensor...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Fingerprint className="w-4 h-4 text-[#3B82F6] dark:text-[#F7A914]" />
+                            <span>
+                              {registeredBiometricUser
+                                ? `Touch ID / Passkey for ${registeredBiometricUser.userName}`
+                                : 'Sign In with Biometric Passkey'}
+                            </span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  )}
+
                   {/* Quick Test Demo Credentials Drawer Toggle */}
                   <div className="pt-2 flex items-center justify-between text-[11px] text-slate-400">
-                    <span>Default test password: <code className="font-mono text-purple-600 dark:text-purple-400">password123</code></span>
+                    <span>Default test password: <code className="font-mono text-[#3B82F6] dark:text-[#60A5FA]">password123</code></span>
                     <button
                       type="button"
                       onClick={() => setShowDemoAccounts(!showDemoAccounts)}
-                      className="text-purple-600 dark:text-purple-400 hover:underline cursor-pointer flex items-center gap-1 font-semibold"
+                      className="text-[#3B82F6] dark:text-[#60A5FA] hover:underline cursor-pointer flex items-center gap-1 font-semibold"
                     >
                       <Sparkles className="w-3 h-3" />
                       <span>{showDemoAccounts ? 'Hide Quick Fill' : 'Quick Demo Accounts'}</span>
@@ -972,7 +1050,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                               setPassword('password123');
                               addToast(`Loaded ${r.name} ID (${roleDefaultCredentials[r.role].id})`, 'info');
                             }}
-                            className="px-2 py-1.5 rounded-xl text-[11px] font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-purple-500 hover:text-purple-600 dark:hover:text-purple-400 text-left truncate cursor-pointer"
+                            className="px-2 py-1.5 rounded-xl text-[11px] font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-[#F7A914] hover:text-[#3B82F6] dark:hover:text-[#F7A914] text-left truncate cursor-pointer"
                           >
                             {r.name}: <span className="font-mono">{roleDefaultCredentials[r.role].id}</span>
                           </button>
@@ -1002,7 +1080,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
           <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center">
                   <KeyRound className="w-5 h-5" />
                 </div>
                 <div>
@@ -1042,7 +1120,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
             ) : (
               <form onSubmit={handleForgotPasswordSubmit} className="space-y-3">
                 <p className="text-xs text-slate-600 dark:text-slate-300">
-                  Enter your registered School User ID (e.g. <code className="font-mono text-purple-600 dark:text-purple-400">TCHR-1025</code>) or school email to receive a password reset token.
+                  Enter your registered School User ID (e.g. <code className="font-mono text-[#3B82F6] dark:text-[#60A5FA]">TCHR-1025</code>) or school email to receive a password reset token.
                 </p>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
@@ -1054,7 +1132,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                     onChange={(e) => setForgotIdentifier(e.target.value)}
                     required
                     placeholder="e.g. TCHR-1025 or email@school.edu"
-                    className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]"
                   />
                 </div>
                 <div className="pt-2 flex gap-2">
@@ -1067,7 +1145,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-sm cursor-pointer"
+                    className="btn-gold flex-1"
                   >
                     Send Token
                   </button>

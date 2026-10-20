@@ -1,20 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark" style="color-scheme: dark;">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EduSpike School Management System</title>
-    <meta name="description" content="EduSpike comprehensive school and campus management platform." />
-    <meta property="og:title" content="EduSpike School Management System" />
-    <meta property="og:description" content="EduSpike comprehensive school and campus management platform." />
+    <title>Ileys — Smarter School Management for a Brighter Future</title>
+    <meta name="description" content="Ileys is a modern, comprehensive school management platform connecting schools, administrators, teachers, accountants, and students." />
+    <meta property="og:title" content="Ileys — School Management Platform" />
+    <meta property="og:description" content="Ileys helps schools manage operations, people, academic information, and administration from one organized platform." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <script>
       (function() {
         try {
-          var saved = localStorage.getItem('eduspike_theme');
-          var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (saved === 'dark' || (!saved && systemDark) || (saved === 'system' && systemDark)) {
+          var saved = localStorage.getItem('ileys_theme_mode') || localStorage.getItem('eduspike_theme');
+          var isDark = saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) {
             document.documentElement.classList.add('dark');
             document.documentElement.style.colorScheme = 'dark';
           } else {
@@ -25,7 +25,7 @@
       })();
     </script>
   </head>
-  <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200">
+  <body class="bg-slate-950 text-slate-100 transition-colors duration-200">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

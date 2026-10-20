@@ -47,7 +47,7 @@ export const ToastContainer: React.FC = () => {
                 ? 'bg-white/95 dark:bg-slate-900/95 border-rose-200 dark:border-rose-800/80 text-slate-800 dark:text-slate-100 shadow-rose-500/10'
                 : isWarning
                 ? 'bg-white/95 dark:bg-slate-900/95 border-amber-200 dark:border-amber-800/80 text-slate-800 dark:text-slate-100 shadow-amber-500/10'
-                : 'bg-white/95 dark:bg-slate-900/95 border-purple-200 dark:border-purple-800/80 text-slate-800 dark:text-slate-100 shadow-purple-500/10'
+                : 'bg-white/95 dark:bg-slate-900/95 border-[#3B82F6]/30 text-slate-800 dark:text-slate-100 shadow-blue-500/10'
             }`}
           >
             <div className="flex items-start gap-3 min-w-0 pr-2">
@@ -55,7 +55,7 @@ export const ToastContainer: React.FC = () => {
                 {isSuccess && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
                 {isError && <AlertCircle className="w-5 h-5 text-rose-500" />}
                 {isWarning && <AlertTriangle className="w-5 h-5 text-amber-500" />}
-                {isInfo && <Info className="w-5 h-5 text-purple-600 dark:text-purple-400" />}
+                {isInfo && <Info className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA]" />}
               </div>
               <div className="min-w-0 flex-1">
                 {toast.title && (

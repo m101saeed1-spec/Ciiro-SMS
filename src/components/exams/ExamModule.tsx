@@ -38,7 +38,7 @@ import {
 } from 'lucide-react';
 
 const SUBJECT_COLORS: Record<string, string> = {
-  Mathematics: '#8b5cf6', // Violet
+  Mathematics: '#3B82F6', // Ileys Blue
   English: '#3b82f6',     // Blue
   Physics: '#10b981',     // Emerald
   Chemistry: '#f59e0b',   // Amber
@@ -273,7 +273,7 @@ export const ExamModule: React.FC = () => {
         <div className="bg-slate-900/95 text-white p-3.5 rounded-2xl shadow-xl border border-slate-700/80 text-xs space-y-2 min-w-[200px] backdrop-blur-xs">
           <div className="border-b border-slate-700 pb-1.5">
             <p className="font-bold text-slate-100 text-sm">{data.fullTitle || label}</p>
-            <p className="text-[10px] text-purple-300 font-medium">
+            <p className="text-[10px] text-[#F7A914] font-medium">
               Term: {data.term} • Date: {data.startDate}
             </p>
           </div>
@@ -316,7 +316,7 @@ export const ExamModule: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800 flex items-center gap-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] text-xs font-bold border border-[#1E3A63] flex items-center gap-1">
               <Award className="w-3.5 h-3.5" />
               {activeRole === 'Student' ? 'My Academic Performance' : 'Examination & Grades'}
             </span>
@@ -334,14 +334,14 @@ export const ExamModule: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsMarkModalOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-bold text-xs hover:bg-purple-100 dark:hover:bg-purple-900/60 transition-all flex items-center gap-2 cursor-pointer"
+              className="btn-outline-navy text-xs py-2 px-3.5"
             >
-              <FileSpreadsheet className="w-4 h-4" />
+              <FileSpreadsheet className="w-4 h-4 text-[#3B82F6]" />
               <span>Enter Student Marks</span>
             </button>
             <button
               onClick={() => setIsAddExamModalOpen(true)}
-              className="px-4 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-all shadow-md shadow-purple-200 dark:shadow-none flex items-center gap-2 cursor-pointer"
+              className="btn-gold text-xs py-2 px-4"
             >
               <Plus className="w-4 h-4" />
               <span>Create Exam</span>
@@ -375,7 +375,7 @@ export const ExamModule: React.FC = () => {
           onClick={() => setActiveTab('exams')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
             activeTab === 'exams'
-              ? 'bg-purple-600 text-white shadow-xs'
+              ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-xs'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
           }`}
         >
@@ -386,7 +386,7 @@ export const ExamModule: React.FC = () => {
           onClick={() => setActiveTab('marks')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
             activeTab === 'marks'
-              ? 'bg-purple-600 text-white shadow-xs'
+              ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-xs'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
           }`}
         >
@@ -397,7 +397,7 @@ export const ExamModule: React.FC = () => {
           onClick={() => setActiveTab('analytics')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
             activeTab === 'analytics'
-              ? 'bg-purple-600 text-white shadow-xs'
+              ? 'bg-[#122E52] dark:bg-[#F7A914] text-white dark:text-[#122E52] shadow-xs'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
           }`}
         >
@@ -419,7 +419,7 @@ export const ExamModule: React.FC = () => {
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="px-2.5 py-1 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 font-bold text-[10px] border border-purple-200 dark:border-purple-800">
+                    <span className="px-2.5 py-1 rounded-full bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] font-bold text-[10px] border border-[#1E3A63]">
                       {ex.term}
                     </span>
                     <span
@@ -458,7 +458,7 @@ export const ExamModule: React.FC = () => {
                 <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2">
                   <button
                     onClick={() => setActiveTab('marks')}
-                    className="flex-1 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-bold text-xs hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200/80 dark:border-purple-800/80 transition-colors text-center cursor-pointer"
+                    className="flex-1 py-2 rounded-xl bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] font-bold text-xs hover:bg-[#EFF6FF] dark:hover:bg-[#0B1B32] border border-[#1E3A63] dark:border-[#1E3A63] transition-colors text-center cursor-pointer"
                   >
                     View Report Cards
                   </button>
@@ -467,7 +467,7 @@ export const ExamModule: React.FC = () => {
                     className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
                     title="View Grade Trends Line Chart"
                   >
-                    <TrendingUp className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <TrendingUp className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                   </button>
                 </div>
               </div>
@@ -486,7 +486,7 @@ export const ExamModule: React.FC = () => {
             <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-base font-bold text-slate-900 dark:text-white">Select Student</h3>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300">
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA]">
                   {students.length} Pupils
                 </span>
               </div>
@@ -500,7 +500,7 @@ export const ExamModule: React.FC = () => {
                     }}
                     className={`p-3 rounded-2xl cursor-pointer transition-all flex items-center gap-3 border ${
                       selectedStudentReport === st.id
-                        ? 'bg-purple-50 dark:bg-purple-950/50 border-purple-300 dark:border-purple-700 ring-2 ring-purple-500/20'
+                        ? 'bg-[#EFF6FF] dark:bg-[#1E3A63] border-[#1E3A63] ring-2 ring-[#F7A914]/20'
                         : 'border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60'
                     }`}
                   >
@@ -521,7 +521,7 @@ export const ExamModule: React.FC = () => {
           <div className={`${activeRole !== 'Student' ? 'lg:col-span-2' : 'w-full'} bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs space-y-6`}>
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-6 flex-wrap gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center font-black">
+                <div className="w-10 h-10 rounded-2xl bg-[#122E52] text-white flex items-center justify-center font-black">
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
@@ -535,9 +535,9 @@ export const ExamModule: React.FC = () => {
                     setSelectedTrendStudentId(reportStudent.id);
                     setActiveTab('analytics');
                   }}
-                  className="p-2 rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/60 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                  className="p-2 rounded-xl border border-[#1E3A63] bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] hover:bg-[#EFF6FF] dark:hover:bg-[#0B1B32] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                 >
-                  <TrendingUp className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                  <TrendingUp className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />
                   <span>View Grade Trends</span>
                 </button>
                 <button
@@ -561,7 +561,7 @@ export const ExamModule: React.FC = () => {
               </div>
               <div>
                 <span className="text-slate-400 dark:text-slate-500 block font-medium">Class & Section</span>
-                <span className="font-bold text-purple-700 dark:text-purple-300">{reportStudent.class} ({reportStudent.section})</span>
+                <span className="font-bold text-[#3B82F6] dark:text-[#60A5FA]">{reportStudent.class} ({reportStudent.section})</span>
               </div>
               <div>
                 <span className="text-slate-400 dark:text-slate-500 block font-medium">Attendance Rate</span>
@@ -597,15 +597,15 @@ export const ExamModule: React.FC = () => {
                           <td className="py-3 font-bold text-slate-900 dark:text-white flex items-center gap-2">
                             <span
                               className="w-2 h-2 rounded-full"
-                              style={{ backgroundColor: SUBJECT_COLORS[m.subject] || '#8b5cf6' }}
+                              style={{ backgroundColor: SUBJECT_COLORS[m.subject] || '#122E52' }}
                             />
                             {m.subject}
                           </td>
-                          <td className="py-3 font-semibold text-purple-700 dark:text-purple-300">{m.marksObtained}</td>
+                          <td className="py-3 font-semibold text-[#3B82F6] dark:text-[#60A5FA]">{m.marksObtained}</td>
                           <td className="py-3 text-slate-500 dark:text-slate-400">{m.totalMarks}</td>
                           <td className="py-3 font-bold text-slate-800 dark:text-slate-200">{pct}%</td>
                           <td className="py-3">
-                            <span className="px-2 py-0.5 rounded font-black text-xs bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                            <span className="px-2 py-0.5 rounded font-black text-xs bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] border border-[#1E3A63]">
                               {m.grade}
                             </span>
                           </td>
@@ -634,17 +634,17 @@ export const ExamModule: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                      <User className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                      <User className="w-3.5 h-3.5 text-[#3B82F6] dark:text-[#60A5FA]" />
                       Active Student
                     </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA]">
                       {trendStudent?.class}
                     </span>
                   </div>
                   <select
                     value={selectedTrendStudentId}
                     onChange={(e) => setSelectedTrendStudentId(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6] cursor-pointer"
                   >
                     {students.map((st) => (
                       <option key={st.id} value={st.id} className="dark:bg-slate-800">
@@ -655,12 +655,12 @@ export const ExamModule: React.FC = () => {
                 </div>
                 <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                   <span>Enrolled: Class {trendStudent?.class}</span>
-                  <span className="font-semibold text-purple-600 dark:text-purple-400">Roll #{trendStudent?.rollNo}</span>
+                  <span className="font-semibold text-[#3B82F6] dark:text-[#60A5FA]">Roll #{trendStudent?.rollNo}</span>
                 </div>
               </div>
             ) : (
               <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold">
+                <div className="w-12 h-12 rounded-2xl bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center font-bold">
                   <User className="w-6 h-6" />
                 </div>
                 <div>
@@ -681,7 +681,7 @@ export const ExamModule: React.FC = () => {
                 <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   Current Semester Avg
                 </span>
-                <span className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
+                <span className="p-2 rounded-xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914]">
                   <Award className="w-4 h-4" />
                 </span>
               </div>
@@ -689,7 +689,7 @@ export const ExamModule: React.FC = () => {
                 <p className="text-2xl font-black text-slate-900 dark:text-white">
                   {analyticsSummary.currentAvg > 0 ? `${analyticsSummary.currentAvg}%` : 'N/A'}
                 </p>
-                <p className="text-xs text-purple-600 dark:text-purple-400 font-semibold mt-0.5">
+                <p className="text-xs text-[#3B82F6] dark:text-[#60A5FA] font-semibold mt-0.5">
                   {analyticsSummary.currentAvg >= 90
                     ? 'Grade A+ (Distinction)'
                     : analyticsSummary.currentAvg >= 80
@@ -757,7 +757,7 @@ export const ExamModule: React.FC = () => {
               <div>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <span>Student Semester Grade Trajectory</span>
-                  <span className="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300">
+                  <span className="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA]">
                     Recharts Multi-Line Visualization
                   </span>
                 </h2>
@@ -774,7 +774,7 @@ export const ExamModule: React.FC = () => {
                     onClick={() => setSelectedSubjectFilter('All')}
                     className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                       selectedSubjectFilter === 'All'
-                        ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs font-bold'
+                        ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs font-bold'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
@@ -786,7 +786,7 @@ export const ExamModule: React.FC = () => {
                       onClick={() => setSelectedSubjectFilter(sub)}
                       className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                         selectedSubjectFilter === sub
-                          ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-300 shadow-2xs font-bold'
+                          ? 'bg-white dark:bg-slate-900 text-[#3B82F6] dark:text-[#60A5FA] shadow-2xs font-bold'
                           : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
@@ -805,7 +805,7 @@ export const ExamModule: React.FC = () => {
                   }`}
                   title="Toggle Class Benchmark Comparison Line"
                 >
-                  <span className={`w-2 h-2 rounded-full ${showClassBenchmark ? 'bg-indigo-400' : 'bg-slate-400'}`} />
+                  <span className={`w-2 h-2 rounded-full ${showClassBenchmark ? 'bg-[#3B82F6]' : 'bg-slate-400'}`} />
                   <span>Class Benchmark</span>
                 </button>
               </div>
@@ -975,7 +975,7 @@ export const ExamModule: React.FC = () => {
                             </td>
                           );
                         })}
-                        <td className="py-3 font-bold text-purple-700 dark:text-purple-300">
+                        <td className="py-3 font-bold text-[#3B82F6] dark:text-[#60A5FA]">
                           {dp.overallAverage ? `${dp.overallAverage}%` : '-'}
                         </td>
                         <td className="py-3 text-slate-500 dark:text-slate-400">
@@ -1009,7 +1009,7 @@ export const ExamModule: React.FC = () => {
               value={examForm.title}
               onChange={(e) => setExamForm({ ...examForm, title: e.target.value })}
               placeholder="e.g. Final Annual Examination 2026"
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -1020,7 +1020,7 @@ export const ExamModule: React.FC = () => {
                 required
                 value={examForm.startDate}
                 onChange={(e) => setExamForm({ ...examForm, startDate: e.target.value })}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]"
               />
             </div>
             <div>
@@ -1030,13 +1030,13 @@ export const ExamModule: React.FC = () => {
                 required
                 value={examForm.endDate}
                 onChange={(e) => setExamForm({ ...examForm, endDate: e.target.value })}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]"
               />
             </div>
           </div>
           <button
             type="submit"
-            className="w-full py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors shadow-md shadow-purple-200 dark:shadow-none mt-2 cursor-pointer"
+            className="btn-gold w-full mt-2 text-xs py-2.5"
           >
             Schedule Exam
           </button>
@@ -1053,7 +1053,7 @@ export const ExamModule: React.FC = () => {
             <select
               value={markForm.studentId}
               onChange={(e) => setMarkForm({ ...markForm, studentId: e.target.value })}
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 cursor-pointer"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6] cursor-pointer"
             >
               {students.map((st) => (
                 <option key={st.id} value={st.id} className="dark:bg-slate-800">
@@ -1069,7 +1069,7 @@ export const ExamModule: React.FC = () => {
               <select
                 value={markForm.subject}
                 onChange={(e) => setMarkForm({ ...markForm, subject: e.target.value })}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 cursor-pointer"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6] cursor-pointer"
               >
                 <option value="Mathematics" className="dark:bg-slate-800">Mathematics</option>
                 <option value="English" className="dark:bg-slate-800">English</option>
@@ -1086,7 +1086,7 @@ export const ExamModule: React.FC = () => {
                 max={100}
                 value={markForm.marksObtained}
                 onChange={(e) => setMarkForm({ ...markForm, marksObtained: Number(e.target.value) })}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]"
               />
             </div>
           </div>
@@ -1098,13 +1098,13 @@ export const ExamModule: React.FC = () => {
               value={markForm.remarks}
               onChange={(e) => setMarkForm({ ...markForm, remarks: e.target.value })}
               placeholder="e.g. Excellent understanding of algebra"
-              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-2 px-3 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[#F7A914]/20 focus:border-[#3B82F6]"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors shadow-md shadow-purple-200 dark:shadow-none mt-2 cursor-pointer"
+            className="btn-gold w-full mt-2 text-xs py-2.5"
           >
             Save Grade Entry
           </button>

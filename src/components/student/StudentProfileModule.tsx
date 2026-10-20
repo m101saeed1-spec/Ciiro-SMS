@@ -75,7 +75,7 @@ export const StudentProfileModule: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in max-w-6xl mx-auto">
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-700 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-purple-200/50 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-[#122E52] via-[#0B1B32] to-[#12233F] border border-[#1E3A63] rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-xl relative overflow-hidden">
         <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6">
           <div className="relative">
             <UserAvatar
@@ -90,7 +90,7 @@ export const StudentProfileModule: React.FC = () => {
 
           <div className="flex-1 text-center sm:text-left">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-              <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-extrabold uppercase tracking-wider text-purple-100">
+              <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-extrabold uppercase tracking-wider text-slate-200">
                 Official Student Record
               </span>
               <span className="px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-200 text-xs font-bold flex items-center gap-1">
@@ -102,11 +102,11 @@ export const StudentProfileModule: React.FC = () => {
             </div>
 
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight">{studentRecord.name}</h1>
-            <p className="text-purple-100 text-xs sm:text-sm mt-1">
+            <p className="text-slate-200 text-xs sm:text-sm mt-1">
               Student ID: <span className="font-mono font-bold text-white">{studentRecord.id}</span> • Roll #{studentRecord.rollNo} • {studentRecord.class} (Section {studentRecord.section})
             </p>
 
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-4 text-xs text-purple-100">
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-4 text-xs text-slate-200">
               <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-xl">
                 <Calendar className="w-3.5 h-3.5" /> Enrolled: {studentRecord.enrollmentDate}
               </span>
@@ -136,7 +136,7 @@ export const StudentProfileModule: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xs space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-[#122E52]/10 dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] flex items-center justify-center font-bold">
                   <User className="w-4 h-4" />
                 </div>
                 <div>
@@ -162,7 +162,7 @@ export const StudentProfileModule: React.FC = () => {
 
               <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
                 <span className="text-slate-400 dark:text-slate-500 font-semibold block mb-0.5">Assigned Class & Section</span>
-                <span className="text-sm font-bold text-purple-700 dark:text-purple-400">{studentRecord.class} - Section {studentRecord.section}</span>
+                <span className="text-sm font-bold text-[#122E52] dark:text-[#F7A914]">{studentRecord.class} - Section {studentRecord.section}</span>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
@@ -196,7 +196,7 @@ export const StudentProfileModule: React.FC = () => {
           <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-2xs space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 text-[#3B82F6] dark:text-[#60A5FA] flex items-center justify-center font-bold">
                   <Heart className="w-4 h-4" />
                 </div>
                 <div>
@@ -244,7 +244,7 @@ export const StudentProfileModule: React.FC = () => {
               {!isEditingBio && (
                 <button
                   onClick={() => setIsEditingBio(true)}
-                  className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/60 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="btn-outline-navy"
                 >
                   <Edit3 className="w-3.5 h-3.5" /> Edit Bio
                 </button>
@@ -262,7 +262,7 @@ export const StudentProfileModule: React.FC = () => {
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Describe your interests, academic goals, favorite subjects..."
-                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 text-xs font-medium text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                    className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-3 text-xs font-medium text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20"
                     maxLength={300}
                   />
                   <div className="flex justify-between items-center text-[10px] text-slate-400 dark:text-slate-500 mt-1">
@@ -275,7 +275,7 @@ export const StudentProfileModule: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="flex-1 py-2.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                    className="btn-gold flex-1"
                   >
                     <Save className="w-3.5 h-3.5" />
                     <span>{isSaving ? 'Saving...' : 'Save Bio'}</span>
@@ -293,7 +293,7 @@ export const StudentProfileModule: React.FC = () => {
                 </div>
               </form>
             ) : (
-              <div className="p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/30 border border-purple-100/60 dark:border-purple-900/40 text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#122E52]/20 border border-slate-200 dark:border-[#1E3A63] text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
                 "{bio || 'No bio entered yet. Click Edit Bio to add your hobbies, interests, or favorite subjects!'}"
               </div>
             )}
@@ -302,8 +302,8 @@ export const StudentProfileModule: React.FC = () => {
           {/* Academic Governance Box */}
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6 rounded-3xl shadow-lg space-y-4">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-purple-400" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-purple-300">
+              <Sparkles className="w-4 h-4 text-[#F7A914]" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#F7A914]">
                 Institutional Standing
               </h3>
             </div>
@@ -315,7 +315,7 @@ export const StudentProfileModule: React.FC = () => {
               </div>
               <div className="flex justify-between py-1 border-b border-slate-700/60">
                 <span className="text-slate-400">Current Term</span>
-                <span className="font-bold text-purple-300">Mid-Term Term 1</span>
+                <span className="font-bold text-[#F7A914]">Mid-Term Term 1</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-700/60">
                 <span className="text-slate-400">Role Status</span>

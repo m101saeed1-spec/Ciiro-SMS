@@ -187,6 +187,8 @@ interface SchoolDataContextType {
   assignFees: (payload: { feeStructureId: string; studentId?: string; class?: string; section?: string; customAmount?: number; dueDate?: string }) => Promise<void>;
   recordFeePayment: (payload: { feeRecordId: string; amount: number; paymentMethod: string; transactionReference?: string; notes?: string }) => Promise<boolean>;
   reverseFeePayment: (paymentId: string, reason: string) => Promise<boolean>;
+  toggleStudentPaymentStatus: (payload: { studentId?: string; feeRecordId?: string; newStatus: 'Paid' | 'Unpaid'; customAmount?: number; paymentMethod?: string; notes?: string }) => Promise<{ success: boolean; error?: string }>;
+  updateStudentFeeRecord: (id: string, updated: Partial<StudentFeeRecord>) => Promise<{ success: boolean; error?: string }>;
 
   // Timetable CRUD & Validation
   addTimetableSlot: (slot: Omit<TimetableSlot, 'id'>) => Promise<{ success: boolean; error?: string }>;
@@ -1085,8 +1087,28 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const deleteNotice = async (id: string) => {
-    setNotices((prev) => prev.filter((n) => n.id !== id));
-    addToast(`Notice deleted.`, 'info');
+    if (currentUser.role === 'Student') {
+      addToast('Access Denied: Students cannot delete announcements.', 'error');
+      return;
+    }
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch(`/api/notices/${id}`, {
+        method: 'DELETE',
+        headers,
+      });
+      if (res.ok) {
+        setNotices((prev) => prev.filter((n) => n.id !== id));
+        addToast('Notice deleted.', 'info');
+        await refreshData();
+      } else {
+        const err = await res.json();
+        addToast(err.error || 'Failed to delete notice.', 'error');
+      }
+    } catch {
+      setNotices((prev) => prev.filter((n) => n.id !== id));
+      addToast('Notice deleted.', 'info');
+    }
   };
 
   // Fees CRUD & Payments
@@ -1188,6 +1210,82 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const err = await res.json();
       addToast(err.error || 'Failed to reverse payment', 'error');
       return false;
+    }
+  };
+
+  const toggleStudentPaymentStatus = async (payload: {
+    studentId?: string;
+    feeRecordId?: string;
+    newStatus: 'Paid' | 'Unpaid';
+    customAmount?: number;
+    paymentMethod?: string;
+    notes?: string;
+  }): Promise<{ success: boolean; error?: string }> => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch('/api/fees/toggle-status', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.updatedFeeRecord) {
+          setStudentFees((prev) => {
+            const exists = prev.some((f) => f.id === data.updatedFeeRecord.id || f.studentId === data.updatedFeeRecord.studentId);
+            if (exists) {
+              return prev.map((f) =>
+                f.id === data.updatedFeeRecord.id || (payload.studentId && f.studentId === payload.studentId)
+                  ? data.updatedFeeRecord
+                  : f
+              );
+            }
+            return [data.updatedFeeRecord, ...prev];
+          });
+        }
+        await refreshData();
+        return { success: true };
+      } else {
+        const err = await res.json().catch(() => ({ error: 'Failed to update payment status' }));
+        const errorMsg = err.error || 'Failed to update payment status';
+        addToast(errorMsg, 'error');
+        return { success: false, error: errorMsg };
+      }
+    } catch (e: any) {
+      const errorMsg = e?.message || 'Network error updating payment status';
+      addToast(errorMsg, 'error');
+      return { success: false, error: errorMsg };
+    }
+  };
+
+  const updateStudentFeeRecord = async (
+    id: string,
+    updated: Partial<StudentFeeRecord>
+  ): Promise<{ success: boolean; error?: string }> => {
+    const headers = getAuthHeaders();
+    try {
+      const res = await fetch(`/api/fees/records/${id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(updated),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.updatedFeeRecord) {
+          setStudentFees((prev) => prev.map((f) => (f.id === id ? data.updatedFeeRecord : f)));
+        }
+        await refreshData();
+        return { success: true };
+      } else {
+        const err = await res.json().catch(() => ({ error: 'Failed to update fee record' }));
+        const errorMsg = err.error || 'Failed to update fee record';
+        addToast(errorMsg, 'error');
+        return { success: false, error: errorMsg };
+      }
+    } catch (e: any) {
+      const errorMsg = e?.message || 'Network error updating fee record';
+      addToast(errorMsg, 'error');
+      return { success: false, error: errorMsg };
     }
   };
 
@@ -1789,6 +1887,8 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         assignFees,
         recordFeePayment,
         reverseFeePayment,
+        toggleStudentPaymentStatus,
+        updateStudentFeeRecord,
         addTimetableSlot,
         updateTimetableSlot,
         deleteTimetableSlot,

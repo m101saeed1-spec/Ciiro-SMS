@@ -9,6 +9,7 @@ import { StudentDashboard } from './StudentDashboard';
 import { AccountantDashboard } from './AccountantDashboard';
 import { DashboardFAB } from './DashboardFAB';
 import { DashboardAnalyticsVisualizer } from './DashboardAnalyticsVisualizer';
+import { InteractiveSchoolCalendar } from './InteractiveSchoolCalendar';
 
 interface DashboardModuleProps {
   onNavigate: (module: NavModule) => void;
@@ -57,6 +58,9 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({ onNavigate }) 
     <div className="relative space-y-6">
       {/* Primary Role-Specific Dashboard Workspace */}
       {renderDashboardContent()}
+
+      {/* Interactive School Calendar: Exams, Holidays & Events in Monthly/Weekly Views */}
+      <InteractiveSchoolCalendar onNavigate={onNavigate} />
 
       {/* Comprehensive Recharts Data Visualizer: Attendance Trends & Academic Performance Metrics */}
       <DashboardAnalyticsVisualizer onNavigate={onNavigate} />

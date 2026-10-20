@@ -215,7 +215,7 @@ export const ExamRankingModule: React.FC = () => {
             <select
               value={selectedExamId}
               onChange={(e) => setSelectedExamId(e.target.value)}
-              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+              className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/20"
             >
               {exams.map((ex) => (
                 <option key={ex.id} value={ex.id} className="dark:bg-slate-800">
@@ -268,7 +268,7 @@ export const ExamRankingModule: React.FC = () => {
           onClick={() => setAnonymizeMode(!anonymizeMode)}
           className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-colors ${
             anonymizeMode
-              ? 'bg-purple-600 text-white shadow-xs'
+              ? 'bg-[#122E52] text-white shadow-xs'
               : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'
           }`}
         >
@@ -288,7 +288,7 @@ export const ExamRankingModule: React.FC = () => {
               Rankings computed according to aggregated exam marks and standardized grading scale
             </p>
           </div>
-          <span className="text-xs font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800 px-3 py-1 rounded-full">
+          <span className="text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA] bg-[#EFF6FF] dark:bg-[#1E3A63] border border-[#1E3A63] dark:border-[#1E3A63] px-3 py-1 rounded-full">
             {filteredRankings.length} Students Listed
           </span>
         </div>
@@ -296,7 +296,7 @@ export const ExamRankingModule: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-purple-50/50 dark:bg-purple-950/30 border-b border-purple-100/50 dark:border-purple-900/30 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <tr className="bg-[#EFF6FF] dark:bg-[#1E3A63] border-b border-[#1E3A63] dark:border-[#1E3A63] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 <th className="py-3 px-4">Rank</th>
                 <th className="py-3 px-4">Student</th>
                 <th className="py-3 px-4">Student ID</th>
@@ -315,7 +315,7 @@ export const ExamRankingModule: React.FC = () => {
                     key={entry.studentId}
                     className={`transition-colors ${
                       isMe
-                        ? 'bg-purple-50/80 dark:bg-purple-950/40 font-semibold'
+                        ? 'bg-[#EFF6FF] dark:bg-[#1E3A63] font-semibold'
                         : 'hover:bg-slate-50/80 dark:hover:bg-slate-800/50'
                     }`}
                   >
@@ -340,7 +340,7 @@ export const ExamRankingModule: React.FC = () => {
                           {anonymizeMode ? `Student #${entry.rollNo}` : entry.studentName}
                         </span>
                         {isMe && (
-                          <span className="bg-purple-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+                          <span className="bg-[#122E52] text-white text-[10px] font-black px-2 py-0.5 rounded-full">
                             YOU
                           </span>
                         )}
@@ -360,7 +360,7 @@ export const ExamRankingModule: React.FC = () => {
                         <span className="font-bold text-slate-900 dark:text-white">{entry.percentage}%</span>
                         <div className="w-16 bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden hidden sm:block">
                           <div
-                            className="bg-purple-600 h-full rounded-full"
+                            className="bg-[#122E52] h-full rounded-full"
                             style={{ width: `${Math.min(entry.percentage, 100)}%` }}
                           />
                         </div>

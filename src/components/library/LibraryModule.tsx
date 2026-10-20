@@ -36,7 +36,7 @@ export const LibraryModule: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
             <span>Academic Library & Repository</span>
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] border border-[#1E3A63]">
               Verified
             </span>
           </h1>
@@ -52,7 +52,7 @@ export const LibraryModule: React.FC = () => {
         {/* Quick stat indicators pills */}
         <div className="flex items-center gap-2 flex-wrap text-xs">
           <div className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex items-center gap-2 text-slate-700 dark:text-slate-300">
-            <span className="w-2 h-2 rounded-full bg-purple-500" />
+            <span className="w-2 h-2 rounded-full bg-[#F7A914]" />
             <span className="font-bold">{totalSyllabusCount}</span>
             <span className="text-slate-400 text-[11px]">Syllabi</span>
           </div>
@@ -62,7 +62,7 @@ export const LibraryModule: React.FC = () => {
             <span className="text-slate-400 text-[11px]">Books</span>
           </div>
           <div className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex items-center gap-2 text-slate-700 dark:text-slate-300">
-            <span className="w-2 h-2 rounded-full bg-indigo-500" />
+            <span className="w-2 h-2 rounded-full bg-[#3B82F6]" />
             <span className="font-bold">{totalResourcesCount}</span>
             <span className="text-slate-400 text-[11px]">Resources</span>
           </div>
@@ -76,7 +76,7 @@ export const LibraryModule: React.FC = () => {
           onClick={() => setActiveTab('syllabus')}
           className={`flex-1 min-w-[140px] py-2.5 px-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === 'syllabus'
-              ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/20'
+              ? 'bg-gradient-to-r from-[#122E52] to-[#1E3A63] text-white shadow-md shadow-md'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800'
           }`}
         >
@@ -89,7 +89,7 @@ export const LibraryModule: React.FC = () => {
           onClick={() => setActiveTab('books')}
           className={`flex-1 min-w-[140px] py-2.5 px-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === 'books'
-              ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/20'
+              ? 'bg-gradient-to-r from-[#122E52] to-[#1E3A63] text-white shadow-md shadow-md'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800'
           }`}
         >
@@ -102,7 +102,7 @@ export const LibraryModule: React.FC = () => {
           onClick={() => setActiveTab('resources')}
           className={`flex-1 min-w-[140px] py-2.5 px-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
             activeTab === 'resources'
-              ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/20'
+              ? 'bg-gradient-to-r from-[#122E52] to-[#1E3A63] text-white shadow-md shadow-md'
               : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800'
           }`}
         >

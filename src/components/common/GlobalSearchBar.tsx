@@ -121,11 +121,11 @@ export const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({ onNavigate }) 
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'Students':
-        return <GraduationCap className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
+        return <GraduationCap className="w-4 h-4 text-[#3B82F6] dark:text-[#F7A914]" />;
       case 'Teachers':
         return <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />;
       case 'Classes':
-        return <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />;
+        return <Layers className="w-4 h-4 text-[#3B82F6] dark:text-[#60A5FA]" />;
       case 'Subjects':
         return <BookMarked className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />;
       case 'Books':
@@ -167,7 +167,7 @@ export const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({ onNavigate }) 
           }}
           onKeyDown={handleKeyDown}
           placeholder="Search students, classes, books, notices..."
-          className="w-full bg-slate-50/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl py-2.5 pl-10 pr-20 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 dark:focus:border-purple-400 transition-all shadow-2xs"
+          className="w-full bg-slate-50/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl py-2.5 pl-10 pr-20 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]/30 focus:border-[#3B82F6] transition-all shadow-2xs"
         />
 
         {/* Search Icon */}
@@ -201,7 +201,7 @@ export const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({ onNavigate }) 
           {/* Header Info */}
           <div className="flex items-center justify-between px-3 py-1.5 border-b border-slate-100 dark:border-slate-800 text-[11px] text-slate-400 dark:text-slate-500">
             <span className="font-semibold flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+              <Sparkles className="w-3 h-3 text-[#3B82F6] dark:text-[#F7A914]" />
               Role Filtered Results ({activeRole})
             </span>
             <span>{results.length} found</span>
@@ -209,7 +209,7 @@ export const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({ onNavigate }) 
 
           {isLoading ? (
             <div className="p-6 text-center text-xs text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2">
-              <div className="w-4 h-4 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-[#3B82F6] border-t-transparent rounded-full animate-spin" />
               Searching directory...
             </div>
           ) : results.length === 0 ? (
@@ -234,7 +234,7 @@ export const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({ onNavigate }) 
                         onMouseEnter={() => setSelectedIndex(globalIdx)}
                         className={`w-full text-left flex items-center justify-between p-2.5 rounded-xl transition-colors ${
                           isSelected
-                            ? 'bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60'
+                            ? 'bg-[#122E52]/10 dark:bg-[#1E3A63]/50 border border-[#1E3A63]'
                             : 'hover:bg-slate-50 dark:hover:bg-slate-800/60'
                         }`}
                       >
@@ -254,7 +254,7 @@ export const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({ onNavigate }) 
 
                         <div className="flex items-center gap-2 shrink-0 ml-2">
                           {item.badge && (
-                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300">
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA]">
                               {item.badge}
                             </span>
                           )}

@@ -116,7 +116,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
         {/* Modal Header */}
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-2xl bg-[#122E52] text-[#F7A914] flex items-center justify-center font-bold">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
@@ -153,7 +153,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
                   placeholder="e.g. St. Jude International Preparatory"
                   value={schoolName}
                   onChange={(e) => setSchoolName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#3B82F6]/20 focus:border-[#3B82F6]"
                 />
               </div>
 
@@ -167,7 +167,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
                     placeholder="e.g. SJI, WCA"
                     value={schoolCode}
                     onChange={(e) => setSchoolCode(e.target.value.toUpperCase())}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono font-bold text-purple-600 dark:text-purple-400 focus:ring-2 focus:ring-purple-500/20"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono font-bold text-[#3B82F6] dark:text-[#60A5FA] focus:ring-2 focus:ring-[#3B82F6]/20"
                   />
                 </div>
                 <div>
@@ -241,8 +241,8 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
 
           {step === 2 && (
             <div className="space-y-3.5">
-              <div className="p-3.5 rounded-2xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800 flex items-center gap-3 text-xs text-purple-900 dark:text-purple-200">
-                <ShieldCheck className="w-5 h-5 text-purple-600 dark:text-purple-400 shrink-0" />
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#122E52]/30 border border-slate-200 dark:border-[#1E3A63] flex items-center gap-3 text-xs text-[#12233F] dark:text-slate-200">
+                <ShieldCheck className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA] shrink-0" />
                 <span>
                   This account will be provisioned as the primary <strong>Owner Admin</strong> with full authority over{' '}
                   <strong>{schoolName}</strong>.
@@ -258,7 +258,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
                   placeholder="e.g. Dr. Arthur Pendelton"
                   value={ownerName}
                   onChange={(e) => setOwnerName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500/20"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#3B82F6]/20"
                 />
               </div>
 
@@ -271,7 +271,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
                   placeholder="owner@school.edu"
                   value={ownerEmail}
                   onChange={(e) => setOwnerEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500/20"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#3B82F6]/20"
                 />
               </div>
 
@@ -320,7 +320,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-left text-xs space-y-1.5 max-w-sm mx-auto">
                 <div className="flex justify-between">
                   <span className="text-slate-400">School Code:</span>
-                  <span className="font-mono font-bold text-purple-600">{schoolCode}</span>
+                  <span className="font-mono font-bold text-[#3B82F6]">{schoolCode}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Admin Email:</span>
@@ -358,7 +358,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
             <button
               onClick={handleNextStep}
               disabled={loading}
-              className="ml-auto px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs flex items-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+              className="btn-gold ml-auto"
             >
               {loading ? (
                 <span>Provisioning Tenant...</span>

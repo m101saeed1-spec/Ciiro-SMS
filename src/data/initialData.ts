@@ -94,8 +94,8 @@ export const INITIAL_PLATFORM_PLANS: PlatformPlan[] = [
 export const INITIAL_SCHOOLS: School[] = [
   {
     id: 'school-1',
-    name: 'Green Hill School',
-    code: 'GH-001',
+    name: 'Al-Hikma School',
+    code: 'AH-001',
     logo: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=200',
     address: 'KM4 Airport Road, Mogadishu, Somalia',
     phone: '+252 (61) 500-1122',
@@ -136,8 +136,8 @@ export const INITIAL_SCHOOLS: School[] = [
   },
   {
     id: 'school-2',
-    name: 'Horizon International School',
-    code: 'HIS-002',
+    name: 'Ileys Academy',
+    code: 'IA-002',
     logo: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=200',
     address: '14 Jigjiga Yar Road, Hargeisa, Somaliland',
     phone: '+252 (63) 400-3344',

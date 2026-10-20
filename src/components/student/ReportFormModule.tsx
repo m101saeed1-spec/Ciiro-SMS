@@ -72,7 +72,7 @@ export const ReportFormModule: React.FC = () => {
       <div className="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-2xs flex flex-wrap items-center justify-between gap-4 print:hidden">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 text-xs font-bold border border-purple-200 dark:border-purple-800 flex items-center gap-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#3B82F6] dark:text-[#60A5FA] text-xs font-bold border border-[#1E3A63] dark:border-[#1E3A63] flex items-center gap-1">
               <FileText className="w-3.5 h-3.5" /> Official Report Form
             </span>
             <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">Academic Year 2026-2027</span>
@@ -91,7 +91,7 @@ export const ReportFormModule: React.FC = () => {
           </button>
           <button
             onClick={handleDownload}
-            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs flex items-center gap-2 shadow-sm shadow-purple-200 dark:shadow-none transition-colors"
+            className="px-4 py-2 rounded-xl bg-[#122E52] hover:bg-[#0B1B32] text-white font-bold text-xs flex items-center gap-2 shadow-sm shadow-md dark:shadow-none transition-colors"
           >
             <Download className="w-4 h-4" /> Download PDF
           </button>
@@ -104,17 +104,17 @@ export const ReportFormModule: React.FC = () => {
         className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-lg p-8 sm:p-12 space-y-8 print:border-none print:shadow-none print:p-0 print:bg-white print:text-black"
       >
         {/* Institutional Header */}
-        <div className="border-b-2 border-purple-600 pb-6">
+        <div className="border-b-2 border-[#1E3A63] pb-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div className="flex items-center gap-3.5">
-              <div className="w-14 h-14 rounded-2xl bg-purple-700 text-white flex items-center justify-center font-black text-2xl shadow-md">
+              <div className="w-14 h-14 rounded-2xl bg-[#122E52] text-[#F7A914] flex items-center justify-center font-black text-2xl shadow-md">
                 <Sparkles className="w-8 h-8" />
               </div>
               <div>
                 <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
                   EDUSPIKE INTERNATIONAL ACADEMY
                 </h2>
-                <p className="text-xs font-semibold text-purple-700 dark:text-purple-400 uppercase tracking-widest mt-0.5">
+                <p className="text-xs font-semibold text-[#122E52] dark:text-[#F7A914] uppercase tracking-widest mt-0.5">
                   Excellence in Academic & Character Leadership
                 </p>
                 <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
@@ -123,8 +123,8 @@ export const ReportFormModule: React.FC = () => {
               </div>
             </div>
 
-            <div className="text-center sm:text-right shrink-0 bg-purple-50 dark:bg-purple-950/60 p-3 rounded-2xl border border-purple-100 dark:border-purple-800">
-              <span className="text-[10px] font-black uppercase tracking-wider text-purple-600 dark:text-purple-400 block">
+            <div className="text-center sm:text-right shrink-0 bg-[#EFF6FF] dark:bg-[#1E3A63] p-3 rounded-2xl border border-[#1E3A63] dark:border-[#1E3A63]">
+              <span className="text-[10px] font-black uppercase tracking-wider text-[#3B82F6] dark:text-[#60A5FA] block">
                 Official Report Card
               </span>
               <span className="text-sm font-bold text-slate-800 dark:text-slate-100 block mt-0.5">
@@ -143,7 +143,7 @@ export const ReportFormModule: React.FC = () => {
           </div>
           <div>
             <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Student ID</span>
-            <span className="font-mono font-bold text-purple-700 dark:text-purple-400 text-sm mt-0.5 block">{student.id}</span>
+            <span className="font-mono font-bold text-[#122E52] dark:text-[#F7A914] text-sm mt-0.5 block">{student.id}</span>
           </div>
           <div>
             <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Class & Section</span>
@@ -184,7 +184,7 @@ export const ReportFormModule: React.FC = () => {
                     <td className="py-3 px-4 font-mono text-slate-500 dark:text-slate-400">{sub.code}</td>
                     <td className="py-3 px-4 text-center text-slate-500 dark:text-slate-400">{sub.passMarks}</td>
                     <td className="py-3 px-4 text-center text-slate-700 dark:text-slate-200 font-medium">{sub.fullMarks}</td>
-                    <td className="py-3 px-4 text-center font-black text-purple-700 dark:text-purple-400 text-sm">
+                    <td className="py-3 px-4 text-center font-black text-[#122E52] dark:text-[#F7A914] text-sm">
                       {sub.obtained}
                     </td>
                     <td className="py-3 px-4 text-center">
@@ -197,16 +197,16 @@ export const ReportFormModule: React.FC = () => {
                 ))}
               </tbody>
               <tfoot>
-                <tr className="bg-purple-50/80 dark:bg-purple-950/40 font-bold text-slate-800 dark:text-slate-100 border-t-2 border-purple-300 dark:border-purple-800 text-xs">
-                  <td colSpan={3} className="py-3 px-4 font-black uppercase text-purple-900 dark:text-purple-200">
+                <tr className="bg-slate-50 dark:bg-[#122E52]/20 font-bold text-slate-800 dark:text-slate-100 border-t-2 border-[#1E3A63] text-xs">
+                  <td colSpan={3} className="py-3 px-4 font-black uppercase text-[#12233F] dark:text-white">
                     Grand Total
                   </td>
                   <td className="py-3 px-4 text-center font-black">{totalFullMarks}</td>
-                  <td className="py-3 px-4 text-center font-black text-purple-800 dark:text-purple-300 text-sm">
+                  <td className="py-3 px-4 text-center font-black text-[#122E52] dark:text-[#F7A914] text-sm">
                     {totalObtained}
                   </td>
                   <td className="py-3 px-4 text-center font-black text-emerald-700 dark:text-emerald-400">A+</td>
-                  <td className="py-3 px-4 text-purple-800 dark:text-purple-300 font-bold">
+                  <td className="py-3 px-4 text-[#122E52] dark:text-[#F7A914] font-bold">
                     Result: <span className="text-emerald-700 dark:text-emerald-400">PASSED WITH HONORS</span>
                   </td>
                 </tr>
@@ -219,7 +219,7 @@ export const ReportFormModule: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 text-center">
             <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Aggregate Percentage</span>
-            <span className="text-2xl font-black text-purple-700 dark:text-purple-400 mt-1 block">{overallPercentage}%</span>
+            <span className="text-2xl font-black text-[#122E52] dark:text-[#F7A914] mt-1 block">{overallPercentage}%</span>
             <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 block">Distinction Standing</span>
           </div>
 
@@ -263,15 +263,15 @@ export const ReportFormModule: React.FC = () => {
 
         {/* Remarks Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-          <div className="p-4 rounded-2xl bg-purple-50/40 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-900/40">
-            <span className="font-bold text-purple-900 dark:text-purple-300 block mb-1">Class Teacher Remarks:</span>
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#122E52]/20 border border-slate-200 dark:border-[#1E3A63]">
+            <span className="font-bold text-[#12233F] dark:text-slate-200 block mb-1">Class Teacher Remarks:</span>
             <p className="text-slate-700 dark:text-slate-300 italic leading-relaxed">
               "{student.name} demonstrates extraordinary aptitude, high enthusiasm for problem-solving, and courteous classroom demeanor. A pleasure to instruct."
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-indigo-50/40 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40">
-            <span className="font-bold text-indigo-900 dark:text-indigo-300 block mb-1">Principal's Recommendation:</span>
+          <div className="p-4 rounded-2xl bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 border border-[#3B82F6]/20">
+            <span className="font-bold text-[#122E52] dark:text-[#60A5FA] block mb-1">Principal's Recommendation:</span>
             <p className="text-slate-700 dark:text-slate-300 italic leading-relaxed">
               "Commended for highest scholastic achievement. Admitted to the Academic Honors Roll for Term 1."
             </p>
@@ -288,7 +288,7 @@ export const ReportFormModule: React.FC = () => {
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            <div className="w-12 h-12 rounded-full border-2 border-dashed border-purple-400 dark:border-purple-600 flex items-center justify-center text-[9px] font-bold text-purple-700 dark:text-purple-300 uppercase">
+            <div className="w-12 h-12 rounded-full border-2 border-dashed border-[#1E3A63] flex items-center justify-center text-[9px] font-bold text-[#3B82F6] dark:text-[#60A5FA] uppercase">
               SEAL
             </div>
             <div className="pt-1 text-[10px] font-bold text-slate-400 dark:text-slate-500">Institutional Seal</div>
