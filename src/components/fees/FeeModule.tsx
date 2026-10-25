@@ -4,6 +4,7 @@ import { useSchoolData } from '../../context/SchoolDataContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { StudentFeeRecord, FeePayment, Student } from '../../types';
 import { UserAvatar } from '../common/UserAvatar';
+import { StatusBadge } from '../common/StatusBadge';
 import { LanguageToggle } from '../common/LanguageToggle';
 import {
   CreditCard,
@@ -39,12 +40,15 @@ export const FeeModule: React.FC<FeeModuleProps> = ({ initialClass }) => {
   const { currentUser, activeRole, activeSchool } = useAuth();
   const {
     students,
+    teachers,
     classes,
     studentFees,
+    teacherPayments,
     feePayments,
     feeStructures,
     toggleStudentPaymentStatus,
     recordFeePayment,
+    recordTeacherPayment,
     addToast,
   } = useSchoolData();
   const { language, t } = useLanguage();
@@ -731,17 +735,7 @@ export const FeeModule: React.FC<FeeModuleProps> = ({ initialClass }) => {
 
                           {/* 8. Payment Status (✓ PAID or ✕ UNPAID) */}
                           <td className="py-3.5 px-4 text-center">
-                            {isPaid ? (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                <CheckCircle2 className="w-3.5 h-3.5" />
-                                <span>{t.paid}</span>
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
-                                <XCircle className="w-3.5 h-3.5" />
-                                <span>{t.unpaid}</span>
-                              </span>
-                            )}
+                            <StatusBadge status={isPaid ? 'Paid' : 'Unpaid'} label={isPaid ? t.paid : t.unpaid} />
                           </td>
 
                           {/* 9. Payment Action */}

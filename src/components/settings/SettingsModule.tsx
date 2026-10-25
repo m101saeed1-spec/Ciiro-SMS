@@ -66,7 +66,6 @@ export const SettingsModule: React.FC = () => {
     activeRole,
     activeSchool,
     isSuperAdmin,
-    isOwnerAdmin,
     isPrincipal,
     updateProfile,
     updateSchool,
@@ -87,7 +86,7 @@ export const SettingsModule: React.FC = () => {
   const schoolLogoInputRef = useRef<HTMLInputElement>(null);
 
   // High-Level Section: 'personal' (My Account & Profile) vs 'system' (School & System Configuration)
-  const canManageSchoolConfig = isSuperAdmin || isOwnerAdmin || isPrincipal || activeRole === 'OwnerAdmin' || activeRole === 'Admin' || activeRole === 'Principal';
+  const canManageSchoolConfig = isSuperAdmin || isPrincipal || activeRole === 'Principal';
   const [sectionMode, setSectionMode] = useState<'personal' | 'system'>('personal');
 
   // Personal Tabs

@@ -157,18 +157,6 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
         return;
       }
 
-      if (isOwnerAdmin) {
-        setGuidanceInfo({
-          title: 'Class Teacher Responsibility',
-          badge: 'School Governance',
-          message:
-            'As School Owner Admin, you oversee academy operations and appoint the Principal. To maintain strict classroom accountability, official student enrollment is managed directly by the assigned Class Teacher for each grade.',
-          suggestedActionLabel: 'View Student Directory',
-          suggestedModule: 'students',
-        });
-        return;
-      }
-
       if (isPrincipal) {
         setGuidanceInfo({
           title: 'Class Teacher Responsibility',
@@ -212,7 +200,8 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
         suggestedModule: 'home',
       });
       return;
-    }
+    } // <-- Added closing brace here
+
 
     if (action === 'record-attendance') {
       // Check authorization
@@ -228,7 +217,7 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
         return;
       }
 
-      if (isOwnerAdmin || isPrincipal) {
+      if (isPrincipal) {
         setGuidanceInfo({
           title: 'Class Teacher Responsibility',
           badge: 'Administrative Oversight',
@@ -268,10 +257,9 @@ export const DashboardFAB: React.FC<DashboardFABProps> = ({ onNavigate }) => {
       });
       return;
     }
-
     if (action === 'issue-invoice') {
-      // Check authorization: Accountant or Owner Admin or School Admin
-      if (isAccountAdmin || isOwnerAdmin || (activeRole as string) === 'Admin') {
+      // Check authorization: Principal
+      if (isPrincipal) {
         setActiveModal('issue-invoice');
         return;
       }

@@ -46,11 +46,9 @@ export const WelcomeEntryFlow: React.FC<WelcomeEntryFlowProps> = ({ onSuccessEnt
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const supportedRoles: { role: UserRole; labelEn: string; labelSo: string; defaultId: string }[] = [
+    { role: 'Principal', labelEn: 'Principal', labelSo: 'Maamulaha Dugsiga', defaultId: '4001' },
     { role: 'Teacher', labelEn: 'Teacher', labelSo: 'Macallin', defaultId: '2001' },
-    { role: 'Principal', labelEn: 'Headteacher', labelSo: 'Maamulaha Dugsiga', defaultId: '4001' },
-    { role: 'AccountAdmin', labelEn: 'Accountant', labelSo: 'Xisaabiye', defaultId: '3001' },
     { role: 'Student', labelEn: 'Student', labelSo: 'Arday', defaultId: '1001' },
-    { role: 'OwnerAdmin', labelEn: 'School Owner', labelSo: 'Mulkiilaha Dugsiga', defaultId: '5001' },
   ];
 
   const handleRoleChange = (r: UserRole) => {
@@ -341,6 +339,13 @@ export const WelcomeEntryFlow: React.FC<WelcomeEntryFlowProps> = ({ onSuccessEnt
               <div className="flex flex-wrap items-center justify-center gap-1.5 text-[11px]">
                 <button
                   type="button"
+                  onClick={() => handleQuickAutofill('school-1', 'Principal', '4001')}
+                  className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold hover:bg-[#122E52]/10 dark:hover:bg-[#122E52]/40 hover:text-[#122E52] dark:hover:text-[#F7A914] cursor-pointer"
+                >
+                  4001 (Principal)
+                </button>
+                <button
+                  type="button"
                   onClick={() => handleQuickAutofill('school-1', 'Teacher', '2001')}
                   className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold hover:bg-[#122E52]/10 dark:hover:bg-[#122E52]/40 hover:text-[#122E52] dark:hover:text-[#F7A914] cursor-pointer"
                 >
@@ -348,31 +353,10 @@ export const WelcomeEntryFlow: React.FC<WelcomeEntryFlowProps> = ({ onSuccessEnt
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleQuickAutofill('school-1', 'Principal', '4001')}
-                  className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold hover:bg-[#122E52]/10 dark:hover:bg-[#122E52]/40 hover:text-[#122E52] dark:hover:text-[#F7A914] cursor-pointer"
-                >
-                  4001 (Headteacher)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickAutofill('school-1', 'AccountAdmin', '3001')}
-                  className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold hover:bg-[#122E52]/10 dark:hover:bg-[#122E52]/40 hover:text-[#122E52] dark:hover:text-[#F7A914] cursor-pointer"
-                >
-                  3001 (Accountant)
-                </button>
-                <button
-                  type="button"
                   onClick={() => handleQuickAutofill('school-1', 'Student', '1001')}
                   className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold hover:bg-[#122E52]/10 dark:hover:bg-[#122E52]/40 hover:text-[#122E52] dark:hover:text-[#F7A914] cursor-pointer"
                 >
                   1001 (Student)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickAutofill('school-1', 'OwnerAdmin', '5001')}
-                  className="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold hover:bg-[#122E52]/10 dark:hover:bg-[#122E52]/40 hover:text-[#122E52] dark:hover:text-[#F7A914] cursor-pointer"
-                >
-                  5001 (School Owner)
                 </button>
               </div>
             </div>

@@ -55,88 +55,109 @@ service cloud.firestore {
     // -------------------------------------------------------------
     match /schoolMemberships/{membershipId} {
       allow read: if isAuthenticated();
-      
-      // Allow creation by authenticated staff or platform owner
-      allow create: if isAuthenticated();
-
-      // Allow claiming Ileys ID linking or updates
-      allow update: if isAuthenticated();
-
+      allow create, update: if isAuthenticated();
       allow delete: if isPlatformOwner();
     }
 
     // -------------------------------------------------------------
-    // Students Collection
+    // Students Collection (School-Isolated)
     // -------------------------------------------------------------
     match /students/{studentId} {
-      allow read: if isAuthenticated();
-      allow create, update, delete: if isAuthenticated();
+      allow read: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
+      allow create: if isAuthenticated() && (isPlatformOwner() || request.resource.data.schoolId != null);
+      allow update: if isAuthenticated() && (isPlatformOwner() || (resource.data.schoolId != null && request.resource.data.schoolId == resource.data.schoolId));
+      allow delete: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
     }
 
     // -------------------------------------------------------------
-    // Teachers Collection
+    // Teachers Collection (School-Isolated)
     // -------------------------------------------------------------
     match /teachers/{teacherId} {
-      allow read: if isAuthenticated();
-      allow create, update, delete: if isAuthenticated();
+      allow read: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
+      allow create: if isAuthenticated() && (isPlatformOwner() || request.resource.data.schoolId != null);
+      allow update: if isAuthenticated() && (isPlatformOwner() || (resource.data.schoolId != null && request.resource.data.schoolId == resource.data.schoolId));
+      allow delete: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
     }
 
     // -------------------------------------------------------------
-    // Classes & Subjects Collections
+    // Classes & Subjects Collections (School-Isolated)
     // -------------------------------------------------------------
     match /classes/{classId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
+      allow create: if isAuthenticated() && (isPlatformOwner() || request.resource.data.schoolId != null);
+      allow update: if isAuthenticated() && (isPlatformOwner() || (resource.data.schoolId != null && request.resource.data.schoolId == resource.data.schoolId));
+      allow delete: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
     }
 
     match /subjects/{subjectId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
+      allow create: if isAuthenticated() && (isPlatformOwner() || request.resource.data.schoolId != null);
+      allow update: if isAuthenticated() && (isPlatformOwner() || (resource.data.schoolId != null && request.resource.data.schoolId == resource.data.schoolId));
+      allow delete: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
     }
 
     // -------------------------------------------------------------
-    // Attendance Collection
+    // Attendance Collection (School-Isolated)
     // -------------------------------------------------------------
     match /attendance/{attendanceId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
+      allow create: if isAuthenticated() && (isPlatformOwner() || request.resource.data.schoolId != null);
+      allow update: if isAuthenticated() && (isPlatformOwner() || (resource.data.schoolId != null && request.resource.data.schoolId == resource.data.schoolId));
+      allow delete: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
     }
 
     // -------------------------------------------------------------
-    // Academic Results Collection
+    // Academic Results Collection (School-Isolated)
     // -------------------------------------------------------------
     match /academicResults/{resultId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
+      allow create: if isAuthenticated() && (isPlatformOwner() || request.resource.data.schoolId != null);
+      allow update: if isAuthenticated() && (isPlatformOwner() || (resource.data.schoolId != null && request.resource.data.schoolId == resource.data.schoolId));
+      allow delete: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
     }
 
     // -------------------------------------------------------------
-    // Timetables Collection
+    // Timetables Collection (School-Isolated)
     // -------------------------------------------------------------
     match /timetables/{timetableId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
+      allow create: if isAuthenticated() && (isPlatformOwner() || request.resource.data.schoolId != null);
+      allow update: if isAuthenticated() && (isPlatformOwner() || (resource.data.schoolId != null && request.resource.data.schoolId == resource.data.schoolId));
+      allow delete: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
     }
 
     // -------------------------------------------------------------
-    // Announcements Collection
+    // Announcements Collection (School-Isolated)
     // -------------------------------------------------------------
     match /announcements/{announcementId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
+      allow create: if isAuthenticated() && (isPlatformOwner() || request.resource.data.schoolId != null);
+      allow update: if isAuthenticated() && (isPlatformOwner() || (resource.data.schoolId != null && request.resource.data.schoolId == resource.data.schoolId));
+      allow delete: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
     }
 
     // -------------------------------------------------------------
-    // Fees & Fee Payments Collections
+    // Fees & Fee Payments Collections (School-Isolated)
     // -------------------------------------------------------------
     match /fees/{feeId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
+      allow create: if isAuthenticated() && (isPlatformOwner() || request.resource.data.schoolId != null);
+      allow update: if isAuthenticated() && (isPlatformOwner() || (resource.data.schoolId != null && request.resource.data.schoolId == resource.data.schoolId));
+      allow delete: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
     }
 
     match /feePayments/{paymentId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
+      allow read: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
+      allow create: if isAuthenticated() && (isPlatformOwner() || request.resource.data.schoolId != null);
+      allow update: if isAuthenticated() && (isPlatformOwner() || (resource.data.schoolId != null && request.resource.data.schoolId == resource.data.schoolId));
+      allow delete: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
+    }
+
+    match /teacherPayments/{paymentId} {
+      allow read: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
+      allow create: if isAuthenticated() && (isPlatformOwner() || request.resource.data.schoolId != null);
+      allow update: if isAuthenticated() && (isPlatformOwner() || (resource.data.schoolId != null && request.resource.data.schoolId == resource.data.schoolId));
+      allow delete: if isAuthenticated() && (isPlatformOwner() || resource.data.schoolId != null);
     }
 
     // -------------------------------------------------------------

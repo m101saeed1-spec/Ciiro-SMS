@@ -21,6 +21,9 @@ import {
   ChatAttachment,
   SyllabusItem,
   LearningResource,
+  TeacherPaymentRecord,
+  Assessment,
+  AssessmentSubmission,
 } from '../types';
 import { auditLogService } from '../services/auditLogService';
 import {
@@ -82,6 +85,8 @@ interface SchoolDataContextType {
   studentFees: StudentFeeRecord[];
   studentFeeRecords: StudentFeeRecord[];
   feePayments: FeePayment[];
+  teacherPayments: TeacherPaymentRecord[];
+  recordTeacherPayment: (payment: Omit<TeacherPaymentRecord, 'id' | 'date'>) => Promise<boolean>;
   downloadFiles: (SyllabusItem | LearningResource)[];
   timetables: TimetableSlot[];
   chatGroups: ChatGroup[];
@@ -195,6 +200,13 @@ interface SchoolDataContextType {
   updateTimetableSlot: (id: string, slot: Partial<TimetableSlot>) => Promise<{ success: boolean; error?: string }>;
   deleteTimetableSlot: (id: string) => Promise<void>;
 
+  // Assessments
+  assessments: Assessment[];
+  assessmentSubmissions: AssessmentSubmission[];
+  createAssessment: (assessmentData: Omit<Assessment, 'id' | 'createdAt' | 'schoolId' | 'teacherId' | 'teacherName'>) => Promise<boolean>;
+  submitAssessmentAnswer: (assessmentId: string, answers: Record<string, string>) => Promise<boolean>;
+  gradeAssessmentSubmission: (submissionId: string, score: number, feedback: string) => Promise<boolean>;
+
   // Helper activity logger
   logActivity: (user: string, action: string, type: ActivityLog['type']) => void;
   refreshData: () => Promise<void>;
@@ -220,7 +232,127 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [feeStructures, setFeeStructures] = useState<FeeStructure[]>(INITIAL_FEE_STRUCTURES);
   const [studentFees, setStudentFees] = useState<StudentFeeRecord[]>(INITIAL_STUDENT_FEES);
   const [feePayments, setFeePayments] = useState<FeePayment[]>(INITIAL_FEE_PAYMENTS);
+  const [teacherPayments, setTeacherPayments] = useState<TeacherPaymentRecord[]>([
+    { id: 'TPAY-1', schoolId: 'school-1', teacherId: 'TCHR-1025', amount: 850, month: 'October 2026', status: 'Paid', method: 'Bank Transfer', reference: 'TXN-998231', recordedBy: 'Principal Eleanor', date: '2026-10-05' },
+    { id: 'TPAY-2', schoolId: 'school-1', teacherId: 'TCHR-1026', amount: 900, month: 'October 2026', status: 'Paid', method: 'EVC Plus', reference: 'EVC-445812', recordedBy: 'Principal Eleanor', date: '2026-10-06' },
+  ]);
+
+  const recordTeacherPayment = async (paymentData: Omit<TeacherPaymentRecord, 'id' | 'date'>): Promise<boolean> => {
+    const newRecord: TeacherPaymentRecord = {
+      ...paymentData,
+      id: `TPAY-${Date.now()}`,
+      date: new Date().toISOString().split('T')[0],
+    };
+    setTeacherPayments((prev) => [newRecord, ...prev]);
+    addToast('Teacher salary payment recorded successfully', 'success');
+    return true;
+  };
   const [timetables, setTimetables] = useState<TimetableSlot[]>(INITIAL_TIMETABLES);
+  const [assessments, setAssessments] = useState<Assessment[]>(() => {
+    const saved = localStorage.getItem('ileys_assessments');
+    return saved ? JSON.parse(saved) : [
+      {
+        id: 'asm-1',
+        schoolId: 'school-1',
+        title: 'Algebra Quiz 1: Linear Equations',
+        description: 'Solve the algebraic equations and show all intermediate steps.',
+        className: 'Class 01',
+        subject: 'Mathematics',
+        teacherId: 'tch-1',
+        teacherName: 'Prof. David Miller',
+        deadline: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
+        totalPoints: 20,
+        questions: [
+          { id: 'q-1', questionText: 'Solve for x: 2x + 5 = 15', questionType: 'short_answer', points: 10, correctAnswer: '5' },
+          { id: 'q-2', questionText: 'What is the slope of y = 3x - 4?', questionType: 'multiple_choice', options: ['3', '-4', '1', '1/3'], correctAnswer: '3', points: 10 }
+        ],
+        createdAt: new Date().toISOString(),
+        status: 'Active'
+      }
+    ];
+  });
+
+  const [assessmentSubmissions, setAssessmentSubmissions] = useState<AssessmentSubmission[]>(() => {
+    const saved = localStorage.getItem('ileys_assessment_submissions');
+    return saved ? JSON.parse(saved) : [
+      {
+        id: 'sub-1',
+        assessmentId: 'asm-1',
+        studentId: 'STU-2026-0125',
+        studentName: 'Sarah Jenkins',
+        class: 'Class 01',
+        answers: { 'q-1': '5', 'q-2': '3' },
+        submittedAt: new Date().toISOString(),
+        status: 'Graded',
+        score: 20,
+        maxScore: 20,
+        teacherFeedback: 'Excellent work! Perfect accuracy.'
+      }
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('ileys_assessments', JSON.stringify(assessments));
+  }, [assessments]);
+
+  useEffect(() => {
+    localStorage.setItem('ileys_assessment_submissions', JSON.stringify(assessmentSubmissions));
+  }, [assessmentSubmissions]);
+
+  const createAssessment = async (assessmentData: Omit<Assessment, 'id' | 'createdAt' | 'schoolId' | 'teacherId' | 'teacherName'>): Promise<boolean> => {
+    const newAssessment: Assessment = {
+      ...assessmentData,
+      id: `asm-${Date.now()}`,
+      schoolId: currentUser.tenantSchoolId || 'school-1',
+      teacherId: currentUser.id,
+      teacherName: currentUser.name,
+      createdAt: new Date().toISOString(),
+      status: 'Active',
+    };
+    setAssessments((prev) => [newAssessment, ...prev]);
+    addToast('Assessment created and sent successfully!', 'success');
+    return true;
+  };
+
+  const submitAssessmentAnswer = async (assessmentId: string, answers: Record<string, string>): Promise<boolean> => {
+    const assessment = assessments.find((a) => a.id === assessmentId);
+    if (!assessment) {
+      addToast('Assessment not found.', 'error');
+      return false;
+    }
+    const studentId = currentUser.studentId || currentUser.id;
+    const studentName = currentUser.name;
+    const studentClass = assessment.className;
+
+    const existingSubIdx = assessmentSubmissions.findIndex((s) => s.assessmentId === assessmentId && s.studentId === studentId);
+    const newSub: AssessmentSubmission = {
+      id: existingSubIdx >= 0 ? assessmentSubmissions[existingSubIdx].id : `sub-${Date.now()}`,
+      assessmentId,
+      studentId,
+      studentName,
+      class: studentClass,
+      answers,
+      submittedAt: new Date().toISOString(),
+      status: 'Submitted',
+    };
+
+    if (existingSubIdx >= 0) {
+      setAssessmentSubmissions((prev) => prev.map((s, idx) => idx === existingSubIdx ? newSub : s));
+    } else {
+      setAssessmentSubmissions((prev) => [newSub, ...prev]);
+    }
+    addToast('Assessment submitted successfully!', 'success');
+    return true;
+  };
+
+  const gradeAssessmentSubmission = async (submissionId: string, score: number, feedback: string): Promise<boolean> => {
+    setAssessmentSubmissions((prev) =>
+      prev.map((s) => (s.id === submissionId ? { ...s, status: 'Graded', score, teacherFeedback: feedback } : s))
+    );
+    addToast('Assessment submission graded successfully!', 'success');
+    return true;
+  };
+
   const [chatGroups, setChatGroups] = useState<ChatGroup[]>(INITIAL_CHAT_GROUPS);
   const [activeChatGroupId, setActiveChatGroupId] = useState<string | null>('grp-all-teachers');
   const [activeChatMessages, setActiveChatMessages] = useState<ChatMessage[]>([]);
@@ -1817,6 +1949,8 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         studentFees,
         studentFeeRecords: studentFees || [],
         feePayments,
+        teacherPayments,
+        recordTeacherPayment,
         downloadFiles: [...(syllabus || []), ...(learningResources || [])],
         timetables,
         chatGroups,
@@ -1892,6 +2026,11 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         addTimetableSlot,
         updateTimetableSlot,
         deleteTimetableSlot,
+        assessments,
+        assessmentSubmissions,
+        createAssessment,
+        submitAssessmentAnswer,
+        gradeAssessmentSubmission,
         logActivity,
         refreshData,
       }}

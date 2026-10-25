@@ -44,11 +44,11 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
   const [email, setEmail] = useState('');
   const [academicYear, setAcademicYear] = useState('2025-2026');
 
-  // Step 2: Owner Administrator Credentials
+  // Step 2: Principal Administrator Credentials
   const [ownerName, setOwnerName] = useState('');
   const [ownerEmail, setOwnerEmail] = useState('');
   const [ownerPassword, setOwnerPassword] = useState('password123');
-  const [ownerDesignation, setOwnerDesignation] = useState('School Owner & Director');
+  const [ownerDesignation, setOwnerDesignation] = useState('Principal Administrator');
 
   if (!isOpen) return null;
 
@@ -66,7 +66,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
       setStep(2);
     } else if (step === 2) {
       if (!ownerName.trim() || !ownerEmail.trim() || !ownerPassword.trim()) {
-        setError('Please complete all Owner Administrator account fields.');
+        setError('Please complete all Principal Administrator account fields.');
         return;
       }
       handleRegister();
@@ -91,14 +91,14 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
         name: ownerName.trim(),
         email: ownerEmail.trim(),
         password: ownerPassword,
-        designation: ownerDesignation,
+        designation: ownerDesignation || 'Principal Administrator',
       }
     );
 
     setLoading(false);
 
     if (res.success && res.school) {
-      addToast(`Successfully registered "${res.school.name}"! Logged in as Owner Admin.`, 'success');
+      addToast(`Successfully registered "${res.school.name}"! Logged in as Principal.`, 'success');
       setStep(3);
     } else {
       setError(res.error || 'Failed to register school. Please check your information.');
@@ -122,7 +122,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
             <div>
               <h2 className="text-base font-bold text-slate-900 dark:text-white">Register New School Tenant</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Step {step} of 3 • {step === 1 ? 'School Information' : step === 2 ? 'Owner Administrator' : 'Provisioning Complete'}
+                Step {step} of 3 • {step === 1 ? 'School Information' : step === 2 ? 'Principal Administrator' : 'Provisioning Complete'}
               </p>
             </div>
           </div>
@@ -244,14 +244,14 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
               <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#122E52]/30 border border-slate-200 dark:border-[#1E3A63] flex items-center gap-3 text-xs text-[#12233F] dark:text-slate-200">
                 <ShieldCheck className="w-5 h-5 text-[#3B82F6] dark:text-[#60A5FA] shrink-0" />
                 <span>
-                  This account will be provisioned as the primary <strong>Owner Admin</strong> with full authority over{' '}
+                  This account will be provisioned as the school's <strong>Principal Administrator</strong> with leadership authority over{' '}
                   <strong>{schoolName}</strong>.
                 </span>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Owner Full Name *
+                  Principal Full Name *
                 </label>
                 <input
                   type="text"
@@ -264,11 +264,11 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Owner Email Address *
+                  Principal Email Address *
                 </label>
                 <input
                   type="email"
-                  placeholder="owner@school.edu"
+                  placeholder="principal@school.edu"
                   value={ownerEmail}
                   onChange={(e) => setOwnerEmail(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-900 dark:text-white focus:ring-2 focus:ring-[#3B82F6]/20"
@@ -278,7 +278,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                    Owner Password *
+                    Principal Password *
                   </label>
                   <input
                     type="password"
@@ -313,7 +313,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
                   <strong>{schoolName}</strong> ({schoolCode}) has been isolated and activated. You are now logged in as{' '}
-                  <strong>{ownerName}</strong> (Owner Admin).
+                  <strong>{ownerName}</strong> (Principal).
                 </p>
               </div>
 
@@ -323,7 +323,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
                   <span className="font-mono font-bold text-[#3B82F6]">{schoolCode}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Admin Email:</span>
+                  <span className="text-slate-400">Principal Email:</span>
                   <span className="font-bold text-slate-700 dark:text-slate-200">{ownerEmail}</span>
                 </div>
                 <div className="flex justify-between">
@@ -364,7 +364,7 @@ export const RegisterSchoolModal: React.FC<RegisterSchoolModalProps> = ({
                 <span>Provisioning Tenant...</span>
               ) : step === 1 ? (
                 <>
-                  <span>Next: Owner Details</span> <ArrowRight className="w-4 h-4" />
+                  <span>Next: Principal Details</span> <ArrowRight className="w-4 h-4" />
                 </>
               ) : (
                 <>

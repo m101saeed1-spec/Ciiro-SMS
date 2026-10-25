@@ -58,7 +58,15 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
             <ul className="space-y-2 text-xs">
               <li>
                 <button
-                  onClick={() => onNavigate('features')}
+                  onClick={() => onNavigate('pricing')}
+                  className="hover:text-[#F7A914] transition-colors cursor-pointer"
+                >
+                  {tr('All-In-One Plan ($15/mo)', 'Qorshaha Buuxa ($15/mo)')}
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('why-ileys')}
                   className="hover:text-white transition-colors cursor-pointer"
                 >
                   {tr('Student Admissions & Dossiers', 'Diiwaangelinta Ardayda')}
@@ -66,7 +74,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onNavigate('features')}
+                  onClick={() => onNavigate('why-ileys')}
                   className="hover:text-white transition-colors cursor-pointer"
                 >
                   {tr('Classroom Roll Call Engine', 'Xaadiriska Fasalka')}
@@ -74,7 +82,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onNavigate('features')}
+                  onClick={() => onNavigate('why-ileys')}
                   className="hover:text-white transition-colors cursor-pointer"
                 >
                   {tr('Single Unified Fees Ledger', 'Diiwaanka Kharashaadka')}
@@ -82,18 +90,10 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onNavigate('features')}
+                  onClick={() => onNavigate('why-ileys')}
                   className="hover:text-white transition-colors cursor-pointer"
                 >
                   {tr('Examinations & GPA Rankings', 'Imtixaannada & Buundooyinka')}
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onNavigate('features')}
-                  className="hover:text-white transition-colors cursor-pointer"
-                >
-                  {tr('Official PDF Notice Bulletins', 'Ogeysiisyada & Warbixinnada')}
                 </button>
               </li>
             </ul>
@@ -102,13 +102,11 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
           {/* Column 3: Institutional Roles (Span 2) */}
           <div className="md:col-span-2 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-              {tr('5 Core Roles', '5-ta Door')}
+              {tr('School Roles', 'Doorka Dugsiga')}
             </h4>
             <ul className="space-y-2 text-xs">
+              <li className="text-slate-300">Principal (#4001)</li>
               <li className="text-slate-300">Teacher (#2001)</li>
-              <li className="text-slate-300">Headteacher (#4001)</li>
-              <li className="text-slate-300">Accountant (#3001)</li>
-              <li className="text-slate-300">School Owner (#5001)</li>
               <li className="text-slate-300">Student (#1001)</li>
             </ul>
           </div>

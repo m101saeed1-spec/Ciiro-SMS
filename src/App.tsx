@@ -20,16 +20,15 @@ import { SchoolsModule } from './components/schools/SchoolsModule';
 import { StudentsModule } from './components/students/StudentsModule';
 import { TeachersModule } from './components/teachers/TeachersModule';
 import { LibraryModule } from './components/library/LibraryModule';
-import { HeadteacherManagementModule } from './components/headteachers/HeadteacherManagementModule';
+import { PlatformAnalyticsModule } from './components/platform/PlatformAnalyticsModule';
+import { PlatformReportsModule } from './components/platform/PlatformReportsModule';
 import { ClassModule } from './components/classes/ClassModule';
 import { SubjectModule } from './components/subjects/SubjectModule';
 import { AttendanceModule } from './components/attendance/AttendanceModule';
 import { ExamModule } from './components/exams/ExamModule';
 import { NoticesModule } from './components/notices/NoticesModule';
 import { FeeModule } from './components/fees/FeeModule';
-import { SchoolOwnerFinancialOverview } from './components/fees/SchoolOwnerFinancialOverview';
 import { TimetableModule } from './components/timetable/TimetableModule';
-import { ChatModule } from './components/chat/ChatModule';
 import { StudentProfileModule } from './components/student/StudentProfileModule';
 import { ExamRankingModule } from './components/student/ExamRankingModule';
 import { ReportFormModule } from './components/student/ReportFormModule';
@@ -38,7 +37,8 @@ import { SettingsModule } from './components/settings/SettingsModule';
 import { DownloadCenterModule } from './components/student/DownloadCenterModule';
 import { ActivityLogView } from './components/activity/ActivityLogView';
 import { StudyBuddyModule } from './components/studybuddy/StudyBuddyModule';
-import { GeminiChatModule } from './components/gemini/GeminiChatModule';
+import { AssessmentsModule } from './components/assessments/AssessmentsModule';
+
 
 interface MainLayoutProps {
   onViewPublicWebsite: () => void;
@@ -73,27 +73,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ onViewPublicWebsite }) => {
           onViewPublicWebsite={onViewPublicWebsite}
         />
 
-        {/* Dynamic Module Canvas */}
         <main
-          className={`flex-1 w-full mx-auto ${
-            activeModule === 'chat' ? 'p-3 sm:p-4 lg:p-6 max-w-7xl' : 'p-4 sm:p-6 lg:p-8 max-w-7xl'
-          }`}
+          className="p-4 sm:p-6 lg:p-8 max-w-7xl"
         >
           {activeModule === 'home' && <DashboardModule onNavigate={(mod) => setActiveModule(mod)} />}
           {activeModule === 'schools' && <SchoolsModule />}
-          {(activeModule === 'headteacher' || activeModule === 'headteachers') && <HeadteacherManagementModule />}
           {activeModule === 'studybuddy' && <StudyBuddyModule />}
           {activeModule === 'profile' && <StudentProfileModule />}
           {activeModule === 'students' && <StudentsModule />}
           {activeModule === 'teachers' && <TeachersModule />}
-          {activeModule === 'chat' && <ChatModule />}
-          {(activeModule === 'fees' || activeModule.startsWith('fee-')) && (
-            activeRole === 'OwnerAdmin' || activeRole === 'Admin' ? (
-              <SchoolOwnerFinancialOverview />
-            ) : (
-              <FeeModule />
-            )
-          )}
+          {(activeModule === 'fees' || activeModule.startsWith('fee-')) && <FeeModule />}
           {activeModule === 'timetable' && <TimetableModule />}
           {activeModule === 'library' && <LibraryModule />}
           {(activeModule === 'account' || activeModule === 'settings') && <SettingsModule />}
@@ -101,12 +90,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ onViewPublicWebsite }) => {
           {activeModule === 'subject' && <SubjectModule />}
           {activeModule === 'attendance' && <AttendanceModule />}
           {activeModule === 'exam' && <ExamModule />}
-          {activeModule === 'ranking' && <ExamRankingModule />}
-          {activeModule === 'report' && <SchoolReportsModule onNavigate={(mod) => setActiveModule(mod)} />}
+          {activeModule === 'assessments' && <AssessmentsModule />}
+          {activeModule === 'ranking' && (activeRole === 'SuperAdmin' ? <PlatformAnalyticsModule /> : <ExamRankingModule />)}
+          {activeModule === 'report' && (activeRole === 'SuperAdmin' ? <PlatformReportsModule /> : <SchoolReportsModule onNavigate={(mod) => setActiveModule(mod)} />)}
           {activeModule === 'downloads' && <DownloadCenterModule />}
           {activeModule === 'notice' && <NoticesModule />}
           {activeModule === 'activities' && <ActivityLogView />}
-          {activeModule === 'gemini' && <GeminiChatModule />}
         </main>
       </div>
 

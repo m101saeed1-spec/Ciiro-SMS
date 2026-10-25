@@ -1,39 +1,45 @@
 export type UserRole =
   | 'SuperAdmin'
   | 'OwnerAdmin'
+  | 'Admin'
+  | 'AccountAdmin'
   | 'Principal'
   | 'Teacher'
-  | 'Student'
-  | 'AccountAdmin'
-  | 'Admin';
+  | 'Student';
 
 /**
- * Returns canonical, consistent display name for user roles per platform specs:
- * 1. Owner Platform (SuperAdmin)
- * 2. School Owner (OwnerAdmin / Admin)
- * 3. Headteacher (Principal)
- * 4. Teacher
- * 5. Student
- * 6. Accountant (AccountAdmin)
+ * Returns canonical display name for the 3 school operational roles + Platform Owner:
+ * 1. Platform Owner (SuperAdmin)
+ * 2. Principal (School Administrator)
+ * 3. Teacher
+ * 4. Student
  */
 export function getRoleDisplayName(role: UserRole | string): string {
   switch (role) {
     case 'SuperAdmin':
-      return 'Owner Platform';
-    case 'OwnerAdmin':
-    case 'Admin':
-      return 'School Owner';
+      return 'Platform Owner';
     case 'Principal':
-      return 'Headteacher';
+      return 'Principal';
     case 'Teacher':
       return 'Teacher';
     case 'Student':
       return 'Student';
-    case 'AccountAdmin':
-      return 'Accountant';
     default:
       return role;
   }
+}
+
+export interface TeacherPaymentRecord {
+  id: string;
+  schoolId: string;
+  teacherId: string;
+  amount: number;
+  month: string;
+  status: 'Paid' | 'Pending' | 'Processing';
+  method: string;
+  reference: string;
+  recordedBy: string;
+  date: string;
 }
 
 export type SubscriptionPlan = 'Basic' | 'Standard' | 'Premium' | 'Enterprise';
@@ -740,20 +746,43 @@ export interface QuizAttempt {
   timeSpentSeconds: number;
 }
 
-export type SchoolEventType = 'exam' | 'holiday' | 'academic' | 'sports' | 'meeting' | 'cultural';
-
-export interface SchoolCalendarEvent {
+export interface AssessmentQuestion {
   id: string;
+  questionText: string;
+  questionType: 'multiple_choice' | 'short_answer' | 'essay';
+  options?: string[]; // for multiple choice
+  correctAnswer?: string;
+  points: number;
+}
+
+export interface AssessmentSubmission {
+  id: string;
+  assessmentId: string;
+  studentId: string;
+  studentName: string;
+  class: string;
+  answers: Record<string, string>; // questionId -> answer
+  submittedAt: string;
+  status: 'Submitted' | 'Graded';
+  score?: number;
+  maxScore?: number;
+  teacherFeedback?: string;
+}
+
+export interface Assessment {
+  id: string;
+  schoolId: string;
   title: string;
-  type: SchoolEventType;
-  date: string; // YYYY-MM-DD
-  endDate?: string;
-  time?: string;
-  location?: string;
-  description?: string;
-  targetAudience?: 'All' | 'Students' | 'Teachers' | 'Parents';
-  schoolId?: string;
-  status?: 'Upcoming' | 'Ongoing' | 'Completed';
+  description: string;
+  className: string; // e.g., 'Class 01' or 'All'
+  subject: string; // e.g., 'Mathematics'
+  teacherId: string;
+  teacherName: string;
+  deadline: string; // ISO date string or yyyy-mm-dd
+  totalPoints: number;
+  questions: AssessmentQuestion[];
+  createdAt: string;
+  status: 'Active' | 'Closed';
 }
 
 // ==========================================

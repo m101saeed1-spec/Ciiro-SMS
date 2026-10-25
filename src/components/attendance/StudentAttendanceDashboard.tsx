@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Student, AttendanceRecord, AttendanceStatus } from '../../types';
 import { UserAvatar } from '../common/UserAvatar';
+import { StatusBadge } from '../common/StatusBadge';
 import { exportAttendanceReportPDF } from '../../utils/pdfExport';
 import { downloadCSV } from '../../utils/csvExport';
 import {
@@ -845,22 +846,7 @@ export const StudentAttendanceDashboard: React.FC<StudentAttendanceDashboardProp
                         {rec.class} - Sec {rec.section}
                       </td>
                       <td className="py-3 px-4">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                            rec.status === 'Present'
-                              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
-                              : rec.status === 'Absent'
-                              ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'
-                              : 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
-                          }`}
-                        >
-                          {rec.status === 'Present' && <CheckCircle2 className="w-3.5 h-3.5" />}
-                          {rec.status === 'Absent' && <XCircle className="w-3.5 h-3.5" />}
-                          {(rec.status === 'Permission' || rec.status === 'Late') && (
-                            <Clock className="w-3.5 h-3.5" />
-                          )}
-                          <span>{rec.status}</span>
-                        </span>
+                        <StatusBadge status={rec.status} />
                       </td>
                       <td className="py-3 px-4 text-slate-500 dark:text-slate-400">
                         {rec.remarks || 'Standard classroom attendance'}

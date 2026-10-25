@@ -226,13 +226,13 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
 
   // Default credentials mapping for the canonical school roles & super admin
   const roleDefaultCredentials: Record<UserRole, { id: string; name: string; title: string }> = {
-    OwnerAdmin: { id: 'ADM-2026-0001', name: 'Salmaan Fitah', title: 'School Owner & Director' },
     Principal: { id: 'PRP-2026-0001', name: 'Dr. Eleanor Vance', title: 'Principal Administrator' },
     Teacher: { id: 'TCHR-1025', name: 'Ahmed Hassan Mohamed', title: 'Senior Science & Math Faculty' },
     Student: { id: 'STU-2026-0125', name: 'Fatima Ali', title: 'Class 02 Scholar' },
-    AccountAdmin: { id: 'ACC-2026-0001', name: 'David Vance', title: 'School Bursar & Fees' },
     SuperAdmin: { id: 'SUP-2026-0001', name: 'Dr. Arthur Sterling', title: 'Platform Master Director' },
-    Admin: { id: 'ADM-2026-0001', name: 'Administrator', title: 'School Administrator' },
+    OwnerAdmin: { id: 'PRP-2026-0001', name: 'Dr. Eleanor Vance', title: 'Principal Administrator' },
+    Admin: { id: 'PRP-2026-0001', name: 'Dr. Eleanor Vance', title: 'Principal Administrator' },
+    AccountAdmin: { id: 'PRP-2026-0001', name: 'Dr. Eleanor Vance', title: 'Principal Administrator' },
   };
 
   // Synchronize school list when schools change in context
@@ -373,7 +373,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
     }
   };
 
-  // Compact 7 School Roles list
+  // 3 Main Operational Roles list
   const schoolRoles: {
     role: UserRole;
     name: string;
@@ -383,17 +383,9 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
     bgClass: string;
   }[] = [
     {
-      role: 'OwnerAdmin',
-      name: 'Owner Admin',
-      description: 'School Director & Board',
-      icon: <Building2 className="w-5 h-5" />,
-      colorClass: 'text-blue-600 dark:text-blue-400',
-      bgClass: 'bg-blue-50 dark:bg-blue-950/50',
-    },
-    {
       role: 'Principal',
-      name: 'Principal Admin',
-      description: 'Academic Operations',
+      name: 'Principal',
+      description: 'School Administration & Oversight',
       icon: <UserCheck className="w-5 h-5" />,
       colorClass: 'text-[#3B82F6] dark:text-[#60A5FA]',
       bgClass: 'bg-[#122E52]/10 dark:bg-[#1E3A63]',
@@ -401,7 +393,7 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
     {
       role: 'Teacher',
       name: 'Teacher',
-      description: 'Classrooms & Grading',
+      description: 'Classrooms, Attendance & Grading',
       icon: <Users className="w-5 h-5" />,
       colorClass: 'text-emerald-600 dark:text-emerald-400',
       bgClass: 'bg-emerald-50 dark:bg-emerald-950/50',
@@ -409,18 +401,10 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
     {
       role: 'Student',
       name: 'Student',
-      description: 'Courses & Homework',
+      description: 'Academic Dossier & Fees',
       icon: <GraduationCap className="w-5 h-5" />,
       colorClass: 'text-amber-600 dark:text-amber-400',
       bgClass: 'bg-amber-50 dark:bg-amber-950/50',
-    },
-    {
-      role: 'AccountAdmin',
-      name: 'Accountant',
-      description: 'Bursar & Fee Invoicing',
-      icon: <DollarSign className="w-5 h-5" />,
-      colorClass: 'text-teal-600 dark:text-teal-400',
-      bgClass: 'bg-teal-50 dark:bg-teal-950/50',
     },
   ];
 
@@ -642,75 +626,38 @@ export const SchoolPortalLogin: React.FC<SchoolPortalLoginProps> = ({ onSuccess 
                       </button>
                     </div>
                   ) : (
-                    /* 7 Role Cards: 4 on top row, 3 on bottom row */
-                    <div className="space-y-2.5">
-                      {/* Top Row: 4 Cards */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                        {schoolRoles.slice(0, 4).map((r) => {
-                          const isSelected = selectedRole === r.role;
-                          return (
-                            <button
-                              key={r.role}
-                              type="button"
-                              onClick={() => handleSelectRole(r.role)}
-                              className={`relative p-3 rounded-2xl border text-center flex flex-col items-center justify-center gap-2 transition-all cursor-pointer group ${
-                                isSelected
-                                  ? 'border-[#122E52] dark:border-[#F7A914] bg-[#122E52]/5 dark:bg-[#122E52]/30 ring-2 ring-[#122E52]/20 shadow-xs'
-                                  : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-100/60 dark:hover:bg-slate-800/40'
-                              }`}
-                            >
-                              {/* Selected Checkmark Badge */}
-                              {isSelected && (
-                                <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-[#122E52] text-[#F7A914] flex items-center justify-center shadow-xs">
-                                  <Check className="w-2.5 h-2.5 stroke-[3]" />
-                                </div>
-                              )}
-                              <div
-                                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 ${r.bgClass} ${r.colorClass}`}
-                              >
-                                {r.icon}
+                    /* 3 Main Operational Role Cards */
+                    <div className="grid grid-cols-3 gap-2.5">
+                      {schoolRoles.map((r) => {
+                        const isSelected = selectedRole === r.role;
+                        return (
+                          <button
+                            key={r.role}
+                            type="button"
+                            onClick={() => handleSelectRole(r.role)}
+                            className={`relative p-3 rounded-2xl border text-center flex flex-col items-center justify-center gap-2 transition-all cursor-pointer group ${
+                              isSelected
+                                ? 'border-[#122E52] dark:border-[#F7A914] bg-[#122E52]/5 dark:bg-[#122E52]/30 ring-2 ring-[#122E52]/20 shadow-xs'
+                                : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-100/60 dark:hover:bg-slate-800/40'
+                            }`}
+                          >
+                            {/* Selected Checkmark Badge */}
+                            {isSelected && (
+                              <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-[#122E52] text-[#F7A914] flex items-center justify-center shadow-xs">
+                                <Check className="w-2.5 h-2.5 stroke-[3]" />
                               </div>
-                              <span className="text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight">
-                                {r.name}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {/* Bottom Row: 3 Cards */}
-                      <div className="grid grid-cols-3 gap-2.5">
-                        {schoolRoles.slice(4, 7).map((r) => {
-                          const isSelected = selectedRole === r.role;
-                          return (
-                            <button
-                              key={r.role}
-                              type="button"
-                              onClick={() => handleSelectRole(r.role)}
-                              className={`relative p-3 rounded-2xl border text-center flex flex-col items-center justify-center gap-2 transition-all cursor-pointer group ${
-                                isSelected
-                                  ? 'border-[#122E52] dark:border-[#F7A914] bg-[#122E52]/5 dark:bg-[#122E52]/30 ring-2 ring-[#122E52]/20 shadow-xs'
-                                  : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/60 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-100/60 dark:hover:bg-slate-800/40'
-                              }`}
+                            )}
+                            <div
+                              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 ${r.bgClass} ${r.colorClass}`}
                             >
-                              {/* Selected Checkmark Badge */}
-                              {isSelected && (
-                                <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-[#122E52] text-[#F7A914] flex items-center justify-center shadow-xs">
-                                  <Check className="w-2.5 h-2.5 stroke-[3]" />
-                                </div>
-                              )}
-                              <div
-                                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 ${r.bgClass} ${r.colorClass}`}
-                              >
-                                {r.icon}
-                              </div>
-                              <span className="text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight">
-                                {r.name}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
+                              {r.icon}
+                            </div>
+                            <span className="text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight">
+                              {r.name}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

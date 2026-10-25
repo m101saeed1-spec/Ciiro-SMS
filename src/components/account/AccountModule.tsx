@@ -380,10 +380,10 @@ export const AccountModule: React.FC = () => {
   const generateAutoSchoolId = (targetRole: UserRole) => {
     const prefixMap: Record<UserRole, string> = {
       SuperAdmin: 'SUP-2026-',
-      OwnerAdmin: 'OWN-2026-',
+      OwnerAdmin: 'PRP-2026-',
       Principal: 'PRP-2026-',
-      Admin: 'ADM-2026-',
-      AccountAdmin: 'ACC-2026-',
+      Admin: 'PRP-2026-',
+      AccountAdmin: 'PRP-2026-',
       Teacher: 'TCH-2026-',
       Student: 'STU-2026-',
     };
@@ -406,17 +406,12 @@ export const AccountModule: React.FC = () => {
     switch (role) {
       case 'SuperAdmin':
         return 'bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#122E52] dark:text-[#F7A914] border-[#1E3A63]';
-      case 'OwnerAdmin':
-      case 'Admin':
-        return 'bg-[#3B82F6]/10 dark:bg-[#3B82F6]/20 text-[#3B82F6] dark:text-[#60A5FA] border-[#3B82F6]/30 dark:border-[#3B82F6]/40';
       case 'Principal':
         return 'bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800';
       case 'Teacher':
         return 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
       case 'Student':
         return 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800';
-      case 'AccountAdmin':
-        return 'bg-teal-100 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 border-teal-200 dark:border-teal-800';
       default:
         return 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700';
     }
@@ -1115,12 +1110,9 @@ export const AccountModule: React.FC = () => {
                   className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-1.5 px-3 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
                 >
                   <option value="All">All Roles</option>
-                  <option value="SuperAdmin">Owner Platform</option>
-                  <option value="OwnerAdmin">School Owner</option>
-                  <option value="Principal">Headteacher</option>
+                  <option value="Principal">Principal</option>
                   <option value="Teacher">Teacher</option>
                   <option value="Student">Student</option>
-                  <option value="AccountAdmin">Accountant</option>
                 </select>
 
                 <select
@@ -1325,11 +1317,9 @@ export const AccountModule: React.FC = () => {
                 onChange={(e) => setSelectedNewRole(e.target.value as UserRole)}
                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl py-2 px-3 text-xs font-bold"
               >
-                <option value="Admin">School Owner (Admin)</option>
-                <option value="Principal">Headteacher (Principal)</option>
+                <option value="Principal">Principal (School Administration)</option>
                 <option value="Teacher">Teacher (Curriculum & Grade Entry)</option>
                 <option value="Student">Student (Protected Student Portal)</option>
-                <option value="AccountAdmin">Accountant (Financial Management)</option>
               </select>
             </div>
 
@@ -1431,7 +1421,7 @@ export const AccountModule: React.FC = () => {
             <div className="flex items-center justify-between">
               <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">Select Official Role</label>
               <div className="flex gap-1 flex-wrap">
-                {(['Admin', 'Principal', 'Teacher', 'Student', 'AccountAdmin'] as UserRole[]).map((r) => (
+                {(['Principal', 'Teacher', 'Student'] as UserRole[]).map((r) => (
                   <button
                     key={r}
                     type="button"

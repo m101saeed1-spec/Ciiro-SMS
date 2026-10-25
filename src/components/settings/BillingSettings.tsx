@@ -222,8 +222,8 @@ export const BillingSettings: React.FC<BillingSettingsProps> = ({ onPlanChanged 
 
             <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
               {tr(
-                'Full multi-role cloud suite: Owner Governance, Principal Oversight, Teacher Gradebook & Attendance, Accountant Fees Ledger, and Student Portal with automated rankings.',
-                'Nidaamka maamulka dugsiyada oo dhammaystiran: Maamulaha guud, Maamulaha dugsiga, Macallinka, Xisaabiyaha, iyo Ardayda.'
+                'Full multi-role cloud suite: Principal School Oversight, Teacher Gradebook & Attendance, and Student Portal with automated rankings.',
+                'Nidaamka maamulka dugsiyada oo dhammaystiran: Maamulaha dugsiga, Macallinka, iyo Ardayda.'
               )}
             </p>
           </div>

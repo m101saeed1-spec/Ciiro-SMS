@@ -94,15 +94,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 className="btn-gold w-full sm:w-auto"
               >
                 <Tag className="w-4 h-4" />
-                <span>{tr('Pro Plan ($19.99/mo · Save 17%)', 'Qorshaha Pro ($19.99/mo)')}</span>
-              </button>
-
-              <button
-                onClick={() => onNavigate('features')}
-                className="btn-outline-navy w-full sm:w-auto"
-              >
-                <Compass className="w-4 h-4 text-[#3B82F6]" />
-                <span>{tr('See Features', 'Eeg Astaamaha')}</span>
+                <span>{tr('Pro Plan ($15/mo)', 'Qorshaha Pro ($15/mo)')}</span>
               </button>
             </div>
           </div>
@@ -201,8 +193,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
               <div className="pt-2">
                 <button
-                  onClick={() => onNavigate('features')}
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#3B82F6] dark:text-[#60A5FA] hover:text-[#2563EB] transition-colors group cursor-pointer"
+                  onClick={() => onNavigate('why-ileys')}
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#122E52] dark:text-[#F7A914] hover:underline transition-colors group cursor-pointer"
                 >
                   <span>{tr('See how Ileys organizes student academic records', 'Eeg sida Ileys u maareyso xogta ardayda')}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -246,7 +238,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
               <div className="pt-2">
                 <button
-                  onClick={() => onNavigate('features')}
+                  onClick={() => onNavigate('why-ileys')}
                   className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors group cursor-pointer"
                 >
                   <span>{tr('Explore the 1-Click Roll Call and grading tools', 'Eeg nidaamka xaadiriska iyo buundooyinka')}</span>
@@ -413,8 +405,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
               <div className="pt-2">
                 <button
-                  onClick={() => onNavigate('features')}
-                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#3B82F6] dark:text-[#60A5FA] hover:text-[#2563EB] transition-colors group cursor-pointer"
+                  onClick={() => onNavigate('why-ileys')}
+                  className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-[#122E52] dark:text-[#F7A914] hover:underline transition-colors group cursor-pointer"
                 >
                   <span>{tr('See the single unified fees ledger and reports', 'Eeg xisaabaadka mideysan iyo warbixinnada')}</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -475,18 +467,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
             <div className="pt-2 text-center flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
-                onClick={() => onNavigate('features')}
-                className="px-6 py-2.5 rounded-full bg-white text-slate-900 hover:bg-slate-100 font-extrabold text-xs transition-all cursor-pointer inline-flex items-center gap-2 shadow-md hover:scale-102"
+                onClick={() => onNavigate('signup')}
+                className="btn-gold"
               >
-                <span>{tr('Explore Detailed Workflows on Features Page', 'Ka Baadh Dhammaan Astaamaha Bogga Qaybaha')}</span>
+                <span>{tr('Get Started Free', 'Ku Bilow Bilaash')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => onNavigate('pricing')}
-                className="btn-gold"
+                className="btn-outline-navy text-white border-white/30 hover:border-white hover:text-white"
               >
-                <span>{tr('Check Pricing Plans ($25/mo)', 'Eeg Qiimaha ($25/mo)')}</span>
-                <Tag className="w-3.5 h-3.5" />
+                <span>{tr('Check Pricing Plans ($15/mo)', 'Eeg Qiimaha ($15/mo)')}</span>
+                <Tag className="w-3.5 h-3.5 text-[#F7A914]" />
               </button>
             </div>
 
@@ -576,8 +568,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
                 {tr(
-                  'Join modern schools bringing their people, academics, and finances into one organized platform with Pro starting at $25/month.',
-                  'Kusoo biir dugsiyada casriga ah ee xogtooda, macallimiintooda, iyo xisaabaadkooda isugu keenay hal madal oo nidaamsan iyadoo Pro uu ka bilaabmayo $25 bishii.'
+                  'Join modern schools bringing their people, academics, and finances into one organized platform with Pro starting at $15/month.',
+                  'Kusoo biir dugsiyada casriga ah ee xogtooda, macallimiintooda, iyo xisaabaadkooda isugu keenay hal madal oo nidaamsan iyadoo Pro uu ka bilaabmayo $15 bishii.'
                 )}
               </p>
 
@@ -586,19 +578,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                   onClick={() => onNavigate('signup')}
                   className="btn-gold w-full sm:w-auto"
                 >
-                  {tr('Explore Ileys (Get Started)', 'Dheeh Ileys (Bilow Hadda)')}
+                  {tr('Get Started Free', 'Bilow Hadda Bilaash')}
                 </button>
                 <button
                   onClick={() => onNavigate('pricing')}
                   className="btn-navy w-full sm:w-auto"
                 >
-                  {tr('View Pricing Plans ($25/mo)', 'Eeg Qorshaha Qiimaha ($25/mo)')}
-                </button>
-                <button
-                  onClick={() => onNavigate('features')}
-                  className="btn-outline-navy w-full sm:w-auto text-white border-white/30 hover:border-white hover:text-white"
-                >
-                  {tr('View All Features', 'Eeg Dhammaan Astaamaha')}
+                  {tr('View Pro Plan ($15/mo)', 'Eeg Qorshaha Pro ($15/mo)')}
                 </button>
               </div>
             </div>

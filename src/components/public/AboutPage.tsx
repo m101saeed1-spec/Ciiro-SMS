@@ -69,13 +69,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             className="btn-gold"
           >
             <Tag className="w-3.5 h-3.5" />
-            <span>{tr('View Pricing ($25/mo Pro)', 'Eeg Qiimaha ($25/mo Pro)')}</span>
+            <span>{tr('View Pricing ($15/mo)', 'Eeg Qiimaha ($15/mo)')}</span>
           </button>
           <button
-            onClick={() => onNavigate('features')}
+            onClick={() => onNavigate('why-ileys')}
             className="px-6 py-2.5 rounded-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
           >
-            {tr('See Platform Features', 'Eeg Astaamaha')}
+            {tr('Why Choose Ileys', 'Maxaa Ileys?')}
           </button>
         </div>
       </section>
@@ -190,8 +190,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
         </h3>
         <p className="text-sm text-slate-700 dark:text-slate-300">
           {tr(
-            'Explore Ileys Pro today at $25/month or contact our team for multi-campus deployments.',
-            'Dheeh Ileys Pro maanta oo ah $25 bishii ama la xiriir kooxdayada haddii aad leedahay laamo badan.'
+            'Explore Ileys Pro today at $15/month or contact our team for multi-campus deployments.',
+            'Dheeh Ileys Pro maanta oo ah $15 bishii ama la xiriir kooxdayada haddii aad leedahay laamo badan.'
           )}
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -199,7 +199,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onNavigate }) => {
             onClick={() => onNavigate('pricing')}
             className="btn-gold w-full sm:w-auto"
           >
-            {tr('View Pro Pricing ($25/mo)', 'Eeg Qiimaha Pro ($25/mo)')}
+            {tr('View Pro Pricing ($15/mo)', 'Eeg Qiimaha Pro ($15/mo)')}
           </button>
           <button
             onClick={() => onNavigate('contact')}

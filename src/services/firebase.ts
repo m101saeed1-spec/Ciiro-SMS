@@ -35,7 +35,7 @@ const app = !getApps().length ? initializeApp(firebaseConfigJson) : getApp();
 export const auth = getAuth(app);
 
 // Use specified databaseId if present, else default
-// Initialize Firestore with auto-detect long-polling to prevent WebChannel 10s connection timeout in browser/iframe environments
+// Initialize Firestore with forced long-polling to eliminate WebChannel streaming 10s timeout in browser/iframe environments
 const targetDbId =
   firebaseConfigJson.firestoreDatabaseId && firebaseConfigJson.firestoreDatabaseId !== '(default)'
     ? firebaseConfigJson.firestoreDatabaseId
@@ -46,7 +46,7 @@ try {
   firestoreInstance = initializeFirestore(
     app,
     {
-      experimentalAutoDetectLongPolling: true,
+      experimentalForceLongPolling: true,
     },
     targetDbId
   );
@@ -63,6 +63,8 @@ export async function testFirebaseConnection() {
   } catch (error) {
     if (error instanceof Error && error.message.includes('the client is offline')) {
       console.warn('Firebase client is offline or connecting...');
+    } else {
+      console.debug('Firebase initial connection status:', error);
     }
   }
 }
@@ -165,18 +167,19 @@ export async function signInWithFirebase(email: string, password: string): Promi
     try {
       userCredential = await signInWithEmailAndPassword(auth, cleanEmail, password);
     } catch (authErr: any) {
-      // If user does not exist yet and is platform admin or demo, attempt creating account securely in Firebase Auth
+      // If user does not exist or credentials mismatch, attempt auto-creating account securely in Firebase Auth
       if (
-        (authErr.code === 'auth/user-not-found' ||
-         authErr.code === 'auth/invalid-credential' ||
-         authErr.code === 'auth/wrong-password') &&
-        cleanEmail === 'm101saeed1@gmail.com'
+        authErr.code === 'auth/user-not-found' ||
+        authErr.code === 'auth/invalid-credential' ||
+        authErr.code === 'auth/wrong-password'
       ) {
         try {
           userCredential = await createUserWithEmailAndPassword(auth, cleanEmail, password);
-        } catch {
-          // If already exists or error, throw original error
-          throw authErr;
+        } catch (createErr: any) {
+          if (createErr.code === 'auth/email-already-in-use') {
+            throw authErr;
+          }
+          throw createErr;
         }
       } else {
         throw authErr;

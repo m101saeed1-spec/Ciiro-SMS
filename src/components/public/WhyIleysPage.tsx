@@ -51,7 +51,7 @@ export const WhyIleysPage: React.FC<WhyIleysPageProps> = ({ onNavigate }) => {
     {
       feature: tr('Pricing & Affordability', 'Qiimaha & Fudeydka'),
       legacy: tr('Hidden setup fees, expensive per-student charges', 'Kharashyo qarsoon iyo lacag qaali ah arday kasta'),
-      ileys: tr('Simple $25/mo Pro plan with 10% annual discount', 'Qorshe fudud oo $25/mo ah oo leh 10% dhimis sannadle ah'),
+      ileys: tr('Simple $15/mo Pro plan with all-inclusive access', 'Qorshe fudud oo $15/mo ah oo leh adeeg dhammaystiran'),
     },
     {
       feature: tr('Language Accessibility', 'Helitaanka Luqadda'),
@@ -101,13 +101,13 @@ export const WhyIleysPage: React.FC<WhyIleysPageProps> = ({ onNavigate }) => {
             className="btn-gold"
           >
             <Tag className="w-3.5 h-3.5" />
-            <span>{tr('See Pro Plan ($25/mo)', 'Eeg Qorshaha Pro ($25/mo)')}</span>
+            <span>{tr('See Pro Plan ($15/mo)', 'Eeg Qorshaha Pro ($15/mo)')}</span>
           </button>
           <button
-            onClick={() => onNavigate('features')}
+            onClick={() => onNavigate('faq')}
             className="px-6 py-2.5 rounded-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-bold text-xs hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
           >
-            {tr('Explore All Features', 'Eeg Astaamaha')}
+            {tr('Read Common FAQs', 'Su’aalaha Badan')}
           </button>
         </div>
       </section>
@@ -252,8 +252,8 @@ export const WhyIleysPage: React.FC<WhyIleysPageProps> = ({ onNavigate }) => {
         </h3>
         <p className="text-sm text-slate-700 dark:text-slate-300">
           {tr(
-            'Explore the full platform features or start with Ileys Pro at $25/mo with flexible monthly, 3-month, 6-month, or yearly billing.',
-            'Baadh astaamaha oo dhan ama ku bilow Ileys Pro oo ah $25 bishii oo leh xilliyo bille, 3 bilood, 6 bilood, ama sannadle ah.'
+            'Get started with Ileys Pro at just $15/month for complete school operational freedom.',
+            'Ku bilow Ileys Pro oo ah kaliya $15 bishii si aad u hesho xorriyad maamul oo dhammaystiran.'
           )}
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -267,7 +267,7 @@ export const WhyIleysPage: React.FC<WhyIleysPageProps> = ({ onNavigate }) => {
             onClick={() => onNavigate('pricing')}
             className="btn-gold w-full sm:w-auto"
           >
-            {tr('View Pro Pricing ($25/mo)', 'Eeg Qiimaha Pro ($25/mo)')}
+            {tr('View Pro Pricing ($15/mo)', 'Eeg Qiimaha Pro ($15/mo)')}
           </button>
         </div>
       </section>

@@ -6,11 +6,9 @@ import { useTheme } from '../../context/ThemeContext';
 import { NavModule } from './Sidebar';
 import { getRoleDisplayName } from '../../types';
 import { UserAvatar } from './UserAvatar';
-import { GlobalSearchBar } from './GlobalSearchBar';
 import { LanguageToggle } from './LanguageToggle';
 import {
   Bell,
-  MessageSquare,
   Menu,
   ChevronDown,
   User,
@@ -64,16 +62,12 @@ export const Header: React.FC<HeaderProps> = ({
     switch (activeRole) {
       case 'SuperAdmin':
         return 'bg-[#FEF3C7] text-[#92400E] border-[#FDE68A]';
-      case 'OwnerAdmin':
-        return 'bg-[#122E52]/10 text-[#122E52] dark:text-[#F7A914] border-[#122E52]/20';
       case 'Principal':
         return 'bg-[#EFF6FF] text-[#1E40AF] border-[#DBEAFE]';
       case 'Teacher':
         return 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300';
       case 'Student':
         return 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300';
-      case 'AccountAdmin':
-        return 'bg-teal-50 text-teal-800 border-teal-200 dark:bg-teal-950/40 dark:text-teal-300';
       default:
         return 'bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-800 dark:text-slate-200';
     }
@@ -91,70 +85,10 @@ export const Header: React.FC<HeaderProps> = ({
           <Menu className="w-5 h-5" />
         </button>
 
-        {/* Active School Badge / Super Admin Switcher */}
-        {activeSchool && (
-          <div className="relative">
-            <button
-              onClick={() => isSuperAdmin && setIsSchoolMenuOpen(!isSchoolMenuOpen)}
-              className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-2xl border text-xs font-bold transition-all ${
-                isSuperAdmin
-                  ? 'border-[#3B82F6]/30 dark:border-[#3B82F6]/40 bg-[#EFF6FF] dark:bg-[#1E3A63]/60 hover:bg-[#DBEAFE] cursor-pointer'
-                  : 'border-slate-200/80 dark:border-[#1E3A63] bg-slate-50/50 dark:bg-[#0B1B32]/50'
-              }`}
-            >
-              <img
-                src={activeSchool.logo}
-                alt={activeSchool.name}
-                className="w-5 h-5 rounded-lg object-cover"
-                onError={(e) => {
-                  (e.target as HTMLElement).style.display = 'none';
-                }}
-              />
-              <span className="max-w-[140px] truncate text-[#122E52] dark:text-white font-extrabold text-[11px]">
-                {activeSchool.name}
-              </span>
-              <span className="text-[10px] font-mono text-[#3B82F6] dark:text-[#93C5FD] bg-[#EFF6FF] dark:bg-[#0B1B32] px-1.5 py-0.2 rounded border border-[#DBEAFE] dark:border-[#1E3A63]">
-                {activeSchool.code}
-              </span>
-              {isSuperAdmin && <ChevronDown className="w-3.5 h-3.5 text-[#3B82F6]" />}
-            </button>
 
-            {isSuperAdmin && isSchoolMenuOpen && (
-              <div className="absolute left-0 mt-2 w-72 bg-white dark:bg-[#0B1B32] rounded-2xl shadow-xl border border-slate-100 dark:border-[#1E3A63] p-2 z-50 animate-scale-up">
-                <div className="p-2 border-b border-slate-100 dark:border-[#1E3A63] mb-1">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                    Switch School Tenant
-                  </span>
-                </div>
-                <div className="max-h-60 overflow-y-auto space-y-1">
-                  {schools.map((sch) => (
-                    <button
-                      key={sch.id}
-                      onClick={() => {
-                        setActiveSchoolId(sch.id);
-                        setIsSchoolMenuOpen(false);
-                      }}
-                      className={`w-full p-2 rounded-xl text-left flex items-center justify-between text-xs font-semibold cursor-pointer ${
-                        sch.id === activeSchool.id
-                          ? 'bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#1E40AF] dark:text-white font-bold'
-                          : 'hover:bg-slate-50 dark:hover:bg-[#122E52] text-slate-700 dark:text-slate-300'
-                      }`}
-                    >
-                      <span className="truncate">{sch.name}</span>
-                      <span className="text-[10px] font-mono text-[#3B82F6] bg-[#EFF6FF] dark:bg-[#0B1B32] px-1.5 py-0.5 rounded border border-[#DBEAFE] dark:border-[#1E3A63]">
-                        {sch.code}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Universal Global Search Bar */}
         <div data-tour="global-search" className="flex-1 max-w-md">
-          <GlobalSearchBar onNavigate={onNavigate} />
         </div>
       </div>
 
@@ -163,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Authenticated Locked Role Badge */}
         <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border border-slate-200/80 dark:border-[#1E3A63] text-xs font-bold transition-all shadow-2xs bg-slate-50/50 dark:bg-[#0B1B32]/50">
           <span className="text-[10px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-extrabold">{t.language === 'so' ? 'Doorka:' : 'Role:'}</span>
-          <span className={`px-2 py-0.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 ${getRoleBadgeStyle()}`}>
+          <span className={`px-2 py-0.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 ${getRoleBadgeStyle()}`} style={{ fontSize: '6px' }}>
             <Lock className="w-3 h-3" />
             {tx(getRoleDisplayName(activeRole))}
           </span>
@@ -178,7 +112,7 @@ export const Header: React.FC<HeaderProps> = ({
             title={tr('View Public Website', 'Eeg Websaydhka Guud')}
           >
             <Globe className="w-3.5 h-3.5 text-[#3B82F6]" />
-            <span>{tr('Public Website', 'Websaydhka Guud')}</span>
+            <span style={{ fontSize: '0px' }}>{tr('Public Website', 'Websaydhka Guud')}</span>
           </button>
         )}
 
@@ -200,113 +134,6 @@ export const Header: React.FC<HeaderProps> = ({
             <Moon className="w-4 h-4 text-[#122E52] group-hover:-rotate-12 transition-transform" />
           )}
         </button>
-
-        {/* Biometric Passkey Quick Indicator (Teachers & Students) */}
-        {isBiometricSupported && (
-          <button
-            type="button"
-            onClick={() => onNavigate('settings')}
-            className={`hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-[11px] font-bold transition-all shadow-2xs cursor-pointer ${
-              hasRegisteredBiometrics
-                ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
-                : 'border-slate-200/80 dark:border-[#1E3A63] bg-white dark:bg-[#122E52] text-slate-600 dark:text-slate-300 hover:border-[#3B82F6]'
-            }`}
-            title={
-              hasRegisteredBiometrics
-                ? tr('Biometric Passkey Active on this Device', 'Furaha Faraha/Wajiga wuu Shaqaynayaa')
-                : tr('Setup WebAuthn Biometric Passkey in Settings', 'Kici Furaha Faraha/Wajiga Settings-ka')
-            }
-          >
-            <Fingerprint className={`w-3.5 h-3.5 ${hasRegisteredBiometrics ? 'text-emerald-500' : 'text-[#3B82F6]'}`} />
-            <span>{hasRegisteredBiometrics ? tr('Passkey Active', 'Faraha Shaqeynaya') : tr('Passkey', 'Furaha')}</span>
-          </button>
-        )}
-
-        {/* Quick Gemini AI Assistant Launcher */}
-        <button
-          type="button"
-          onClick={() => onNavigate('gemini')}
-          className="relative p-2.5 rounded-full border border-[#F7A914]/40 bg-[#FEF3C7] dark:bg-[#122E52] text-[#92400E] dark:text-[#F7A914] hover:bg-[#FDE68A] dark:hover:bg-[#1E3A63] hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-2xs"
-          title="Open Gemini AI Platform Assistant"
-        >
-          <Sparkles className="w-4 h-4 text-[#F7A914]" />
-          <span className="sr-only">Gemini AI</span>
-        </button>
-
-        {/* Notifications Icon Button */}
-        <div className="relative">
-          <button
-            onClick={() => setIsNotifOpen(!isNotifOpen)}
-            className="relative p-2.5 rounded-full border border-slate-200/80 dark:border-[#1E3A63] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1E3A63] hover:text-[#3B82F6] transition-colors"
-            title="Notifications"
-          >
-            <Bell className="w-4 h-4" />
-            {notices.length > 0 && (
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#F7A914] border-2 border-white dark:border-[#0B1B32] animate-pulse" />
-            )}
-          </button>
-
-          {/* Notifications Dropdown */}
-          {isNotifOpen && (
-            <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-[#0B1B32] rounded-2xl shadow-xl border border-slate-100 dark:border-[#1E3A63] p-4 z-50 animate-scale-up">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#1E3A63]">
-                <h4 className="text-sm font-bold text-[#122E52] dark:text-white">School Notices</h4>
-                <button
-                  onClick={() => setIsNotifOpen(false)}
-                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="py-2 space-y-2.5 max-h-64 overflow-y-auto">
-                {notices.slice(0, 4).map((n) => (
-                  <div
-                    key={n.id}
-                    onClick={() => {
-                      onNavigate('notice');
-                      setIsNotifOpen(false);
-                    }}
-                    className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#122E52]/70 hover:bg-[#EFF6FF] dark:hover:bg-[#1E3A63] cursor-pointer transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#EFF6FF] dark:bg-[#1E3A63] text-[#1E40AF] dark:text-[#93C5FD]">
-                        {n.priority}
-                      </span>
-                      <span className="text-[11px] text-slate-400 dark:text-slate-500">{n.date}</span>
-                    </div>
-                    <p className="text-xs font-semibold text-[#122E52] dark:text-white mt-1 line-clamp-1">{n.title}</p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">{n.content}</p>
-                  </div>
-                ))}
-              </div>
-              <button
-                onClick={() => {
-                  onNavigate('notice');
-                  setIsNotifOpen(false);
-                }}
-                className="w-full mt-2 py-2 text-center text-xs font-bold text-[#3B82F6] hover:bg-[#EFF6FF] dark:hover:bg-[#1E3A63] rounded-xl transition-colors cursor-pointer"
-              >
-                View All Notices
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Faculty Chat Icon */}
-        {(activeRole === 'Teacher' || activeRole === 'OwnerAdmin' || activeRole === 'Principal' || activeRole === 'Admin') && (
-          <button
-            onClick={() => onNavigate('chat')}
-            className="relative p-2.5 rounded-full border border-slate-200/80 dark:border-[#1E3A63] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#1E3A63] hover:text-[#3B82F6] transition-colors"
-            title="Faculty Chat"
-          >
-            <MessageSquare className="w-4 h-4" />
-            {unreadChatCount > 0 && (
-              <span className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-full bg-[#F7A914] text-[9px] font-bold text-[#12233F] shadow-xs">
-                {unreadChatCount}
-              </span>
-            )}
-          </button>
-        )}
 
         {/* Profile User Dropdown Pill */}
         <div data-tour="profile-menu" className="relative">
@@ -360,7 +187,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>{tr('Account Profile', 'Xogta Koontada')}</span>
               </button>
 
-              {(activeRole === 'SuperAdmin' || activeRole === 'OwnerAdmin' || activeRole === 'Admin') && (
+              {(activeRole === 'SuperAdmin' || activeRole === 'Principal') && (
                 <button
                   onClick={() => {
                     onNavigate('activities' as NavModule);

@@ -95,15 +95,15 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
       {/* Platform Header Banner */}
       <div className="bg-gradient-to-br from-[#122E52] via-[#0B1B32] to-[#12233F] rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-[#1E3A63]">
         <div className="relative z-10 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F7A914]/20 border border-[#F7A914]/40 text-[#F7A914] text-xs font-bold mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F7A914]/20 border border-[#F7A914]/40 text-xs font-bold mb-3" style={{ color: '#ffffff' }}>
             <ShieldCheck className="w-3.5 h-3.5 text-[#F7A914]" />
-            <span>Platform Master Administration</span>
+            <span style={{ color: '#ffffff' }}>Platform Master Administration</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight" style={{ color: '#ffffff' }}>
             Platform Command Center
           </h1>
-          <p className="text-slate-300 text-xs sm:text-sm mt-2 leading-relaxed">
-            Welcome, {currentUser.name}. You have unrestricted platform-level oversight across all {totalSchools} registered school tenants, multi-tenant databases, faculty accounts, and enterprise compliance.
+          <p className="text-xs sm:text-sm mt-2 leading-relaxed" style={{ color: '#ffffff' }}>
+            <span style={{ color: '#ffffff' }}>Welcome,</span> <span>{currentUser.name}.</span> <span>You</span> <span>have</span> <span style={{ fontSize: '11px' }}>unrestricted</span> platform-level oversight across all {totalSchools} registered school tenants, multi-tenant databases, faculty accounts, and enterprise compliance.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 mt-5">
@@ -127,8 +127,8 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
               className="btn-outline-navy"
               title="Refresh Telemetry"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${loadingStats ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">Refresh</span>
+              <RefreshCw className={`w-3.5 h-3.5 ${loadingStats ? 'animate-spin' : ''}`} style={{ color: '#ffaf00' }} />
+              <span className="hidden sm:inline" style={{ color: '#ffffff' }}>Refresh</span>
             </button>
           </div>
         </div>

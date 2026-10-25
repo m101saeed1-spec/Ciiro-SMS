@@ -53,30 +53,21 @@ export const TeachersModule: React.FC = () => {
     addToast,
   } = useSchoolData();
 
-  // Role permissions: Headteacher (Principal) and School Owner can recruit and manage faculty
+  // Role permissions: Principal can recruit and manage faculty
   const canAddTeacher =
     isPrincipal ||
-    isOwnerAdmin ||
     isAdmin ||
-    activeRole === 'Principal' ||
-    activeRole === 'OwnerAdmin' ||
-    activeRole === 'Admin';
+    activeRole === 'Principal';
 
   const canNominateClassTeacher =
     isPrincipal ||
-    isOwnerAdmin ||
     isAdmin ||
-    activeRole === 'Principal' ||
-    activeRole === 'OwnerAdmin' ||
-    activeRole === 'Admin';
+    activeRole === 'Principal';
 
   const canManageTeachers =
     isPrincipal ||
-    isOwnerAdmin ||
     isAdmin ||
-    activeRole === 'Principal' ||
-    activeRole === 'OwnerAdmin' ||
-    activeRole === 'Admin';
+    activeRole === 'Principal';
 
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);

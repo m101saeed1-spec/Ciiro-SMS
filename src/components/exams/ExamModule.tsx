@@ -4,6 +4,7 @@ import { useSchoolData } from '../../context/SchoolDataContext';
 import { Exam, StudentMark } from '../../types';
 import { Modal } from '../common/Modal';
 import { UserAvatar } from '../common/UserAvatar';
+import { StatusBadge } from '../common/StatusBadge';
 import {
   ResponsiveContainer,
   LineChart,
@@ -422,15 +423,7 @@ export const ExamModule: React.FC = () => {
                     <span className="px-2.5 py-1 rounded-full bg-[#3B82F6]/10 text-[#3B82F6] dark:text-[#60A5FA] font-bold text-[10px] border border-[#1E3A63]">
                       {ex.term}
                     </span>
-                    <span
-                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                        ex.status === 'Completed'
-                          ? 'bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
-                          : 'bg-amber-50 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
-                      }`}
-                    >
-                      {ex.status}
-                    </span>
+                    <StatusBadge status={ex.status} />
                   </div>
 
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">{ex.title}</h3>

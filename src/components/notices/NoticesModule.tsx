@@ -21,11 +21,11 @@ import {
 
 export const NoticesModule: React.FC = () => {
   const { notices, addNotice, deleteNotice, globalSearch } = useSchoolData();
-  const { currentUser, isStudent, activeRole, isSuperAdmin, isOwnerAdmin, isPrincipal, isTeacher } = useAuth();
+  const { currentUser, isStudent, activeRole, isSuperAdmin, isPrincipal, isTeacher } = useAuth();
   const { t, tr, tx, isSomali } = useLanguage();
 
   // Strict role check: Students cannot publish or delete announcements
-  const canManageNotices = !isStudent && (isPrincipal || isOwnerAdmin || isTeacher || isSuperAdmin || activeRole === 'Admin');
+  const canManageNotices = !isStudent && (isPrincipal || isTeacher || isSuperAdmin);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAudienceFilter, setSelectedAudienceFilter] = useState<string>('All');

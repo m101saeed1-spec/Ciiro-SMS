@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 import { Modal } from '../common/Modal';
 
-export const SchoolOwnerOverview: React.FC = () => {
+export const SchoolProfileOverview: React.FC = () => {
   const { activeSchool, updateSchool, currentUser } = useAuth();
   const { students, teachers, classes, books, addToast } = useSchoolData();
   const { language, t, tx, tr } = useLanguage();

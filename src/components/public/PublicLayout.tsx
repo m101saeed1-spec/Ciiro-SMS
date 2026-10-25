@@ -4,7 +4,6 @@ import { PublicFooter } from './PublicFooter';
 import { HomePage } from './HomePage';
 import { AboutPage } from './AboutPage';
 import { WhyIleysPage } from './WhyIleysPage';
-import { FeaturesPage } from './FeaturesPage';
 import { PricingPage } from './PricingPage';
 import { FaqPage } from './FaqPage';
 import { ContactPage } from './ContactPage';
@@ -45,7 +44,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
   }, [currentRoute]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200 relative selection:bg-[#F7A914] selection:text-[#122E52]">
+    <div className="min-h-screen flex flex-col bg-[#F7F9FC] dark:bg-[#0B1B32] text-[#12233F] dark:text-slate-100 transition-colors duration-200 relative selection:bg-[#F7A914] selection:text-[#122E52]">
       
       {/* ========================================================================= */}
       {/* 1. TOP SCROLL PROGRESS BAR (Thin, Animated, Primary Accent)               */}
@@ -70,7 +69,6 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
         {currentRoute === 'home' && <HomePage onNavigate={onNavigate} />}
         {currentRoute === 'about' && <AboutPage onNavigate={onNavigate} />}
         {currentRoute === 'why-ileys' && <WhyIleysPage onNavigate={onNavigate} />}
-        {currentRoute === 'features' && <FeaturesPage onNavigate={onNavigate} />}
         {currentRoute === 'pricing' && <PricingPage onNavigate={onNavigate} />}
         {currentRoute === 'faq' && <FaqPage onNavigate={onNavigate} />}
         {currentRoute === 'contact' && <ContactPage onNavigate={onNavigate} />}

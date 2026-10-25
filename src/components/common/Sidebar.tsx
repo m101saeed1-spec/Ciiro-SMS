@@ -35,6 +35,7 @@ import {
   Clock,
   BarChart3,
   UserCheck,
+  FileCheck,
 } from 'lucide-react';
 
 export type NavModule =
@@ -58,6 +59,7 @@ export type NavModule =
   | 'subject'
   | 'attendance'
   | 'exam'
+  | 'assessments'
   | 'notice'
   | 'profile'
   | 'ranking'
@@ -90,31 +92,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { currentUser, activeRole, isSuperAdmin } = useAuth();
   const { unreadChatCount } = useSchoolData();
-  const { t } = useLanguage();
+  const { t, tr } = useLanguage();
 
-  // 1. OWNER PLATFORM NAVIGATION
   const platformOwnerNavItems: NavItem[] = [
     { id: 'home', label: t.dashboard, icon: Home },
     { id: 'schools', label: t.schools, icon: Building2 },
-    { id: 'headteachers', label: t.headteachers, icon: UserCheck },
     { id: 'ranking', label: t.analytics, icon: BarChart3 },
     { id: 'report', label: t.reports, icon: FileText },
     { id: 'activities', label: t.activityAuditLogs, icon: History },
     { id: 'settings', label: t.platformSettings, icon: Settings },
   ];
 
-  // 2. SCHOOL OWNER NAVIGATION
-  const schoolOwnerNavItems: NavItem[] = [
-    { id: 'home', label: t.dashboard, icon: Home },
-    { id: 'schools', label: t.schoolOverview, icon: Building2 },
-    { id: 'headteachers', label: t.headteacherManagement, icon: UserCheck },
-    { id: 'fees', label: t.financialOverview, icon: CreditCard },
-    { id: 'report', label: t.schoolPerformanceReports, icon: FileText },
-    { id: 'notice', label: t.announcements, icon: Bell },
-    { id: 'settings', label: t.settings, icon: Settings },
-  ];
-
-  // 3. HEADTEACHER NAVIGATION
+  // 2. PRINCIPAL NAVIGATION (School Administration)
   const headteacherNavItems: NavItem[] = [
     { id: 'home', label: t.dashboard, icon: Home },
     { id: 'students', label: t.students, icon: GraduationCap },
@@ -123,6 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'subject', label: t.subjects, icon: BookMarked },
     { id: 'attendance', label: t.attendance, icon: CalendarCheck },
     { id: 'exam', label: t.examsResults, icon: Award },
+    { id: 'assessments', label: tr('Assessments', 'Imtixaanaadka'), icon: FileCheck },
     { id: 'timetable', label: t.timetable, icon: CalendarDays },
     { id: 'notice', label: t.announcements, icon: Bell },
     { id: 'fees', label: t.accountsFees, icon: CreditCard },
@@ -130,19 +120,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'settings', label: t.settings, icon: Settings },
   ];
 
-  // 4. TEACHER NAVIGATION
+  // 3. TEACHER NAVIGATION (Classrooms, Timetable & Salary Records)
   const teacherNavItems: NavItem[] = [
     { id: 'home', label: t.dashboard, icon: Home },
     { id: 'class', label: t.myClasses, icon: Layers },
     { id: 'students', label: t.myStudents, icon: GraduationCap },
     { id: 'attendance', label: t.attendance, icon: CalendarCheck },
     { id: 'exam', label: t.examsResults, icon: Award },
+    { id: 'assessments', label: tr('Assessments', 'Imtixaanaadka'), icon: FileCheck },
     { id: 'timetable', label: t.myTimetable, icon: CalendarDays },
+    { id: 'fees', label: 'Teacher Payments', icon: CreditCard },
     { id: 'notice', label: t.announcements, icon: Bell },
     { id: 'settings', label: t.settings, icon: Settings },
   ];
 
-  // 5. STUDENT NAVIGATION
+  // 4. STUDENT NAVIGATION (Academic Records & Fees)
   const studentNavItems: NavItem[] = [
     { id: 'home', label: t.dashboard, icon: Home },
     { id: 'class', label: t.myClass, icon: Layers },
@@ -150,18 +142,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'teachers', label: t.myTeachers, icon: Users },
     { id: 'attendance', label: t.myAttendance, icon: CalendarCheck },
     { id: 'exam', label: t.myResults, icon: Award },
+    { id: 'assessments', label: tr('Assessments', 'Imtixaanaadka'), icon: FileCheck },
     { id: 'timetable', label: t.myTimetable, icon: CalendarDays },
     { id: 'fees', label: t.myFees, icon: CreditCard },
-    { id: 'notice', label: t.announcements, icon: Bell },
-    { id: 'settings', label: t.settings, icon: Settings },
-  ];
-
-  // 6. ACCOUNTANT NAVIGATION (Single Unified FEES Module)
-  const accountantNavItems: NavItem[] = [
-    { id: 'home', label: t.dashboard, icon: Home },
-    { id: 'fees', label: t.accountsFees, icon: CreditCard },
-    { id: 'ranking', label: t.analytics, icon: BarChart3 },
-    { id: 'report', label: t.reports, icon: FileText },
     { id: 'notice', label: t.announcements, icon: Bell },
     { id: 'settings', label: t.settings, icon: Settings },
   ];
@@ -171,19 +154,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
     switch (activeRole) {
       case 'SuperAdmin':
         return platformOwnerNavItems;
-      case 'OwnerAdmin':
-      case 'Admin':
-        return schoolOwnerNavItems;
       case 'Principal':
         return headteacherNavItems;
       case 'Teacher':
         return teacherNavItems;
       case 'Student':
         return studentNavItems;
-      case 'AccountAdmin':
-        return accountantNavItems;
       default:
-        return schoolOwnerNavItems;
+        return headteacherNavItems;
     }
   };
 

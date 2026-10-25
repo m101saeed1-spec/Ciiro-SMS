@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export const ClassModule: React.FC = () => {
-  const { activeRole, isPrincipal, isOwnerAdmin, isAdmin, currentUser } = useAuth();
+  const { activeRole, isPrincipal, isAdmin, currentUser } = useAuth();
   const {
     classes,
     addClass,
@@ -31,11 +31,8 @@ export const ClassModule: React.FC = () => {
 
   const canManageClasses =
     isPrincipal ||
-    isOwnerAdmin ||
     isAdmin ||
-    activeRole === 'Principal' ||
-    activeRole === 'OwnerAdmin' ||
-    activeRole === 'Admin';
+    activeRole === 'Principal';
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedClassForView, setSelectedClassForView] = useState<SchoolClass | null>(null);

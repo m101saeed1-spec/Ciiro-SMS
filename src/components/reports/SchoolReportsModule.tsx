@@ -59,7 +59,7 @@ interface SchoolReportsModuleProps {
 }
 
 export const SchoolReportsModule: React.FC<SchoolReportsModuleProps> = ({ onNavigate }) => {
-  const { currentUser, activeRole, activeSchool, isOwnerAdmin, isPrincipal } = useAuth();
+  const { currentUser, activeRole, activeSchool, isPrincipal } = useAuth();
   const {
     students = [],
     teachers = [],
@@ -76,8 +76,7 @@ export const SchoolReportsModule: React.FC<SchoolReportsModuleProps> = ({ onNavi
 
   // Role categorization
   const isStudent = activeRole === 'Student';
-  const isAccountant = activeRole === 'AccountAdmin';
-  const isExecutive = activeRole === 'OwnerAdmin' || activeRole === 'Admin' || activeRole === 'Principal' || isOwnerAdmin || isPrincipal;
+  const isExecutive = activeRole === 'Principal' || isPrincipal;
 
   // Active Report Section Tab
   const [activeReportTab, setActiveReportTab] = useState<'performance' | 'attendance' | 'financial' | 'academics'>('performance');
@@ -581,7 +580,7 @@ export const SchoolReportsModule: React.FC<SchoolReportsModuleProps> = ({ onNavi
               <FileText className="w-5 h-5" />
             </span>
             <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              {isAccountant ? 'Bursar & Revenue Audit' : 'Institutional Performance Intelligence'}
+              {'Institutional Performance Intelligence'}
             </span>
             <span className="text-slate-300 dark:text-slate-700">·</span>
             <span className="text-xs font-semibold text-[#3B82F6] dark:text-[#60A5FA]">
@@ -589,7 +588,7 @@ export const SchoolReportsModule: React.FC<SchoolReportsModuleProps> = ({ onNavi
             </span>
           </div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
-            {isAccountant ? 'Financial Performance & Revenue Audit Reports' : 'School Performance Report & Analytics'}
+            {'School Performance Report & Analytics'}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Analyzed performance metrics, attendance trends, curriculum mastery tiers, and fee collections generated from live system data.

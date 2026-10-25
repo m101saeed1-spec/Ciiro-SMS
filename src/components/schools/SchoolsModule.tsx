@@ -39,7 +39,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { School } from '../../types';
-import { SchoolOwnerOverview } from './SchoolOwnerOverview';
+import { SchoolProfileOverview } from './SchoolOwnerOverview';
 
 export const SchoolsModule: React.FC = () => {
   const {
@@ -57,7 +57,7 @@ export const SchoolsModule: React.FC = () => {
 
   // If the active user is not the Platform Super Admin, show their specific School Overview
   if (!isSuperAdmin) {
-    return <SchoolOwnerOverview />;
+    return <SchoolProfileOverview />;
   }
 
   const {
@@ -250,19 +250,19 @@ export const SchoolsModule: React.FC = () => {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-[#F7A914] shadow-inner">
-                <Building2 className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md border flex items-center justify-center text-[#F7A914] shadow-inner" style={{ borderColor: '#ffffff' }}>
+                <Building2 className="w-5 h-5" style={{ borderColor: '#3f3c12', backgroundColor: '#f7a914' }} />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h1 className="text-xl font-black tracking-tight text-white">
+                  <h1 className="text-xl font-black tracking-tight" style={{ color: '#fdfdfd' }}>
                     School Tenancy & Infrastructure Management
                   </h1>
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 border border-amber-400/30" style={{ color: '#ffffff' }}>
                     Super Admin Console
                   </span>
                 </div>
-                <p className="text-xs text-[#F7A914]/80 mt-0.5">
+                <p className="text-xs mt-0.5" style={{ color: '#ffffff' }}>
                   Multi-tenant isolation engine: Every student, teacher, attendance record, and chat group is cryptographically bound to its <code className="bg-white/10 px-1 py-0.5 rounded text-[#F7A914]">school_id</code>.
                 </p>
               </div>

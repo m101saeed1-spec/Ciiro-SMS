@@ -21,7 +21,6 @@ interface AuthContextType {
   activeSchoolId: string;
   activeSchool: School | undefined;
   setActiveSchoolId: (schoolId: string) => void;
-  switchSchoolContext: (schoolId: string, role?: UserRole) => Promise<{ success: boolean; error?: string }>;
 
   // 6 Canonical Roles:
   isSuperAdmin: boolean;
@@ -101,7 +100,13 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [userProfiles, setUserProfiles] = useState<UserProfile[]>(() => {
     const saved = localStorage.getItem('eduspike_profiles');
-    return saved ? JSON.parse(saved) : INITIAL_USER_PROFILES;
+    const rawList = saved ? JSON.parse(saved) : INITIAL_USER_PROFILES;
+    return rawList.map((p: any) => {
+      if (p.role === 'OwnerAdmin' || p.role === 'Admin' || p.role === 'AccountAdmin') {
+        return { ...p, role: 'Principal', designation: 'Principal Administrator' };
+      }
+      return p;
+    });
   });
 
   const [schools, setSchools] = useState<School[]>(() => {
@@ -111,11 +116,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [memberships, setMemberships] = useState<SchoolMembership[]>(() => {
     const saved = localStorage.getItem('eduspike_memberships');
-    return saved ? JSON.parse(saved) : INITIAL_SCHOOL_MEMBERSHIPS;
+    const rawList = saved ? JSON.parse(saved) : INITIAL_SCHOOL_MEMBERSHIPS;
+    return rawList.map((m: any) => {
+      if (m.role === 'OwnerAdmin' || m.role === 'Admin' || m.role === 'AccountAdmin') {
+        return { ...m, role: 'Principal', designation: 'Principal Administrator' };
+      }
+      return m;
+    });
   });
 
   const [activeRoleId, setActiveRoleId] = useState<string>(() => {
-    return localStorage.getItem('eduspike_active_profile_id') || 'usr-admin-1';
+    const saved = localStorage.getItem('eduspike_active_profile_id');
+    if (!saved || saved === 'usr-admin-1') return 'usr-principal-1';
+    return saved;
   });
 
   const [activeSchoolId, setActiveSchoolIdState] = useState<string>(() => {
@@ -179,8 +192,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('eduspike_active_child_id', activeChildId);
   }, [activeChildId]);
 
-  const currentUser = userProfiles.find((p) => p.id === activeRoleId) || userProfiles[0];
-  const activeRole = currentUser.role;
+  const rawProfile = userProfiles.find((p) => p.id === activeRoleId) || userProfiles[0];
+  const currentUser: UserProfile = {
+    ...rawProfile,
+    role: (rawProfile.role === 'OwnerAdmin' || rawProfile.role === 'Admin' || rawProfile.role === 'AccountAdmin')
+      ? 'Principal'
+      : rawProfile.role,
+  };
+  const activeRole: UserRole = currentUser.role;
 
   // Active School resolution
   const activeSchool = useMemo(() => {
@@ -202,13 +221,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   }, [memberships, currentUser, activeRole]);
 
-  // 6 Canonical Role Booleans
+  // Strict Role Booleans (Principal, Teacher, Student + SuperAdmin)
   const isSuperAdmin = activeRole === 'SuperAdmin';
-  const isOwnerAdmin = activeRole === 'OwnerAdmin';
+  const isOwnerAdmin = false;
   const isPrincipal = activeRole === 'Principal';
   const isTeacher = activeRole === 'Teacher';
   const isStudent = activeRole === 'Student';
-  const isAccountAdmin = activeRole === 'AccountAdmin';
+  const isAccountAdmin = false;
 
   // Class Teacher Responsibility Hierarchy
   const classTeacherOf = currentUser.classTeacherOf || [];
@@ -228,12 +247,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return {
         allowed: false,
         reason: 'Access restricted: Platform Super Administrators provide oversight and tenant management, but cannot perform direct classroom operations. Please log in as the assigned Class Teacher.',
-      };
-    }
-    if (isOwnerAdmin) {
-      return {
-        allowed: false,
-        reason: 'Access restricted: School Owners supervise school governance and finances. Classroom operations are managed by the assigned Class Teacher.',
       };
     }
     if (isPrincipal) {
@@ -268,8 +281,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Composite Role Helpers
-  const isAdmin = isSuperAdmin || isOwnerAdmin || isPrincipal || (activeRole as string) === 'Admin';
-  const isSchoolStaff = isAdmin || isTeacher || isAccountAdmin;
+  const isAdmin = isSuperAdmin || isPrincipal;
+  const isSchoolStaff = isPrincipal || isTeacher;
 
   // Strict multi-tenancy access check
   const canAccessSchool = (schoolId: string): boolean => {
@@ -288,34 +301,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const switchSchoolContext = async (
-    targetSchoolId: string,
-    targetRole?: UserRole
-  ): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const res = await fetch('/api/auth/select-context', {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ schoolId: targetSchoolId, role: targetRole }),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        return { success: false, error: data.error || 'Failed to switch school context.' };
-      }
-
-      setActiveSchoolIdState(targetSchoolId);
-      return { success: true };
-    } catch {
-      if (isSuperAdmin || canAccessSchool(targetSchoolId)) {
-        setActiveSchoolIdState(targetSchoolId);
-        return { success: true };
-      }
-      return { success: false, error: 'Access Denied: You do not have authorization for this school.' };
-    }
-  };
-
-  // Role-based Access Control matrix across 8 Account Types
+  // Role-based Access Control matrix across the canonical roles
   const hasPermission = (permissionKey: string): boolean => {
     if (isSuperAdmin) return true;
 
@@ -330,7 +316,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       case 'audit_logs:view_all':
         return isSuperAdmin;
 
-      // 2. School Owner & Principal Admin Permissions
+      // 2. Principal Admin Permissions
       case 'schools:view_own':
       case 'schools:edit_own':
       case 'analytics:school':
@@ -338,7 +324,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       case 'users:manage_roles':
       case 'users:create':
       case 'users:toggle_status':
-        return isOwnerAdmin || isPrincipal || isSuperAdmin;
+        return isPrincipal || isSuperAdmin;
 
       // 3. Student & Academic Management
       case 'students:create':
@@ -348,14 +334,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       case 'classes:manage':
       case 'subjects:manage':
       case 'timetable:manage':
-        return isOwnerAdmin || isPrincipal || isSuperAdmin;
+        return isPrincipal || isSuperAdmin;
 
-      // 4. Financial & Fee Management (Account Admin / Fee Manager + Owner/Principal)
+      // 4. Financial & Fee Management (Principal / SuperAdmin)
       case 'fees:manage':
       case 'fees:create_structure':
       case 'fees:record_payment':
       case 'fees:reports':
-        return isAccountAdmin || isOwnerAdmin || isPrincipal || isSuperAdmin;
+        return isPrincipal || isSuperAdmin;
 
       // 5. Library Management (School Leadership)
       case 'library:manage':
@@ -364,18 +350,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       case 'library:delete_book':
       case 'library:borrow':
       case 'library:return':
-        return isOwnerAdmin || isPrincipal || isSuperAdmin;
+        return isPrincipal || isSuperAdmin;
 
       // 6. Faculty / Teacher Specific Permissions
       case 'attendance:mark':
       case 'exams:manage':
       case 'marks:enter':
-        return isTeacher || isOwnerAdmin || isPrincipal || isSuperAdmin;
+        return isTeacher || isPrincipal || isSuperAdmin;
 
       // 7. Academic Materials & Uploads
       case 'syllabus:upload':
       case 'resources:upload':
-        return isTeacher || isOwnerAdmin || isPrincipal || isSuperAdmin;
+        return isTeacher || isPrincipal || isSuperAdmin;
 
       // 8. Communication & Collaboration
       case 'chat:access':
@@ -383,7 +369,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return isSchoolStaff || isSuperAdmin;
 
       case 'notices:create':
-        return isOwnerAdmin || isPrincipal || isTeacher || isSuperAdmin;
+        return isPrincipal || isTeacher || isSuperAdmin;
 
       // 9. Read-only Views
       case 'students:view_list':
@@ -552,7 +538,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     id: string,
     updated: Partial<School>
   ): Promise<{ success: boolean; school?: School; error?: string }> => {
-    if (!isSuperAdmin && !isOwnerAdmin) {
+    if (!isSuperAdmin && !isPrincipal) {
       return { success: false, error: 'Access Denied: Only Administrators can modify school parameters.' };
     }
 
@@ -682,7 +668,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     role: UserRole,
     designation?: string
   ): Promise<{ success: boolean; error?: string }> => {
-    if (!isSuperAdmin && !isOwnerAdmin && !isPrincipal) {
+    if (!isSuperAdmin && !isPrincipal) {
       return { success: false, error: 'Access Denied: Insufficient administrative privileges.' };
     }
 
@@ -718,7 +704,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const revokeMembership = async (membershipId: string): Promise<{ success: boolean; error?: string }> => {
-    if (!isSuperAdmin && !isOwnerAdmin) {
+    if (!isSuperAdmin && !isPrincipal) {
       return { success: false, error: 'Access Denied: Insufficient administrative privileges.' };
     }
 
@@ -766,7 +752,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     newRole: UserRole,
     reason?: string
   ): Promise<{ success: boolean; error?: string }> => {
-    if (!isSuperAdmin && !isOwnerAdmin && !isPrincipal) {
+    if (!isSuperAdmin && !isPrincipal) {
       return { success: false, error: 'Access Denied: Elevated privileges required.' };
     }
 
@@ -799,7 +785,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     status: 'Active' | 'Disabled',
     reason?: string
   ): Promise<{ success: boolean; error?: string }> => {
-    if (!isSuperAdmin && !isOwnerAdmin && !isPrincipal) {
+    if (!isSuperAdmin && !isPrincipal) {
       return { success: false, error: 'Access Denied: Elevated privileges required.' };
     }
 
@@ -835,7 +821,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       tenantSchoolId?: string;
     }
   ): Promise<{ success: boolean; error?: string }> => {
-    if (!isSuperAdmin && !isOwnerAdmin && !isPrincipal) {
+    if (!isSuperAdmin && !isPrincipal) {
       return { success: false, error: 'Access Denied: Elevated privileges required.' };
     }
 
@@ -985,45 +971,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
       };
 
-      const ownerCount = userProfiles.filter((p) => p.role === 'OwnerAdmin').length + 1;
-      const ownerSchoolId = `ADM-2026-${String(ownerCount).padStart(4, '0')}`;
-      const newOwnerId = `usr-owner-${Date.now()}`;
+      const principalCount = userProfiles.filter((p) => p.role === 'Principal').length + 1;
+      const principalSchoolId = `PRP-2026-${String(principalCount).padStart(4, '0')}`;
+      const newPrincipalId = `usr-principal-${Date.now()}`;
 
-      const newOwner: UserProfile = {
-        id: newOwnerId,
-        schoolId: ownerSchoolId,
+      const newPrincipal: UserProfile = {
+        id: newPrincipalId,
+        schoolId: principalSchoolId,
         tenantSchoolId: newId,
         name: ownerData.name,
         email: ownerData.email,
-        role: 'OwnerAdmin',
+        role: 'Principal',
         password: ownerData.password || 'password123',
         status: 'Active',
         roleAssignedBy: 'Local School Registration',
         roleAssignedAt: new Date().toISOString().slice(0, 10),
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
         phone: ownerData.phone || '+1 (555) 000-0000',
-        designation: ownerData.designation || 'School Owner & Administrator',
+        designation: ownerData.designation || 'Principal Administrator',
         joinDate: new Date().toISOString().slice(0, 10),
-        bio: `Founder & Administrator of ${newSchool.name}.`,
+        bio: `Principal Administrator of ${newSchool.name}.`,
       };
 
       const newMem: SchoolMembership = {
-        id: `mem-${newOwnerId}-${newId}`,
-        userId: newOwnerId,
+        id: `mem-${newPrincipalId}-${newId}`,
+        userId: newPrincipalId,
         schoolId: newId,
         schoolName: newSchool.name,
         schoolCode: newSchool.code,
-        role: 'OwnerAdmin',
+        role: 'Principal',
         status: 'Active',
         joinedAt: new Date().toISOString(),
       };
 
       setSchools((prev) => [...prev, newSchool]);
-      setUserProfiles((prev) => [...prev, newOwner]);
+      setUserProfiles((prev) => [...prev, newPrincipal]);
       setMemberships((prev) => [...prev, newMem]);
 
       setActiveSchoolIdState(newId);
-      setActiveRoleId(newOwnerId);
+      setActiveRoleId(newPrincipalId);
       setIsAuthenticated(true);
 
       return { success: true, school: newSchool };
@@ -1465,7 +1451,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setAuthUser({
         name: matchedProfile.name,
         email: matchedProfile.email,
-        isPlatformOwner: matchedProfile.role === 'SuperAdmin' || matchedProfile.role === 'OwnerAdmin',
+        isPlatformOwner: matchedProfile.role === 'SuperAdmin',
       });
       setHasEnteredWorkspace(true);
       setIsAuthenticated(true);
@@ -1528,7 +1514,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         activeSchoolId,
         activeSchool,
         setActiveSchoolId,
-        switchSchoolContext,
         isSuperAdmin,
         isOwnerAdmin,
         isPrincipal,

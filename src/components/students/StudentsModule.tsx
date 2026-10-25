@@ -48,17 +48,14 @@ import {
 } from 'lucide-react';
 
 export const StudentsModule: React.FC = () => {
-  const { activeRole, currentUser, canPerformClassOperations, isPrincipal, isOwnerAdmin, isAdmin, activeSchool } = useAuth();
+  const { activeRole, currentUser, canPerformClassOperations, isPrincipal, isAdmin, activeSchool } = useAuth();
   const { students, classes, addStudent, updateStudent, deleteStudent, addStudentsBulk, addToast, globalSearch } = useSchoolData();
 
   // Role permissions
   const canManageStudents =
     isPrincipal ||
-    isOwnerAdmin ||
     isAdmin ||
     activeRole === 'Principal' ||
-    activeRole === 'OwnerAdmin' ||
-    activeRole === 'Admin' ||
     activeRole === 'Teacher';
 
   // Navigation State: 'classes' (Default Class Directory) | 'class-roster' (Selected Class Students)

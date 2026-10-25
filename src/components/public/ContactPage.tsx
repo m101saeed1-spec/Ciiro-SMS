@@ -92,8 +92,8 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
 
           <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
             {tr(
-              'Whether you are setting up a single academy with our $25/mo Pro plan or digitizing a multi-campus school network, our engineering and onboarding team is ready to assist.',
-              'Haddii aad tahay dugsi keliya oo bilaabaya qorshaha $25/mo Pro ama shabakad dugsiyo badan leh, kooxdayadu waxay diyaar u tahay inay kugu caawiso sidii aad u bilaabi lahayd.'
+              'Whether you are setting up a single academy with our $15/mo Pro plan or digitizing a multi-campus school network, our engineering and onboarding team is ready to assist.',
+              'Haddii aad tahay dugsi keliya oo bilaabaya qorshaha $15/mo Pro ama shabakad dugsiyo badan leh, kooxdayadu waxay diyaar u tahay inay kugu caawiso sidii aad u bilaabi lahayd.'
             )}
           </p>
 
@@ -135,7 +135,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
               className="inline-flex items-center gap-2 text-xs font-bold text-[#3B82F6] dark:text-[#60A5FA] hover:underline transition-colors"
             >
               <Tag className="w-3.5 h-3.5" />
-              <span>{tr('Check Ileys Pro Plan Details ($25/mo · 10% Discount)', 'Eeg Faahfaahinta Qorshaha Pro ($25/mo · 10% Dhimis)')}</span>
+              <span>{tr('Check Ileys Pro Plan Details ($15/mo)', 'Eeg Faahfaahinta Qorshaha Pro ($15/mo)')}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -235,7 +235,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ onNavigate }) => {
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-[#3B82F6] focus:outline-none cursor-pointer"
                   >
-                    <option value="Pro Plan Setup ($25/mo)">{tr('Pro Plan Setup ($25/mo)', 'Qorshaha Pro ($25/mo)')}</option>
+                    <option value="Pro Plan Setup ($15/mo)">{tr('Pro Plan Setup ($15/mo)', 'Qorshaha Pro ($15/mo)')}</option>
                     <option value="School Onboarding & Demo">{tr('School Onboarding & Demo', 'Diiwaangelinta Dugsiga')}</option>
                     <option value="Multi-Campus Network">{tr('Multi-Campus Network', 'Laamo Badan oo Dugsiyo ah')}</option>
                     <option value="Data Migration Assistance">{tr('Data Migration Assistance', 'Soo Wareejinta Xogta')}</option>

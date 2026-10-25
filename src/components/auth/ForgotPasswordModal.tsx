@@ -326,11 +326,10 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {[
+                  { label: 'Principal', email: 'principal@alhikma.edu' },
                   { label: 'Teacher', email: 'teacher@alhikma.edu' },
-                  { label: 'Headteacher', email: 'principal@alhikma.edu' },
-                  { label: 'Accountant', email: 'accountant@alhikma.edu' },
                   { label: 'Student', email: 'student@alhikma.edu' },
-                  { label: 'Platform Owner', email: 'superadmin@ileys.edu' },
+                  { label: 'Super Admin', email: 'superadmin@ileys.edu' },
                 ].map((demo) => (
                   <button
                     key={demo.email}
